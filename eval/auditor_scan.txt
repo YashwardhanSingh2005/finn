@@ -24,3 +24,20 @@ Warning: TT: undefined function: 21
 ===== TATASTEEL 2026 pages 584 clean true 
   report standalone p286 unmodified EoM: - GC: - KAM× 9 | op ev: In our opinion and to the best of our information and according to the explanations given 
   report consolidated p410 unmodified EoM: - GC: - KAM× 7 | op ev: In our opinion and to the best of our information and according to the explanations given 
+Warning: TT: undefined function: 21
+===== ETERNAL 2026 pages 422 clean false 
+Warning: TT: undefined function: 21
+===== TRENT 2026 pages 262 clean true 
+  report standalone p168 unmodified EoM: - GC: - KAM× 9 | op ev: 238 Company Overview / Statutory Reports / Financial Statements / Notice Independent Audit
+  report consolidated p209 unmodified EoM: - GC: - KAM× 6 | op ev: 320 Company Overview / Statutory Reports / Financial Statements / Notice Independent Audit
+Warning: TT: undefined function: 21
+Warning: TT: undefined function: 21
+Warning: TT: undefined function: 21
+Warning: TT: undefined function: 21
+Warning: TT: invalid function id: 136
+Warning: TT: invalid function id: 136
+===== DIXON 2026 pages 520 clean false 
+Warning: TT: undefined function: 21
+===== CDSL 2026 pages 354 clean true 
+  report standalone p216 unmodified EoM: - GC: - KAM× 6 | op ev: Independent Auditor’s Report To the Members of Central Depository Services (India) Limited
+Warning: TT: undefined function: 21

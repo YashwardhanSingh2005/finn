@@ -8,6 +8,7 @@ const REFS = [
   ["Candour: tone and uncertainty", "Loughran & McDonald (2011), When is a liability not a liability? Textual analysis, dictionaries, and 10-Ks, Journal of Finance (word-list subsets)."],
   ["Candour: analyst praise", "Milian & Smith (2017), An investigation of analysts’ praise of management during earnings conference calls."],
   ["Narrative vs numbers", "Indian evidence that optimistic concall tone can mask weak future performance (NSE–NYU study of BSE-500 calls). FINN compares the tone trend with the reported-growth trend."],
+  ["What the auditor said", "SA 700/705/706/570 (opinion, emphasis of matter, going concern) and CARO 2020 annexure remarks, read from the annual report with rules."],
   ["Triage materiality", "SEBI LODR Reg 30(4), amended July 2023: lower of 2% turnover, 2% net worth, 5% of 3-year average |PAT|."],
   ["Why numbers are never generated", "FinanceBench (Islam et al. 2023): retrieval-augmented GPT-4 failed or refused about 81% of financial questions. FINN’s models only locate and quote, code computes, and every quote is verified against the PDF."],
 ];

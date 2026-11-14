@@ -67,6 +67,12 @@ Most "AI for investors" tools put a summary on top of the firehose. That makes t
 - **Promises × Candour:** each promise thread shows whether analysts asked about it and management dodged, with the matched terms displayed.
 - **SEBI transcript-lag check:** the call date and the filing date are read from the PDF and checked against the 5-working-day rule.
 - **Chance the next promise is kept.** Investors weight a manager's forecasts by that manager's track record (Hutton & Stocken 2009). FINN makes the weight explicit: a Beta(1,1) prior updated by the ledger's kept and not-kept verdicts gives a probability with an 80% range. Few promises gives a wide range, honestly shown. A style label comes from goalpost history: *walks down, then beats* (Richardson, Teoh & Wysocki 2004), *raises, then misses*, or *reliable*.
+- **What the auditor said:** read from the latest annual report with rules, not a model. Audit reports follow SA 700/705/706/570 and CARO 2020, so the signals are phrase-detectable:
+  - the opinion type (unmodified, qualified, adverse or disclaimer) for both the standalone and consolidated reports;
+  - any Emphasis of Matter or going-concern uncertainty, quoted with its page;
+  - adverse CARO remarks: unpaid statutory dues, defaults, fraud, cash losses.
+
+  Negated phrases ("there were no defaults") are ignored, and unit tests cover this. Example: Suzlon's FY26 auditor draws attention to *"the restatement of the comparative financial information"*.
 - **Balance and cash.** Each flag shows the rule that fired, e.g. `rule: Σ CFO / Σ PAT < 70%`. Covers:
   - cash conversion: Σ operating cash flow ÷ Σ PAT, with the yearly table;
   - debt-to-equity;
