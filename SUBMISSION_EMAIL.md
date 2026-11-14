@@ -1,0 +1,47 @@
+**To:** assessment@enam.com
+**Subject:** IIT Delhi – AI Engineer - 2027
+
+Dear ENAM team,
+
+Please find my submission for the FINN build challenge below.
+
+- **Prototype (open on a phone):** {{LIVE_URL}}
+- **Repository:** https://github.com/YashwardhanSingh2005/finn
+- **AI build history:** the Claude Code session export is attached; `BUILD_LOG.md` in the repo summarises the main steps.
+
+**What I built.** FINN is built on two ideas: an investor needs to know *what to read* and *whether to believe it*.
+
+- **Push is a triage desk, not a feed.**
+  - Every NSE filing across an 18-stock portfolio is sorted into *Needs you*, *Worth a read* or *Filed away*, for any time window, including "since your last visit".
+  - Each card opens to an itemised 0–100 score: category, stage, seniority, deal size as a share of revenue, the SEBI Reg 30 materiality threshold, the market reaction in the stock's own volatility units, position weight, and your own rules.
+  - Price and volume triggers are user-defined, either absolute or in σ.
+  - Management changes come with the appointee's profile taken from the filing itself, plus LinkedIn.
+  - Results come with Revenue, EBITDA, PBT and PAT, QoQ and YoY. EBITDA is computed in code from the filing's own lines and reconciled with standardised data.
+- **Pull centres on a Promise Ledger.**
+  - FINN reads a company's last four earnings calls and extracts every forward-looking promise, verifying each quote against the transcript.
+  - It links the same promise across calls and flags when management moves the goalposts (a target lowered, or a deadline pushed out).
+  - It checks each promise against reported numbers and produces a say–do score.
+  - The same view covers the business snapshot, trajectory, balance sheet, cash quality and a bull/bear case. Each bull or bear point may cite only verified evidence.
+  - It works for any NSE ticker.
+
+**Key decisions**
+
+1. **Models locate and quote; code computes.** No number on screen is produced by a model. Every model-supplied quote is checked against the source PDF; quotes that fail are dropped, and the drop is counted on screen.
+2. **Rules before models for triage.** Rules are free, instant and explainable. Models are spent only on items that earn attention: a cheap model (Haiku) reads documents, and a stronger model (Sonnet) is used only for cross-call judgement, batched to one call per company. Everything is cached by document. A new company costs about ₹5 the first time and nothing after that, and a cost meter in the app shows the spend.
+3. **I tested whether the ranking works.** I re-scored a year of portfolio filings, leaving out the market-reaction term so the test isn't circular.
+   - The first version barely separated urgent filings from routine ones.
+   - A per-category breakdown showed which weights were wrong.
+   - After re-tuning, the result held on the six months I hadn't tuned on: *Needs you* filings were followed by a ≥2σ move **27%** of the time, vs **11%** for routine ones. Only 6% of filings now reach *Needs you*.
+   - The result is shown in the app, with its caveats.
+
+**What I left out on purpose.** Notification delivery (WhatsApp or Web Push): the digest and triggers are computed on demand. Deep reads of annual reports. Logins. A chat box: chat invites answers that can't be checked, so FINN gives structured views with receipts instead.
+
+**Where I'd take it next.** Discount each new guidance figure by management's historical say–do score. Track credibility per CEO and CFO. Alert when a promise goes silent in the latest call. Diff annual reports year over year (risk factors, contingent liabilities, related-party transactions, auditor remarks). Then deliver only the *Needs you* tier as a push.
+
+**Landscape.** Concall summaries and filing alerts are already common in India (Trendlyne, Tijori, Screener). The closest things to the ledger are Tijori's narrative "then vs now" and Arthneeti's quarter-on-quarter scorecard. Neither verifies quotes, threads promises across calls, detects goalpost moves, or explains why an alert ranks where it does.
+
+Thank you for a well-designed brief. I enjoyed building this.
+
+Best regards,
+Yashwardhan Singh
+IIT Delhi

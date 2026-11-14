@@ -58,6 +58,7 @@ function Finder({ onPick }) {
 const TABS = [
   { k: "snap", label: "Snapshot" },
   { k: "ledger", label: "Promises" },
+  { k: "candour", label: "Candour" },
   { k: "money", label: "Balance & cash" },
   { k: "bb", label: "Bull vs bear" },
 ];
@@ -101,6 +102,7 @@ function Company({ symbol, back, startTab }) {
         {tab === "snap" && <Snapshot c={c} biz={biz} L={judged.data || ledger.data} goLedger={() => setTab("ledger")} />}
         {tab === "ledger" && <Ledger st={ledger} judged={judged} />}
         {tab === "money" && <Money a={c.analysis} />}
+        {tab === "candour" && <Candour symbol={symbol} />}
         {tab === "bb" && <BullBear symbol={symbol} ready={!!judged.data || !!judged.error} />}
       </div>
       <p className="costbar">Numbers: {c.consolidated ? "consolidated" : "standalone"} statements as filed (via screener.in) · fetched {new Date(c.fetchedAt).toLocaleString("en-IN")}</p>
@@ -401,6 +403,70 @@ function BullBear({ symbol, ready }) {
         {d.evidence.map((e) => <div key={e.id} className="small mt4"><span className="tick">{e.id}</span> {e.text} <span className="muted tiny">· {e.src}</span></div>)}
       </details>
       {d.meta && <div className="tiny muted">{d.meta.model} · ${d.meta.usd?.toFixed(4)}</div>}
+    </div>
+  );
+}
+
+const NA_CLS = { refuse: "risk", unable: "watch", defer: "info" };
+
+/** How management talks: non-answers, uncertainty, tone, and whether the story matches the numbers. */
+function Candour({ symbol }) {
+  const { data: d, loading, error } = useApi("candour", { symbol });
+  if (loading) return <div className="card"><div className="row"><span className="spin" /> <strong>Reading the last four calls…</strong></div><p className="small muted">Pairing every analyst question with management’s answer and flagging non-answers. No AI model involved: published word lists, applied the same way every time.</p></div>;
+  if (error) return <div className="card"><p className="err">{error.message}</p></div>;
+  const calls = d.calls.filter((x) => x.parsed).slice().reverse(); // oldest -> newest
+  const dv = d.divergence;
+  const maxNA = Math.max(20, ...calls.map((x) => x.nonAnswerRate || 0));
+  const vcls = !dv ? "neutral" : dv.verdict === "aligned" ? "good" : dv.verdict === "story ahead of numbers" ? "risk" : "watch";
+  return (
+    <div className="stack">
+      {dv && (
+        <section className="card" style={{ background: vcls === "risk" ? "var(--risk-soft)" : vcls === "watch" ? "var(--watch-soft)" : undefined, borderColor: vcls === "good" ? undefined : "transparent" }}>
+          <div className="tiny muted">Narrative vs numbers, {dv.from} → {dv.to} calls</div>
+          <div className="serif" style={{ fontSize: 21, fontWeight: 600, textTransform: "capitalize" }}>{dv.verdict}</div>
+          <div className="small ink2">{dv.why}</div>
+          <div className="rule mt4">rule: {dv.rule}</div>
+        </section>
+      )}
+      <section className="card">
+        <h3>Questions dodged, call by call</h3>
+        <div className="row" style={{ alignItems: "flex-end", gap: 10, height: 96 }}>
+          {calls.map((x) => (
+            <div key={x.period} className="grow" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+              <span className="tiny num" style={{ fontWeight: 600 }}>{x.nonAnswerRate}%</span>
+              <div title={`${x.nonAnswers.length} of ${x.questions} questions`} style={{ width: "60%", height: `${Math.max(3, (x.nonAnswerRate / maxNA) * 64)}px`, background: "var(--accent)", borderRadius: "4px 4px 0 0" }} />
+              <span className="tiny muted">{x.period.replace(" 20", " '")}</span>
+            </div>
+          ))}
+        </div>
+        <p className="tiny muted">Share of analyst questions answered with a refusal (“we don’t give…”), an inability (“difficult to say”), or a deferral (“take it offline”). {calls.map((x) => `${x.period}: ${x.nonAnswers.length}/${x.questions}`).join(" · ")}</p>
+        <table className="fig mt8">
+          <thead><tr><th>per call</th>{calls.map((x) => <th key={x.period}>{x.period.replace(" 20", " '")}</th>)}</tr></thead>
+          <tbody>
+            <tr><td className="lab">Revenue YoY (quarter discussed)</td>{calls.map((x) => <td key={x.period}><Delta v={x.growth?.yoy} /></td>)}</tr>
+            <tr><td className="lab">Tone, prepared remarks</td>{calls.map((x) => <td key={x.period}>{x.prepared.tone.toFixed(2)}</td>)}</tr>
+            <tr><td className="lab">Tone, Q&A answers</td>{calls.map((x) => <td key={x.period}>{x.qa.tone.toFixed(2)}</td>)}</tr>
+            <tr><td className="lab">Uncertainty words /1k (Q&A)</td>{calls.map((x) => <td key={x.period}>{x.qa.uncPer1k}</td>)}</tr>
+            <tr><td className="lab">Hedges /1k (Q&A)</td>{calls.map((x) => <td key={x.period}>{x.qa.hedgePer1k}</td>)}</tr>
+            <tr><td className="lab">Analysts / questions</td>{calls.map((x) => <td key={x.period}>{x.analysts}/{x.questions}</td>)}</tr>
+          </tbody>
+        </table>
+        <p className="tiny muted mt4">Tone = (positive − negative) / (positive + negative) finance words. 1 = all positive.</p>
+      </section>
+      {d.calls.filter((x) => x.parsed).map((x) => x.nonAnswers.length > 0 && (
+        <section key={x.period} className="card">
+          <h3>{x.period} call: {x.nonAnswers.length} non-answer{x.nonAnswers.length > 1 ? "s" : ""}</h3>
+          {x.nonAnswers.map((na, i) => (
+            <div key={i} className="flag" style={{ display: "block" }}>
+              <div className="row wrap" style={{ gap: 6 }}><span className={`pill ${NA_CLS[na.kind]}`}>{na.kind}</span><span className="tiny muted">{na.analyst} asked</span></div>
+              <div className="small muted mt4">“{na.question}”</div>
+              <div className="quote">“{na.answer}”</div>
+              <Receipt url={x.url} page={na.page} label={`${na.responder}, transcript`} extra={`matched “${na.phrase}”`} />
+            </div>
+          ))}
+        </section>
+      ))}
+      <p className="tiny muted">Method: question–answer pairing from the transcript’s speaker turns. Non-answer phrases after Gow, Larcker & Zakolyukina (2021), “Non-answers during conference calls” (JAR). Tone and uncertainty use subsets of the Loughran & McDonald (2011) finance word lists. Deterministic, free, same rules for every company.{d.calls.some((x) => x.error) ? ` ${d.calls.filter((x) => x.error).length} transcript(s) couldn’t be fetched.` : ""}</p>
     </div>
   );
 }

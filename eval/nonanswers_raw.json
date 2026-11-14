@@ -1,0 +1,776 @@
+{
+ "detections": [
+  {
+   "s": "POLYCAB",
+   "period": "Oct 2026",
+   "kind": "unable",
+   "phrase": "difficult to quantify",
+   "analyst": "Ashish Kanodia",
+   "question": "Got it. And just last one, between wires and cables, anything to highlight there? What led to wires kind of outpacing cables? Because from an underlying demand point of view, of course, you see more at a macro level, the…",
+   "answer": "And it is very difficult to quantify the end market for a cable and a wire business simply because I think some of the wires also act as an ancillary to the cable.",
+   "responder": "Aditya Nathany",
+   "page": 14
+  },
+  {
+   "s": "POLYCAB",
+   "period": "Oct 2026",
+   "kind": "refuse",
+   "phrase": "would not like to guide",
+   "analyst": "Akshay",
+   "question": "And congratulations on great set. Wanted to understand on the export side in terms of what kind of cables you're seeing broader acceptability globally from Indian cable manufacturers. And if you can distinguish this betw…",
+   "answer": "So I think we would not like to guide in terms of the revenue growth per se, but it's anyone's guess of how copper price is going to be.",
+   "responder": "Aditya Nathany",
+   "page": 15
+  },
+  {
+   "s": "POLYCAB",
+   "period": "Oct 2026",
+   "kind": "unable",
+   "phrase": "difficult to say",
+   "analyst": "Ashish Jain",
+   "question": "Okay. So an extension of that, in second half also, do you think wires could continue to grow faster than cables? Is that our base case expectation today based upon the trajectory we are seeing as we speak?",
+   "answer": "So it's very difficult to say if cables is going to outpace wires in the next quarter or so.",
+   "responder": "Aditya Nathany",
+   "page": 17
+  },
+  {
+   "s": "POLYCAB",
+   "period": "Oct 2026",
+   "kind": "refuse",
+   "phrase": "we don't give",
+   "analyst": "Rabindra Nath Nayak",
+   "question": "Okay, 30%. Okay. So our share would be, house share would be 30%?",
+   "answer": "Ravindra, we don't give a breakdown of our market share based on a segment.",
+   "responder": "Aditya Nathany",
+   "page": 17
+  },
+  {
+   "s": "POLYCAB",
+   "period": "Oct 2026",
+   "kind": "refuse",
+   "phrase": "we don't give",
+   "analyst": "Rabindra Nath Nayak",
+   "question": "Okay. No, that I agree. But I'm just talking about only the house wire segment, that's why I'm asking?",
+   "answer": "Ravindra, we don't give segment breakdown.",
+   "responder": "Aditya Nathany",
+   "page": 17
+  },
+  {
+   "s": "POLYCAB",
+   "period": "Jul 2026",
+   "kind": "defer",
+   "phrase": "take it offline",
+   "analyst": "Aniruddha Joshi",
+   "question": "Yes. Congrats to entire team for posting for a solid result. Sir, two questions from my side. If you can indicate the price hikes and volume growth in this quarter on a year-on-year basis. And now considering the copper …",
+   "answer": "So I think for more details into it, we can of course take it offline.",
+   "responder": "Shashank Yagnick",
+   "page": 7
+  },
+  {
+   "s": "POLYCAB",
+   "period": "Jul 2026",
+   "kind": "unable",
+   "phrase": "don't have a number",
+   "analyst": "Ravi Swaminathan",
+   "question": "Congrats on a good set of numbers. I would like to double-click on the volume growth opportunity from the cable segment. How was the performance from transmission side this time? And how do you see the visibility, especi…",
+   "answer": "So we don't have a number for June, but 2 months have already seen 2,000 circuit kilometre getting added.",
+   "responder": "Shashank Yagnick",
+   "page": 10
+  },
+  {
+   "s": "POLYCAB",
+   "period": "Jul 2026",
+   "kind": "refuse",
+   "phrase": "we don't give",
+   "analyst": "Sameer Gupta",
+   "question": "Okay. And on the FMEG ex-solar if you could just help me with the growth in terms of volume and price hikes for this quarter, it would be helpful.",
+   "answer": "Sameer by design, we don't give a split of the FMEG respective portfolios.",
+   "responder": "Shashank Yagnick",
+   "page": 15
+  },
+  {
+   "s": "POLYCAB",
+   "period": "May 2026",
+   "kind": "unable",
+   "phrase": "difficult to quantify",
+   "analyst": "Puneet Gulati",
+   "question": "Congratulations on good numbers. First, if you can quantify what sort of impact you had in March on account of these Middle East-related disruptions?",
+   "answer": "And I think it's very difficult to quantify that.",
+   "responder": "Shashank Yagnick",
+   "page": 11
+  },
+  {
+   "s": "POLYCAB",
+   "period": "May 2026",
+   "kind": "unable",
+   "phrase": "difficult to give a number",
+   "analyst": "Keyur Pandya",
+   "question": "Understood. And just second question on the exports. So you have mentioned a target for FY '30. But with current disruptions in the Middle East, and opening of new geographies post probably, say, U.S. where tariffs have …",
+   "answer": "So difficult to give a number, but I will tell you the driver.",
+   "responder": "Shashank Yagnick",
+   "page": 14
+  },
+  {
+   "s": "POLYCAB",
+   "period": "May 2026",
+   "kind": "refuse",
+   "phrase": "we don't give",
+   "analyst": "Akshay Gattani",
+   "question": "Got it. And for FY27 capex, what will be the focus areas? And a separate question on that is how much the solar business now accounts in FMEG revenue? I think earlier it was more than 50%. Has it moved up?",
+   "answer": "So primarily, we don't give breakup of the intersegment contribution in FMEG.",
+   "responder": "Shashank Yagnick",
+   "page": 16
+  },
+  {
+   "s": "POLYCAB",
+   "period": "Jan 2026",
+   "kind": "unable",
+   "phrase": "difficult to comment",
+   "analyst": "Akshay Gattani",
+   "question": "Got it. And second question, sir, like you highlighted, strategically, you have not passed through all commodity inflation to protect the demand. Do you think if the way copper and aluminium are moving up, if this contin…",
+   "answer": "It's very difficult to comment on the commodity prices.",
+   "responder": "Shashank Yagnick",
+   "page": 10
+  },
+  {
+   "s": "POLYCAB",
+   "period": "Jan 2026",
+   "kind": "unable",
+   "phrase": "difficult to say",
+   "analyst": "Pulkit Patni",
+   "question": "Okay. Secondly, on your ad spend, which is considerably higher and almost 3x of what your quarterly ad spends are, is this the new run rate? Is there some new thought process in terms of gaining market share? How should …",
+   "answer": "But it will be difficult to say that this will be every year or every quarter run rate because first half of this year, we didn't spend materially on A&P.",
+   "responder": "Shashank Yagnick",
+   "page": 14
+  },
+  {
+   "s": "POLYCAB",
+   "period": "Jan 2026",
+   "kind": "unable",
+   "phrase": "difficult to comment",
+   "analyst": "Achal Lohade",
+   "question": "Two questions. First, on the growth. If I understand right, essentially, the copper aluminium price will be up 40%, 50% on a Y-o-Y basis. If we assume the same price continues for next 2, 3 quarters, right? So do you see…",
+   "answer": "So, I think as mentioned earlier, we have zero control over commodity prices and therefore it is difficult to comment.",
+   "responder": "Shashank Yagnick",
+   "page": 17
+  },
+  {
+   "s": "KAYNES",
+   "period": "Aug 2026",
+   "kind": "refuse",
+   "phrase": "we don't give",
+   "analyst": "Praveen Sahay",
+   "question": "Yes, thank you for follow-up. One question is related to your order book. Can you give a indicative numbers, how has been the sector-wise or the segment-wise your order book right now?",
+   "answer": "Normally, we don't give sector-wise or segment-wise, but as of now, we have a very good order book.",
+   "responder": "N. Muthukumar",
+   "page": 19
+  },
+  {
+   "s": "KAYNES",
+   "period": "May 2026",
+   "kind": "defer",
+   "phrase": "get back to you",
+   "analyst": "Jigar Shah",
+   "question": "Sorry to harp on it again and again on smart meter business, but the communication from your side seems to be very off since last 2, 3 quarters on smart meter business and has created a lot of confusion. And if you see, …",
+   "answer": "We will get back to you in the days to come on this specific project.",
+   "responder": "N. Muthukumar",
+   "page": 17
+  },
+  {
+   "s": "KAYNES",
+   "period": "Feb 2026",
+   "kind": "refuse",
+   "phrase": "would not like to comment",
+   "analyst": "Sameet Sinha",
+   "question": "Can you specify how much, has any projections changed for your OSAT PCB business within that context?",
+   "answer": "So, at this point in time, I would not like to comment on how better it can be.",
+   "responder": "Jairam Sampath",
+   "page": 10
+  },
+  {
+   "s": "KAYNES",
+   "period": "Feb 2026",
+   "kind": "defer",
+   "phrase": "come back to you",
+   "analyst": "Santhosh Seshadri",
+   "question": "So my question is whether are you consciously targeting away from the smart metering business given the working capital cycle there? Is there a way to realign this business to target export markets by utilizing the exist…",
+   "answer": "And you can look forward to newer type of measurements and meters, et cetera, also in the future once we complete our trials and testing, et cetera, we will come back to and come back to you guys and inform.",
+   "responder": "Jairam Sampath",
+   "page": 12
+  },
+  {
+   "s": "ASIANPAINT",
+   "period": "Aug 2026",
+   "kind": "unable",
+   "phrase": "difficult to say",
+   "analyst": "Percy Panthaki",
+   "question": "Okay. So, it's a plus 3% on mix. Got it. Secondly, just wanted to understand the pricing. Now I know that you have several input costs, and they have their own demand-supply functions, etc. it's not just linked to crude.…",
+   "answer": "It is very difficult to say that at $90 this will happen and $100 this will happen.",
+   "responder": "Amit Syngle",
+   "page": 23
+  },
+  {
+   "s": "ASIANPAINT",
+   "period": "Aug 2026",
+   "kind": "unable",
+   "phrase": "difficult to put a number",
+   "analyst": "Percy Panthaki",
+   "question": "Got it. Last question, would you be able to give some idea of the benefit of the low-cost inventory this quarter? Would you be able to quantify it in basis points of gross margin or something like that?",
+   "answer": "Again, difficult to put a number to it, because today we have seen that, normally you will not keep too much of inventory also.",
+   "responder": "Amit Syngle",
+   "page": 23
+  },
+  {
+   "s": "ASIANPAINT",
+   "period": "Aug 2026",
+   "kind": "unable",
+   "phrase": "difficult to say",
+   "analyst": "Aditya Bhartia",
+   "question": "Sir, given that low-cost inventory was contributing to our sales for roughly half of the quarter, could you give us some indication about how profitability may have changed in the first half of the quarter versus the sec…",
+   "answer": "Right now, it's very difficult to say that today, we will take a price increase.",
+   "responder": "Amit Syngle",
+   "page": 24
+  },
+  {
+   "s": "ASIANPAINT",
+   "period": "Aug 2026",
+   "kind": "unable",
+   "phrase": "difficult to say",
+   "analyst": "Jaykumar Doshi",
+   "question": "The last one, at the time of announcement of this project, you had indicated that you expect, this will give you cost competitiveness, which should help your gross margins by 400-500 basis points. I assume that would be …",
+   "answer": "Very difficult to say that it will maintain at 400 or 500 basis points or between 300-400 basis points, because overall it also depends on the advantage which you are getting from the current sourcing which you are doing and the formulation…",
+   "responder": "Amit Syngle",
+   "page": 25
+  },
+  {
+   "s": "ASIANPAINT",
+   "period": "Jun 2026",
+   "kind": "unable",
+   "phrase": "too early to say",
+   "analyst": "Aditya Bhartia",
+   "question": "My first question was again on VAE and VAM project. While I understand that these benefits would be felt over the course of the entire year, could you give us some indication of what could be the benefit in terms of cost…",
+   "answer": "As I said, it is too early to say because there are several factors at play.",
+   "responder": "Amit Syngle",
+   "page": 25
+  },
+  {
+   "s": "HAL",
+   "period": "May 2026",
+   "kind": "refuse",
+   "phrase": "cannot quantify",
+   "analyst": "Harshit",
+   "question": "Okay. But any amount that you can suggest? What could be...",
+   "answer": "It's not the right time to say what the penalties will be— we cannot quantify them right now.",
+   "responder": "Ravi Kota",
+   "page": 12
+  },
+  {
+   "s": "HAL",
+   "period": "May 2026",
+   "kind": "refuse",
+   "phrase": "cannot comment",
+   "analyst": "Harshit",
+   "question": "Okay. And sir, lastly, just wanted to check on the AMCA program. I know you are not part of it, but is there a possibility during the production time that HAL could be involved? And secondly, is there a possibility of yo…",
+   "answer": "And as far as SU-57 is concerned, it's the government's call, so we cannot comment on that right now.",
+   "responder": "Ravi Kota",
+   "page": 13
+  },
+  {
+   "s": "HAL",
+   "period": "May 2023",
+   "kind": "refuse",
+   "phrase": "would not like to comment",
+   "analyst": "Aditya",
+   "question": "My first question is on the grounding of ALH, for sure. So what I understand is that we are going to replace aluminum control rods with the steel rods. So with this change, have all the issues been resolved or there have…",
+   "answer": "We would not like to comment on that.",
+   "responder": "E. P. Jayadeva",
+   "page": 9
+  },
+  {
+   "s": "JUBLFOOD",
+   "period": "Aug 2026",
+   "kind": "refuse",
+   "phrase": "We don't give",
+   "analyst": "Kunal Vora",
+   "question": "Understood. Okay. And lastly, if you can comment on capex for the quarter and for the full year, what is the expectation sir?",
+   "answer": "We don't give it by quarter.",
+   "responder": "Suman Hegde",
+   "page": 5
+  },
+  {
+   "s": "JUBLFOOD",
+   "period": "Aug 2026",
+   "kind": "refuse",
+   "phrase": "we don't share",
+   "analyst": "Aditya Soman",
+   "question": "Hi, good evening and thanks for the opportunity. So the question was just on your sort of average order value across both Domino's and Popeyes in India. Could you share the number? And if you can't share the absolute num…",
+   "answer": "You know, we don't share the average order value.",
+   "responder": "Sameer Khetarpal",
+   "page": 15
+  },
+  {
+   "s": "JUBLFOOD",
+   "period": "May 2026",
+   "kind": "unable",
+   "phrase": "difficult to predict",
+   "analyst": "Aditya Vikram",
+   "question": "Okay. And in terms of the margin, right? So we already read the shareholders letter that there would be short-term margin pressures. So are you seeing, I understand that one of the aspect of this is war and how the globa…",
+   "answer": "Very difficult to predict.",
+   "responder": "Suman Hegde",
+   "page": 8
+  },
+  {
+   "s": "JUBLFOOD",
+   "period": "May 2026",
+   "kind": "defer",
+   "phrase": "take it offline",
+   "analyst": "Avi Mehta",
+   "question": "No, no. The gross margin has gone up 100 basis points from 74.5% to 75.5%. And your realizations have gone down by 5 percentage points, which means that the cost of materials have to go down to almost 8%, 9% give or take…",
+   "answer": "Can I suggest we take it offline?",
+   "responder": "Sameer Khetarpal",
+   "page": 12
+  },
+  {
+   "s": "JUBLFOOD",
+   "period": "Feb 2026",
+   "kind": "refuse",
+   "phrase": "we don't disclose",
+   "analyst": "Manish Poddar",
+   "question": "Just two bits. First is, let's say, can you help me understand how much of, let's say, the delivery orders will be happening through our app broadly? And this monetization of the ad page on our platform or the app, how b…",
+   "answer": "So we don't disclose our share of our own channels versus the aggregators.",
+   "responder": "Sameer Khetarpal",
+   "page": 15
+  },
+  {
+   "s": "JUBLFOOD",
+   "period": "Feb 2026",
+   "kind": "defer",
+   "phrase": "come back to you",
+   "analyst": "Amit Sachdeva",
+   "question": "If you don't mind, is there a rough ADS that you can share, if possible, in say Bangalore, if not in all, but in typical ADS that store is getting, which you are satisfied with? And obviously, there will be a range, I do…",
+   "answer": "Give us 4 months, we will come back to you, Amit, on that when we are very close.",
+   "responder": "Sameer Khetarpal",
+   "page": 18
+  },
+  {
+   "s": "DIXON",
+   "period": "Aug 2026",
+   "kind": "refuse",
+   "phrase": "not able to share",
+   "analyst": "Bharat C. Shah",
+   "question": "Of course. One last speak on that. I suppose the initiatives and thoughts are in areas much more than devices, personal devices and appliances and all of that into precision engineering and precision manufacturing becaus…",
+   "answer": "Sorry, I'm not able to share more details.",
+   "responder": "Atul Lall",
+   "page": 16
+  },
+  {
+   "s": "DIXON",
+   "period": "Feb 2026",
+   "kind": "unable",
+   "phrase": "premature to comment",
+   "analyst": "Ankur Sharma",
+   "question": "Okay.",
+   "answer": "So it's slightly premature to comment on a number for '26-'27.",
+   "responder": "Atul Lall",
+   "page": 7
+  },
+  {
+   "s": "DIXON",
+   "period": "Feb 2026",
+   "kind": "unable",
+   "phrase": "difficult to say",
+   "analyst": "Ankur Sharma",
+   "question": "Okay. Fair. Just on the margins, one was, how do you really see margins more so with the PLI -- at least the original PLI benefits kind of going away as we head into '27. So how do you see cell phone margins? And obvious…",
+   "answer": "Sure, it is very difficult to say right now.",
+   "responder": "Saurabh Gupta",
+   "page": 8
+  },
+  {
+   "s": "DIXON",
+   "period": "Feb 2026",
+   "kind": "unable",
+   "phrase": "don't have that number right now",
+   "analyst": "Aditya Bhartia",
+   "question": "Sir, my first question is on amount that is due for PLI schemes. Could you just quantify roughly what amount may be due from government authorities in respect of PLI? And what would be our portion of it? And in the last …",
+   "answer": "So, Aditya, I don't have that number right now with me.",
+   "responder": "Saurabh Gupta",
+   "page": 13
+  },
+  {
+   "s": "DIXON",
+   "period": "Feb 2026",
+   "kind": "refuse",
+   "phrase": "would not like to disclose",
+   "analyst": "Girish Achhipalia",
+   "question": "My question was just on capex. If you can just highlight for FY '26 and FY '27, how much is the budget? And secondly, I wanted to understand when you get the approval for Vivo JV, you would be having some kind of cash co…",
+   "answer": "We would not like to disclose that number of acquisition right now.",
+   "responder": "Atul Lall",
+   "page": 17
+  },
+  {
+   "s": "SUZLON",
+   "period": "Nov 2026",
+   "kind": "unable",
+   "phrase": "difficult to predict",
+   "analyst": "Sumit Kishore",
+   "question": "Two questions from my side. The first one is if you could elaborate on your comments around the depressed contribution margin of 21.2% in Q2. Also, in what time will the higher fixed expenses in WTG business continue? Yo…",
+   "answer": "It is difficult to predict the timing of this resolution, given the nature of the externality.",
+   "responder": "Rahul Jain",
+   "page": 6
+  },
+  {
+   "s": "SUZLON",
+   "period": "Nov 2026",
+   "kind": "refuse",
+   "phrase": "cannot comment",
+   "analyst": "Sumit Kishore",
+   "question": "Okay. On the fixed expenses?",
+   "answer": "5%Of course, I cannot comment about commodity and FX.",
+   "responder": "Ajay Kapur",
+   "page": 6
+  },
+  {
+   "s": "SUZLON",
+   "period": "Nov 2026",
+   "kind": "defer",
+   "phrase": "come back to you",
+   "analyst": "Shakuntala Agarwala",
+   "question": "I would like to ask basically three basic questions. One is, Adani and JSW have also entered into JSW -- wind energy. So how competitively we are getting impacted? Second is, the cash conversion cycle, I want to know abo…",
+   "answer": "Largely, some of this we also use for our working capital, but I think the number on the encumbered piece is something that I will have to dig more detail into and then come back to you.",
+   "responder": "Ajay Kapur",
+   "page": 7
+  }
+ ],
+ "calls": [
+  {
+   "s": "POLYCAB",
+   "period": "Oct 2026",
+   "parsed": true,
+   "q": 30,
+   "na": 5,
+   "prepTone": 0.806,
+   "prepN": 2328,
+   "qaN": 4297
+  },
+  {
+   "s": "POLYCAB",
+   "period": "Jul 2026",
+   "parsed": true,
+   "q": 25,
+   "na": 3,
+   "prepTone": 0.714,
+   "prepN": 1745,
+   "qaN": 4778
+  },
+  {
+   "s": "POLYCAB",
+   "period": "May 2026",
+   "parsed": true,
+   "q": 29,
+   "na": 3,
+   "prepTone": 0.667,
+   "prepN": 3114,
+   "qaN": 3449
+  },
+  {
+   "s": "POLYCAB",
+   "period": "Jan 2026",
+   "parsed": true,
+   "q": 37,
+   "na": 3,
+   "prepTone": 0.905,
+   "prepN": 1931,
+   "qaN": 4047
+  },
+  {
+   "s": "KAYNES",
+   "period": "Aug 2026",
+   "parsed": true,
+   "q": 26,
+   "na": 1,
+   "prepTone": 0.765,
+   "prepN": 3273,
+   "qaN": 3556
+  },
+  {
+   "s": "KAYNES",
+   "period": "May 2026",
+   "parsed": true,
+   "q": 20,
+   "na": 1,
+   "prepTone": 0.841,
+   "prepN": 2473,
+   "qaN": 5131
+  },
+  {
+   "s": "KAYNES",
+   "period": "Feb 2026",
+   "parsed": true,
+   "q": 32,
+   "na": 2,
+   "prepTone": 0.8,
+   "prepN": 1253,
+   "qaN": 4969
+  },
+  {
+   "s": "KAYNES",
+   "period": "Dec 2025",
+   "error": "pdf 406 https://www.bseindia.com/stockinfo/AnnPdfOpen.aspx?Pname=d42ff5a9-4c9e-4163-ae33-ed915881baa4.pdf"
+  },
+  {
+   "s": "ASIANPAINT",
+   "period": "Nov 2026",
+   "parsed": true,
+   "q": 15,
+   "na": 0,
+   "prepTone": 0.718,
+   "prepN": 4675,
+   "qaN": 2045
+  },
+  {
+   "s": "ASIANPAINT",
+   "period": "Aug 2026",
+   "parsed": true,
+   "q": 21,
+   "na": 4,
+   "prepTone": 0.73,
+   "prepN": 3687,
+   "qaN": 2571
+  },
+  {
+   "s": "ASIANPAINT",
+   "period": "Jun 2026",
+   "parsed": true,
+   "q": 25,
+   "na": 1,
+   "prepTone": 0.887,
+   "prepN": 4273,
+   "qaN": 2331
+  },
+  {
+   "s": "ASIANPAINT",
+   "period": "Feb 2026",
+   "error": "pdf 406 https://www.bseindia.com/stockinfo/AnnPdfOpen.aspx?Pname=8bc8c7dd-23d0-4cf2-bcdf-620769ed0d1a.pdf"
+  },
+  {
+   "s": "HAL",
+   "period": "May 2026",
+   "parsed": true,
+   "q": 52,
+   "na": 2,
+   "prepTone": 0.75,
+   "prepN": 1245,
+   "qaN": 3505
+  },
+  {
+   "s": "HAL",
+   "period": "May 2025",
+   "error": "pdf 406 https://www.bseindia.com/stockinfo/AnnPdfOpen.aspx?Pname=94da53ef-52aa-4fdd-8cc2-9dcf291a112d.pdf"
+  },
+  {
+   "s": "HAL",
+   "period": "May 2024",
+   "parsed": true,
+   "q": 40,
+   "na": 0,
+   "prepTone": 0.778,
+   "prepN": 2443,
+   "qaN": 3804
+  },
+  {
+   "s": "HAL",
+   "period": "May 2023",
+   "parsed": true,
+   "q": 31,
+   "na": 1,
+   "prepTone": 0.375,
+   "prepN": 2190,
+   "qaN": 4508
+  },
+  {
+   "s": "JUBLFOOD",
+   "period": "Nov 2026",
+   "error": "pdf 406 https://www.bseindia.com/stockinfo/AnnPdfOpen.aspx?Pname=99fcbd72-fabb-41b7-9c21-6486e41d472a.pdf"
+  },
+  {
+   "s": "JUBLFOOD",
+   "period": "Aug 2026",
+   "parsed": true,
+   "q": 25,
+   "na": 2,
+   "prepTone": 1,
+   "prepN": 342,
+   "qaN": 4465
+  },
+  {
+   "s": "JUBLFOOD",
+   "period": "May 2026",
+   "parsed": true,
+   "q": 26,
+   "na": 2,
+   "prepTone": 1,
+   "prepN": 337,
+   "qaN": 2707
+  },
+  {
+   "s": "JUBLFOOD",
+   "period": "Feb 2026",
+   "parsed": true,
+   "q": 24,
+   "na": 2,
+   "prepTone": 0.943,
+   "prepN": 1263,
+   "qaN": 4756
+  },
+  {
+   "s": "TCS",
+   "period": "Oct 2026",
+   "parsed": true,
+   "q": 30,
+   "na": 0,
+   "prepTone": 0.774,
+   "prepN": 2543,
+   "qaN": 2609
+  },
+  {
+   "s": "TCS",
+   "period": "Jul 2026",
+   "error": "pdf 406 https://www.bseindia.com/stockinfo/AnnPdfOpen.aspx?Pname=27523cab-de62-4f78-939a-6d9853bbd060.pdf"
+  },
+  {
+   "s": "TCS",
+   "period": "Apr 2026",
+   "parsed": true,
+   "q": 24,
+   "na": 0,
+   "prepTone": 0.608,
+   "prepN": 4230,
+   "qaN": 2299
+  },
+  {
+   "s": "TCS",
+   "period": "Jan 2026",
+   "parsed": true,
+   "q": 20,
+   "na": 0,
+   "prepTone": 0.67,
+   "prepN": 3386,
+   "qaN": 2042
+  },
+  {
+   "s": "DIXON",
+   "period": "Nov 2026",
+   "parsed": true,
+   "q": 31,
+   "na": 0,
+   "prepTone": 0.563,
+   "prepN": 2695,
+   "qaN": 4679
+  },
+  {
+   "s": "DIXON",
+   "period": "Aug 2026",
+   "parsed": true,
+   "q": 41,
+   "na": 1,
+   "prepTone": 0.655,
+   "prepN": 2202,
+   "qaN": 3771
+  },
+  {
+   "s": "DIXON",
+   "period": "May 2026",
+   "error": "pdf 406 https://www.bseindia.com/stockinfo/AnnPdfOpen.aspx?Pname=38b72f07-55a6-4503-91fd-ed3b2c209e96.pdf"
+  },
+  {
+   "s": "DIXON",
+   "period": "Feb 2026",
+   "parsed": true,
+   "q": 44,
+   "na": 4,
+   "prepTone": 0.647,
+   "prepN": 1968,
+   "qaN": 4046
+  },
+  {
+   "s": "RELIANCE",
+   "period": "Nov 2026",
+   "parsed": false,
+   "q": 0,
+   "na": 0,
+   "prepTone": 0.569,
+   "prepN": 15755,
+   "qaN": 0
+  },
+  {
+   "s": "RELIANCE",
+   "period": "Jul 2026",
+   "parsed": false,
+   "q": 0,
+   "na": 0,
+   "prepTone": 0.5,
+   "prepN": 16433,
+   "qaN": 0
+  },
+  {
+   "s": "RELIANCE",
+   "period": "Apr 2026",
+   "parsed": false,
+   "q": 0,
+   "na": 0,
+   "prepTone": 0.51,
+   "prepN": 15827,
+   "qaN": 0
+  },
+  {
+   "s": "RELIANCE",
+   "period": "Jan 2026",
+   "parsed": false,
+   "q": 0,
+   "na": 0,
+   "prepTone": 0.647,
+   "prepN": 18036,
+   "qaN": 0
+  },
+  {
+   "s": "SUZLON",
+   "period": "Nov 2026",
+   "parsed": true,
+   "q": 42,
+   "na": 3,
+   "prepTone": 0.8,
+   "prepN": 1197,
+   "qaN": 4798
+  },
+  {
+   "s": "SUZLON",
+   "period": "Aug 2026",
+   "parsed": true,
+   "q": 37,
+   "na": 0,
+   "prepTone": 0,
+   "prepN": 95,
+   "qaN": 4831
+  },
+  {
+   "s": "SUZLON",
+   "period": "Jun 2026",
+   "parsed": true,
+   "q": 29,
+   "na": 0,
+   "prepTone": 0,
+   "prepN": 106,
+   "qaN": 5446
+  },
+  {
+   "s": "SUZLON",
+   "period": "Feb 2026",
+   "parsed": true,
+   "q": 38,
+   "na": 0,
+   "prepTone": 0.938,
+   "prepN": 1102,
+   "qaN": 5203
+  }
+ ]
+}

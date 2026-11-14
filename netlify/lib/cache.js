@@ -6,8 +6,18 @@ import { put, head } from "@vercel/blob";
 
 const mem = new Map();
 let store = null;
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 function blobs() {
   if (store !== null) return store;
+  if (process.env.FINN_DISK_CACHE) {
+    // local development / evaluation: plain JSON files
+    const dir = process.env.FINN_DISK_CACHE;
+    store = {
+      async get(k) { try { return JSON.parse(await readFile(`${dir}/${k}.json`, "utf8")); } catch { return null; } },
+      async setJSON(k, v) { await mkdir(dir, { recursive: true }); await writeFile(`${dir}/${k}.json`, JSON.stringify(v)); },
+    };
+    return store;
+  }
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     store = {
       async get(k) {

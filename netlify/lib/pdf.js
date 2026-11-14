@@ -1,10 +1,26 @@
 // PDF -> per-page text. Pages are kept separate so every extracted claim can cite "p. N".
 import { extractText, getDocumentProxy } from "unpdf";
+import { cache } from "./cache.js";
 
 const UA = "FINN-prototype/0.1 (+https://github.com/YashwardhanSingh2005/finn)";
 
-export async function fetchPdfPages(url, { maxPages = 60 } = {}) {
-  const r = await fetch(url, { headers: { "user-agent": UA, accept: "application/pdf,*/*", "accept-language": "en-IN,en" }, redirect: "follow" });
+/** Cached by URL: exchange PDFs are immutable, so each is downloaded and parsed once. */
+export async function fetchPdfPages(url, opts = {}) {
+  const key = `pdf:v1:${url}`;
+  const hit = await cache.get(key);
+  if (hit) return { ...hit, pages: hit.pages.slice(0, opts.maxPages || 60) };
+  const doc = await fetchPdfPagesRaw(url, { maxPages: 60 });
+  await cache.set(key, doc);
+  return { ...doc, pages: doc.pages.slice(0, opts.maxPages || 60) };
+}
+
+async function fetchPdfPagesRaw(url, { maxPages = 60 } = {}) {
+  let r;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    r = await fetch(url, { headers: { "user-agent": UA, accept: "application/pdf,*/*", "accept-language": "en-IN,en" }, redirect: "follow" });
+    if (r.ok || ![406, 429, 500, 502, 503].includes(r.status)) break;
+    await new Promise((res) => setTimeout(res, 1500 * (attempt + 1))); // exchange servers throttle bursts
+  }
   if (!r.ok) throw new Error(`pdf ${r.status} ${url}`);
   const buf = new Uint8Array(await r.arrayBuffer());
   const pdf = await getDocumentProxy(buf);

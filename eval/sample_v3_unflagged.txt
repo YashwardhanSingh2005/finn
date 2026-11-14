@@ -1,0 +1,161 @@
+pool 217
+
+#0 TCS
+Q: Yes, hi. Thanks for taking my question. Two questions from my side. In the last conference call, we had mentioned and many other companies have also mentioned that with the advent of these LLM platforms, clients are now increasing
+A: Vibhor, like what you said definitely is playing out. Last time also, we laid out our Infrastructure to Intelligence where it's made up of infrastructure layer and there's a model and data layer and on top of that is an agent layer. And on the agent layer, we are building the agent control planes. And on the model and data layer
+
+#1 HAL
+Q: So 11 units in FY '29? 
+A: Yes. That is -- will complete. 
+
+#2 ASIANPAINT
+Q: Perfect sir. And just a follow up on there, that VAE, any range of what are the potential benefits, how much can it accrue from the phase one? 
+A: So, see, right now we are in a phase where we are really normalizing the whole area of formulations, but we believe that when it really works to its full potential, it should really give us some advantage of 300 bps to 500 bps on relevant products. 
+
+#3 HAL
+Q: So at least 15 additional, the -- and that will be largely starting from August to March? 
+A: August. Yes, exactly. 
+
+#4 ASIANPAINT
+Q: Thanks. Thank you, Amit. Just follow up here before I ask the second question. Is it fair to say that, let's say you as a market leader and maybe the other industry players also, are probably a little worried about the price elast
+A: So, if you look in the past also, we've had inflation and, from a price elasticity point of view, I don't think it's only an art. It is also a science to really understand how consumers would really look at because we are especially in a discretionary category. It's not a category which is everyday use and therefore one of the l
+
+#5 HAL
+Q: Okay. Got it, sir. And secondly, I just want to understand this pipeline that you mentioned of INR900 billion orders over the next 2 years, including ROH. So if we keep ROH of about INR200 billion -- INR20,000 crores a year on the
+A: Since these contracts are not yet 100% finalized, that's why I did not give detailed numbers for each contract because it takes time. But a ballpark figure, I' have just explain what are the numbers the services are expecting. And we have started discussing with them, with these numbers, with these -- top-level cost with them. B
+
+#6 POLYCAB
+Q: Understand. Sir any timeline or we will just leave it to the time that they require? 
+A: I would not like to hazard a guess on the timeline, but obviously, as a company, we would certainly do the best to see how fast we can get the order. Definitely it's something which we will be focusing on. 
+
+#7 SUZLON
+Q: Okay. Actually, my question was, we have paid around INR700 crores to INR800 crores, out of which annual profitability is around only INR4 crores a year. As per the CRISIL report which I was seeing, INR2,600 crores was the net cas
+A: Again, you were talking about June, I was talking about September number when I was talking about INR2,300 crores. That's the position. It's available in our results release as well. I think the number of encumbrance remains at about 40%, 50% only, but we'll have to drill into it to understand the exact number. Again, that's not
+
+#8 TCS
+Q: Yes, thanks for the opportunity. The first question is, one of your large peers who gave the guidance for the next year, this time, they clearly notified that the growth in consulting and managed services would be almost similar. 
+A: So, Sandeep, when Aarthi spoke, she outlined a few types of projects that we are doing in AI, right? That is, AI-native solutions with business outcome, AI-led transformation of enterprise systems, autonomous GBS, and AI coming up in technology modernization, modernizing data estate. All these are, at this time, we see increasin
+
+#9 HAL
+Q: Yes, yes. Understood, sir. Very clear on that. Sir, one more question. So now that the next 2 years we'll be working on 5, 6 programs in parallel, with LCH Prachand also coming up for delivery and Su-30, so how are we -- while we 
+A: See, all the deliveries for the next year will be as per the contract. You touched upon the manpower and other things, if you see, now we have -- we are trying to increase our efficiency inside. And we are trying to outsource because we have partnered with so many people outside to do the main -- full structures so that I will b
+
+#10 DIXON
+Q: My first question is on some of the new projects that you mentioned that you are working on. In your opening remarks, you mentioned that there are some projects that you are working beyond mobile phones. And also in the previous c
+A: So certain sectors, certain domains that we are pursuing very actively. The first one is the IT products category. If you see the numbers, from practically minuscule numbers in the current quarter, we have grown to almost 2,100 stores. We already have 4 out of top 5 global brands as our customers. We are migrating from the prese
+
+#11 POLYCAB
+Q: Congratulations on excellent show. Two questions. First, with respect to the institutional segment, while obviously most of our sales are through the distribution channel, but are you seeing any delay in offtake given the substant
+A: No, I think, Achal, we are not seeing any significant movement with that respect because if you see, copper prices have only gone up 6% quarter-to-quarter. And aluminum has actually come down. So whenever that happens, there will be a restocking and a destocking event. Whenever these copper prices will increase, restocking will 
+
+#12 TCS
+Q: Just one follow-up, given that we added 14,000 freshers last quarter, we've added 10,000 in this quarter, and our net addition is just 13-odd thousand people over the last two quarters, would it be fair to assume that the hiring m
+A: Ashwin, as I said, we are hiring to demand, and definitely we're seeing good demand in these new technologies. So, we will continue to hire to staff those positions. 
+
+#13 KAYNES
+Q: Thank you for opportunity. My question is related to the components. As you also touched upon and given some detail in the presentation, the prices for a components has been raised on the average of a 30%-35%, even the lead time h
+A: I'll touch the base, but I think I would request Ramesh sir to talk about it because he has huge experience in this business. Split this into 2, PCB and other components. Other components, as you rightly said, the prices is going up by 30%-35%, and PCB is the one which is -- it's a challenging today because even order booking ha
+
+#14 ASIANPAINT
+Q: Understood. Okay. Secondly, with the price increases that you have taken and also 2Q will have a mixed impact because of no exterior sales which are higher margin. But in 3Q exterior sales will come back. So, with that mix coming 
+A: So, we have taken now further price increases. We have announced an almost 3.5% price increase for November, which has already been announced, which takes into account the impact of anti-dumping duties as well as what's coming in. So, what we are looking very clearly as we go forward, that calibration will continue. And from a g
+
+#15 KAYNES
+Q: Yes, hi, good morning. Thanks for taking up my questions. So my first question is on the smart metering business. So how do you think about this business internally? Do you see this as an extension of this EMS business or do you t
+A: Thank you very much for asking. You have given us all clues on how to do that. I'll tell you sir, the metering business we acquired about 2 years before. And prior to that, we were a supplier to that company as a PCB assembly. So this has given us, Kaynes, a very substantial confidence of getting into a product company and worki
+
+#16 SUZLON
+Q: Sir, second question is on the pipeline. So how do you see the pipeline of projects, where the projects are awarded, but the orders are yet to be placed? Any number that we have? 
+A: Just to clarify, you are talking about the order pipeline? 
+
+#17 HAL
+Q: So I wanted to ask, provisioning as a percentage of revenue was on the lower end this year. Can you please elaborate on that? And what would be the stable state guidance that we can consider for the same? 
+A: The provision is based on the happening of an event. See, last time, the provision we made because the 1 SU-30 aircraft got into an accident. So, for the replacement purpose, we made a provision of INR800 crores. And that situation is not there, in the current year. So it's not comparable. Provision is based on any happening or 
+
+#18 TCS
+Q: Yes, hi. Good evening. Thanks for the opportunity. Wanted your thoughts on the regional markets, more specifically in the context of the BSNL deal. Do you think that should sort of lend to some sort of support as we get into the s
+A: Nitin, I'll answer the questions on BSNL and Q3. Samir can take up the question on margin. BSNL can provide a cushion for the next couple of quarters. But the fact is regional markets will be volatile; we don't do that much of annuity-based work in the regional markets. And also, for some of the programs we do here, the deliveri
+
+#19 POLYCAB
+Q: And if you could just give some guidance on how should we look at revenue run rates for this business? 
+A: I think, Rahul, the kind of growth that we are seeing in FMEG, we are very much confident that we would love to do this kind of a level, and we are very much confident that this growth is further going to increase. It's a mix -- this segment's entire mix to our portfolio is certainly going to grow. 
+
+#20 KAYNES
+Q: Yes sir. Thanks a lot for this. And would it be possible to share the cash flow from operations by the end of first quarter? 
+A: At the end of first quarter, I think we -- as we said, our inventory has gone up by INR177 crores, we have added up, and receivables we were short by INR68 crores, taking it to about a total of about INR259 crores of a negative cash flow, okay? Having said that, the first quarter is very, very challenging quarter in terms of our
+
+#21 TCS
+Q: Okay. Secondly, on margin. So, this quarter we saw a gross margin decline sequentially despite this quarter not having any wage hike impact. Samir, could you quantify how much of this we see structural, meaning we are making activ
+A: Sure. First, on the gross margin part, as you can see the increase which is in subcontractors, third-party expenses, directly reflects on the gross margin. The other investments which I talked about are more SG&A linked investments. And as I mentioned earlier, we are prioritizing investments for growth. And like you mentioned, l
+
+#22 POLYCAB
+Q: One pie? 
+A: It's 30%-35% of the overall. 
+
+#23 HAL
+Q: On the Sukhoi program, I have 2 questions. First, on the 12 Sukhoi-30 aircraft order, what is the expected execution timeline? And when are deliveries likely to commence? And how many aircraft should we expect to be delivered annu
+A: Okay. The Su-30 MKI, as per contract, starts from '27, '28, that is, in that year, there is only 1 aircraft due as per contract. And next year, we are going to complete all 11 In 28-29. 
+
+#24 HAL
+Q: Right. So what's the target for HTT, ALH? 
+A: ALH, Army, the 10 numbers are left out, and then we are going to deliver those 10. There are the other 5, and Pawan Hans is 8. These are our targets. They're all on track, and we'll be able to do that. 
+
+#25 ASIANPAINT
+Q: Perfect sir. So lastly, just one quick question on the next gen emulsion that you spoke about. I know in India it is the first that is going to get produced from your side. But in the market, are these products available with anyb
+A: If you look at two things, first from a point of view of VAE which we are making, it's a very differentiated VAE and not the general VAE which is even available worldwide. There is a clear technological ingenuity of what has gone and this ingenuity really looks at giving us two-three things. One, it gives basically in existing p
+
+#26 KAYNES
+Q: Understood. Understood, sir. And on the issues that we're kind of highlighting around availability and cost side, does that mean that we should be anticipating lower margins at least in the next few quarters? And how does the pass
+A: Like what the Chairman said, I wanted to reiterate the point. It's a challenging time. We need to make sure that we have the balance between sitting this off and also grow, and service the customer. If we are not going to service the customer, and if they are going to fail, it's going to impact us also. So, we are working very, 
+
+#27 TCS
+Q: And, Aarthi, if I can just dwell a bit more on that. Are there any specific pockets or, let's say, verticals, maybe banking or hi-tech, some other verticals where we're seeing more of this at this point of time and some other key 
+A: Sure. I think that's a great question, Vibhor. What we are seeing is, first of all, when we look at the $3.1 billion annualized revenues, AI revenue is growing across every vertical. I think that's very positive. Now, there are three verticals which are leading in terms of growth rate, and the top three verticals are BFSI, Manuf
+
+#28 ASIANPAINT
+Q: So just to understand this better, you are saying that the overall company level there could be a 300-bps benefit which you may choose to reach out to market in a different way, whatever, in savings or use it in marketing. That's 
+A: 300 bps to 500 bps on relevant products. Absolutely. 33 | 
+
+#29 SUZLON
+Q: Okay. Got it. Just last question on the localization thing. What we've seen for solar manufacturing is that there have been subsequent rounds and the government has tried to go back from, you know, module to cell to ingot wafer ma
+A: I think right now, as I mentioned, the current policy envisages these components I mentioned, nacelle, blade, tower, generator, gearbox, and special bearing. On top of it, pitch bearing and main bearing. I think if you add all this, you're almost maybe hitting 85% of the cost. I believe we can do 100% also in India. I think Indi
+
+#30 JUBLFOOD
+Q: Yeah, thank you so much from my side, and happy Diwali to everyone. 
+A: Happy Diwali. 
+
+#31 SUZLON
+Q: Sir, just to clarify this, sales here what you are mentioning is over and above the order book, right? The pipeline that we have. 
+A: Absolutely. 
+
+#32 HAL
+Q: Yes. Sir, what is the status of Uttam Radar integration? By when we will start producing Mk1A? Is the Uttam integrated on them? I believe the earlier plan was to start from the 41st unit. Is that still intact? 
+A: No. Because this is controlled by the DRDO. So we are only a production agency. Once they give the production clearance, we will go to the DCPP partner and we'll buy it. So as of now, it is not coming in the 83 program. So in the 97 program, we are planning to integrate this. 
+
+#33 HAL
+Q: That is clear, sir. But yes, on the commodity and other input costs also, are there pass-throughs available? 
+A: Other input costs mean only the material. Labor and all those things, this escalation is already factored. And material escalation is already factored into the contract itself. So I don't think -- based on our negotiation and the clubbing of the material and then LTBA and all those things, we don't see any significant increase i
+
+#34 HAL
+Q: Can I ask one more question, if that's okay? 
+A: Yes, please go ahead. 
+
+#35 JUBLFOOD
+Q: Sir, just one final question was that I was looking at, you give cumulative data on the monthly active users and transacting users. I know it has Popeyes and Domino's and Hong's combined in it, but it is just interesting to see th
+A: I think, if you just zoom out for one minute in terms of MTUs, the numbers for aggregators, and for us combined is minuscule. So we are talking about 15, 20, 25 million MTUs, right? In a country so large, which means online delivery is under-penetrated, pizza is under-penetrated, and QSR is under-penetrated. So first is we have 
+
+#36 ASIANPAINT
+Q: So, this does not mean all phases to come in, right? The 300 bps plus. 
+A: So, partial benefit in Phase 1 and full benefit as we get into a good part of phase two. 28 | 
+
+#37 HAL
+Q: Okay. And sir, just since you've been mentioning it time and again, that there is an ongoing process of checking and the facilities on the LCA, and approvals are expected once we complete most of these parameters. I'm just trying 
+A: No. Because once the certification happens, all aircraft will be with the same software. Minor modifications will be there. There's always continuous improvement. But that will not be like a huge jump. Minor updates will be there because once we fly, a few improvements will be required. So that we will take on if we—and most of 
+
+#38 DIXON
+Q: So, thank you for the opportunity and congratulations on a very strong sales number. Sir, my question is firstly on the sales number itself. As compared to the run rate of the last few quarters, there has been a significant year-o
+A: So, Sonali, basically if you look at the volume growth, so year-on-year the volume has been slightly marginally lower. The reason the growth in mobile revenues are there or IT hardware revenues is there is basically because the selling prices have gone up. Selling prices also largely has gone up because of the component prices a
+
+#39 KAYNES
+Q: So, with the first question, I also did ask about the debt on the balance sheet. The second question was about the tax rate. 
+A: If you look at the tax rate, the effective tax rate for the company is around 22% and odd. And our total debt is, I think Senthil can you just tell 

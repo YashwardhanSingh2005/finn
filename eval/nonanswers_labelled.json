@@ -1,0 +1,402 @@
+[
+ {
+  "i": 0,
+  "company": "POLYCAB",
+  "call": "Oct 2026",
+  "kind": "unable",
+  "phrase": "difficult to quantify",
+  "answer": "And it is very difficult to quantify the end market for a cable and a wire business simply because I think some of the wires also act as an ancillary to the cable.",
+  "label": "false_positive",
+  "note": "caveat inside a substantive explanation"
+ },
+ {
+  "i": 1,
+  "company": "POLYCAB",
+  "call": "Oct 2026",
+  "kind": "refuse",
+  "phrase": "would not like to guide",
+  "answer": "So I think we would not like to guide in terms of the revenue growth per se, but it's anyone's guess of how copper price is going to be.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 2,
+  "company": "POLYCAB",
+  "call": "Oct 2026",
+  "kind": "unable",
+  "phrase": "difficult to say",
+  "answer": "So it's very difficult to say if cables is going to outpace wires in the next quarter or so.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 3,
+  "company": "POLYCAB",
+  "call": "Oct 2026",
+  "kind": "refuse",
+  "phrase": "we don't give",
+  "answer": "Ravindra, we don't give a breakdown of our market share based on a segment.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 4,
+  "company": "POLYCAB",
+  "call": "Oct 2026",
+  "kind": "refuse",
+  "phrase": "we don't give",
+  "answer": "Ravindra, we don't give segment breakdown.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 5,
+  "company": "POLYCAB",
+  "call": "Jul 2026",
+  "kind": "defer",
+  "phrase": "take it offline",
+  "answer": "So I think for more details into it, we can of course take it offline.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 6,
+  "company": "POLYCAB",
+  "call": "Jul 2026",
+  "kind": "unable",
+  "phrase": "don't have a number",
+  "answer": "So we don't have a number for June, but 2 months have already seen 2,000 circuit kilometre getting added.",
+  "label": "false_positive",
+  "note": "partial answer: gave the 2-month figure"
+ },
+ {
+  "i": 7,
+  "company": "POLYCAB",
+  "call": "Jul 2026",
+  "kind": "refuse",
+  "phrase": "we don't give",
+  "answer": "Sameer by design, we don't give a split of the FMEG respective portfolios.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 8,
+  "company": "POLYCAB",
+  "call": "May 2026",
+  "kind": "unable",
+  "phrase": "difficult to quantify",
+  "answer": "And I think it's very difficult to quantify that.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 9,
+  "company": "POLYCAB",
+  "call": "May 2026",
+  "kind": "unable",
+  "phrase": "difficult to give a number",
+  "answer": "So difficult to give a number, but I will tell you the driver.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 10,
+  "company": "POLYCAB",
+  "call": "May 2026",
+  "kind": "refuse",
+  "phrase": "we don't give",
+  "answer": "So primarily, we don't give breakup of the intersegment contribution in FMEG.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 11,
+  "company": "POLYCAB",
+  "call": "Jan 2026",
+  "kind": "unable",
+  "phrase": "difficult to comment",
+  "answer": "It's very difficult to comment on the commodity prices.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 12,
+  "company": "POLYCAB",
+  "call": "Jan 2026",
+  "kind": "unable",
+  "phrase": "difficult to say",
+  "answer": "But it will be difficult to say that this will be every year or every quarter run rate because first half of this year, we didn't spend materially on A&P.",
+  "label": "false_positive",
+  "note": "answered (explained why not a run-rate)"
+ },
+ {
+  "i": 13,
+  "company": "POLYCAB",
+  "call": "Jan 2026",
+  "kind": "unable",
+  "phrase": "difficult to comment",
+  "answer": "So, I think as mentioned earlier, we have zero control over commodity prices and therefore it is difficult to comment.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 14,
+  "company": "KAYNES",
+  "call": "Aug 2026",
+  "kind": "refuse",
+  "phrase": "we don't give",
+  "answer": "Normally, we don't give sector-wise or segment-wise, but as of now, we have a very good order book.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 15,
+  "company": "KAYNES",
+  "call": "May 2026",
+  "kind": "defer",
+  "phrase": "get back to you",
+  "answer": "We will get back to you in the days to come on this specific project.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 16,
+  "company": "KAYNES",
+  "call": "Feb 2026",
+  "kind": "refuse",
+  "phrase": "would not like to comment",
+  "answer": "So, at this point in time, I would not like to comment on how better it can be.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 17,
+  "company": "KAYNES",
+  "call": "Feb 2026",
+  "kind": "defer",
+  "phrase": "come back to you",
+  "answer": "And you can look forward to newer type of measurements and meters, et cetera, also in the future once we complete our trials and testing, et cetera, we will come back to and come back to you guys and inform.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 18,
+  "company": "ASIANPAINT",
+  "call": "Aug 2026",
+  "kind": "unable",
+  "phrase": "difficult to say",
+  "answer": "It is very difficult to say that at $90 this will happen and $100 this will happen.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 19,
+  "company": "ASIANPAINT",
+  "call": "Aug 2026",
+  "kind": "unable",
+  "phrase": "difficult to put a number",
+  "answer": "Again, difficult to put a number to it, because today we have seen that, normally you will not keep too much of inventory also.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 20,
+  "company": "ASIANPAINT",
+  "call": "Aug 2026",
+  "kind": "unable",
+  "phrase": "difficult to say",
+  "answer": "Right now, it's very difficult to say that today, we will take a price increase.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 21,
+  "company": "ASIANPAINT",
+  "call": "Aug 2026",
+  "kind": "unable",
+  "phrase": "difficult to say",
+  "answer": "Very difficult to say that it will maintain at 400 or 500 basis points or between 300-400 basis points, because overall it also depends on the advantage which you are getting from the current sourcing which you are doing and the formulation\u2026",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 22,
+  "company": "ASIANPAINT",
+  "call": "Jun 2026",
+  "kind": "unable",
+  "phrase": "too early to say",
+  "answer": "As I said, it is too early to say because there are several factors at play.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 23,
+  "company": "HAL",
+  "call": "May 2026",
+  "kind": "refuse",
+  "phrase": "cannot quantify",
+  "answer": "It's not the right time to say what the penalties will be\u2014 we cannot quantify them right now.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 24,
+  "company": "HAL",
+  "call": "May 2026",
+  "kind": "refuse",
+  "phrase": "cannot comment",
+  "answer": "And as far as SU-57 is concerned, it's the government's call, so we cannot comment on that right now.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 25,
+  "company": "HAL",
+  "call": "May 2023",
+  "kind": "refuse",
+  "phrase": "would not like to comment",
+  "answer": "We would not like to comment on that.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 26,
+  "company": "JUBLFOOD",
+  "call": "Aug 2026",
+  "kind": "refuse",
+  "phrase": "We don't give",
+  "answer": "We don't give it by quarter.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 27,
+  "company": "JUBLFOOD",
+  "call": "Aug 2026",
+  "kind": "refuse",
+  "phrase": "we don't share",
+  "answer": "You know, we don't share the average order value.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 28,
+  "company": "JUBLFOOD",
+  "call": "May 2026",
+  "kind": "unable",
+  "phrase": "difficult to predict",
+  "answer": "Very difficult to predict.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 29,
+  "company": "JUBLFOOD",
+  "call": "May 2026",
+  "kind": "defer",
+  "phrase": "take it offline",
+  "answer": "Can I suggest we take it offline?",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 30,
+  "company": "JUBLFOOD",
+  "call": "Feb 2026",
+  "kind": "refuse",
+  "phrase": "we don't disclose",
+  "answer": "So we don't disclose our share of our own channels versus the aggregators.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 31,
+  "company": "JUBLFOOD",
+  "call": "Feb 2026",
+  "kind": "defer",
+  "phrase": "come back to you",
+  "answer": "Give us 4 months, we will come back to you, Amit, on that when we are very close.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 32,
+  "company": "DIXON",
+  "call": "Aug 2026",
+  "kind": "refuse",
+  "phrase": "not able to share",
+  "answer": "Sorry, I'm not able to share more details.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 33,
+  "company": "DIXON",
+  "call": "Feb 2026",
+  "kind": "unable",
+  "phrase": "premature to comment",
+  "answer": "So it's slightly premature to comment on a number for '26-'27.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 34,
+  "company": "DIXON",
+  "call": "Feb 2026",
+  "kind": "unable",
+  "phrase": "difficult to say",
+  "answer": "Sure, it is very difficult to say right now.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 35,
+  "company": "DIXON",
+  "call": "Feb 2026",
+  "kind": "unable",
+  "phrase": "don't have that number right now",
+  "answer": "So, Aditya, I don't have that number right now with me.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 36,
+  "company": "DIXON",
+  "call": "Feb 2026",
+  "kind": "refuse",
+  "phrase": "would not like to disclose",
+  "answer": "We would not like to disclose that number of acquisition right now.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 37,
+  "company": "SUZLON",
+  "call": "Nov 2026",
+  "kind": "unable",
+  "phrase": "difficult to predict",
+  "answer": "It is difficult to predict the timing of this resolution, given the nature of the externality.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 38,
+  "company": "SUZLON",
+  "call": "Nov 2026",
+  "kind": "refuse",
+  "phrase": "cannot comment",
+  "answer": "5%Of course, I cannot comment about commodity and FX.",
+  "label": "non_answer",
+  "note": ""
+ },
+ {
+  "i": 39,
+  "company": "SUZLON",
+  "call": "Nov 2026",
+  "kind": "defer",
+  "phrase": "come back to you",
+  "answer": "Largely, some of this we also use for our working capital, but I think the number on the encumbered piece is something that I will have to dig more detail into and then come back to you.",
+  "label": "non_answer",
+  "note": ""
+ }
+]

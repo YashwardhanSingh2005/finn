@@ -1,0 +1,161 @@
+pool 238
+
+#0 KAYNES
+Q: And on the part of question where you mentioned that, you know, how is the shift from service model to supply model, how is that tracking? 
+A: We have done all the pre-requirement, study, everything. We are working with some partnership with many people, but nothing concrete as yet happened. You will hear in the coming quarters, may not be in the next quarter, the next quarter, third quarter, we will have some clear idea on it. 
+
+#1 JUBLFOOD
+Q: Happy Diwali, team. Just one observation. I happened to see one location in High Street in which there is a Domino's and a Popeyes, both side by side. In fact, when you walk in, both the counters are just next to each other. There
+A: Manoj, good to hear your voice, and I think it's a good observation you have. It's not programmatic, actually, I will say that. We are doing it more opportunistically. And these are in three or four areas. We have very good rentals and large stores in certain high street. You could have probably gone to Indiranagar or Marathahal
+
+#2 SUZLON
+Q: Okay. Sir, my second question, we have an unutilized capacity. We have a capacity for 4.5 gigawatts. We have cash and working capital. What is stopping us from going faster? 
+A: So -- two things. Number one, we are looking at a plan which we unveiled a couple of months back as part of Suzlon 2.0. Wherein we have said from our 30%, 33% market share, we wish to increase our India market share to 40%. This we said we will do by FY31. We also mentioned we are looking at our order book from current 6 gigawat
+
+#3 DIXON
+Q: And how would you expect Quarter 3 volumes panning out while you maintain your full year guidance? Q3 FY '27 volume guidance, any color on that, sir? 
+A: So Quarter 3 being post-Diwali time, I think it is going to be somewhere in the range of around 7 to 7.5 million. Yes, Quarter 3 broadly will go back to the Quarter 1 levels and Quarter 4 to Quarter 2 levels. That is how you should look at it. So we did 17 million, and we are expecting broadly a similar number in next 6 months. 
+
+#4 SUZLON
+Q: For the installation, sir? 
+A: Yes. 
+
+#5 POLYCAB
+Q: Export, what kind of products you're seeing more acceptability in global market? 
+A: So for exports, Akshay, I think we -- today we are doing all the conventional part of the cables that we do. These are all institutional-based business. So we are doing LV, HV, MVs as well. So we are -- the volumes that we share is quite reasonable to the mixes towards that. I mean that's the only guide I can give to you because
+
+#6 TCS
+Q: Yes. Thanks for the opportunity. Two questions. So, we'd hoped for 2Q to be better when we talked in 1Q. So, what were the areas of negative surprises this quarter which kept the growth closer to the 1Q levels? And the second ques
+A: Ashwin, I'll answer the first two questions, and Sudeep will answer on the fresher hiring. On Q2, same as Q1, as we explained, Q2 has been good almost across all parameters except the regional markets. If you compare Q2 and Q1 on international growth, Q1 was almost flattish on international growth, and international growth in Q2
+
+#7 HAL
+Q: Got it. And sir, one more clarification. When you receive an order for a new aircraft, let's say, a Tejas LCA order you received a couple of years back, 97 plus 83, did the order inflow include the ROH portion in that, or is that 
+A: It's only for production. It's only for the delivery of the quantity along with the… That will be a separate order later. 
+
+#8 HAL
+Q: Sir, what is the status of the start of delivery of LCA Mark-1A to the Air Force? When can we expect the Air Force to accept the first lot? That is the first question. And what is the revenue growth and EBITDA margin guidance for 
+A: Thank you, Mr. Atul. This is CMD here. See, as you are aware, that we have 6 engines received from GE now, and all these aircraft are flying. There are few tests still undergoing now, and we are going to discuss the same with the Air Force in the coming months. So we are hoping to resolve everything and stabilize by August or Se
+
+#9 SUZLON
+Q: Previously, you were doing it half-yearly, sir. 
+A: See, again, I think, the scale and size has changed, right? At that point in time, we were doing it half-yearly because there was a very large -- we were growing 60%, and therefore confidence building measures were also being taken into account. But we now believe that, like Ajay said, a 25% CAGR is the one that we are looking a
+
+#10 POLYCAB
+Q: And congratulations on a great set of numbers. Firstly, on the FMEG margin. So if you see the 10.1% is already at the upper end of your projected targets. So could you highlight what are the key drivers behind it, and which of the
+A: Yes. Thank you, Kevin, for your question. For the FMEG margin question, I think there are few things that have worked for us in this quarter and probably the kind of initiatives that we have put together over the past few years, and those strategies are actually reaping benefits. Now, definitely scale has increased in this quart
+
+#11 KAYNES
+Q: Yes. Morning, sir. Thank you for the opportunity. My first question is, if you could help us with the absolute figures of the receivables, trade payables, and the inventories as of June? I'm just giving a like-to-like number, what
+A: Yes, you're right. First quarter. 
+
+#12 DIXON
+Q: So sir, this will be largely done under Gemtek or will it be a separate partnership? 
+A: No, this is going to be separate. Separate, separate. So Gemtek is separate, and this will be what we had just mentioned will be separate. 
+
+#13 SUZLON
+Q: Okay. Sir, what is the percentage of revenue that gets held up for the installation, and what is the aggregate held up amount currently? 
+A: It depends on customer to customer. Some customers, it is between 5%-10%. For certain other customers, it could be in the range of about, let's say -- so again, I think the range remains between 5% to 7.5% to 10% max. That's the way it works. 
+
+#14 DIXON
+Q: Sir, just a lot of questions got answered. Just one question on IT overall, the margin profile for this year, next year, once you scale up to Rs. 20,000 crores, how should that pan out? And similar question on telecom. How should 
+A: So, Rahul, the IT margins, of course, here also we have seen the increase in selling prices on account of memory, and we get a per-piece conversion chart. So the margin may not reflect the right picture right now, but I will give you the margins. The margins would be closer to 2-2.2 2.3% kind of numbers in IT hardware, which we 
+
+#15 HAL
+Q: Right. So what's the target for HTT, ALH? 
+A: ALH, Army, the 10 numbers are left out, and then we are going to deliver those 10. There are the other 5, and Pawan Hans is 8. These are our targets. They're all on track, and we'll be able to do that. 
+
+#16 HAL
+Q: Unmanned aircraft and all those. Other programs beyond that, right? Maybe first on the Tejas Mark II, when do you expect the prototype rollout? 
+A: Yes. The assembly of these structures is going on for Tejas Mark II. So we are expecting in the last quarter of this year, for the rollout of Mark II. Again, these are all joint designs between us and ADA. So there are a few things that have to be resolved by them also. So we are expecting that by March, we should be able to rol
+
+#17 SUZLON
+Q: Understood. Secondly, on the debt side, I mean, the finance cost side, I think what we would have -- we were guiding for or estimating around INR300 crores finance cost. However, in H1 itself, we have crossed INR250 crores. You di
+A: Okay. I don't think multiplying H1 FY26 gives you a position to say that it will be INR300 crores next year. You have also to look at the deliveries. H1 FY26, we did almost 1,000 megawatts of deliveries. This year, we are higher by 21%. We have already done 1,217 megawatts. Overall revenue also is higher by about 24%. So there w
+
+#18 KAYNES
+Q: INR180 crores. So, sir, the net debt number appears to have increased much higher than what it should be. We're just kind of wondering how the reconciliation can happen. 
+A: We have given, I when I say operating cash flow, it's INR235 crores. 
+
+#19 HAL
+Q: Understood, sir. And for all your manufacturing -- just one clarification, all the manufacturing projects, revenue recognition is only at the time of delivery, right? It is not on percent of completion method. 
+A: No, no. It's against delivery. 
+
+#20 HAL
+Q: But, sir, the delay in the delivery of the first 6 aircraft appears to be beyond the engine because those aircraft are ready. And based on media reports, and we don't know the reality, it looks like there is some software issue, e
+A: See, the testing, whatever has been done, is only for refining whatever has already been tested. So this is a continuous process. So since there are more technicalities involved in that, I will restrict myself to saying that we are moving in a very positive direction, and we are hopeful that by August or September, we should be 
+
+#21 HAL
+Q: Got it, sir. Sir, my second question is pertaining to supply chain risk that we have in the business, where if I look at beyond probably engine supply from GE, in case of other programs, are you seeing any kind of supply disruptio
+A: Yes. See, if you see now the current global situation, whatever is there, I will not say disruption, but slowness is there. There is a slowness. But when we have discussions with them, and now we have started discussing with their Tier 1, Tier 2 vendors also, we are getting confident that we should be able to get the items. Ther
+
+#22 HAL
+Q: So, my question again on LCA. So you did highlight that I think there's a final leg of iteration, and probably 6 by September, we can deliver. So I think so far in April and May, we may not have received the engine. So, what is th
+A: No, Mr. Amit, again, thanks for your question. June, we are expecting 1 engine now. Then afterwards, it is going to August. From August, they have committed 2. And then by end of this year around 15 to 20, yes, so because 15 is telling, yes, I would give, but a balanced one, you may get more which is still not committing. So tha
+
+#23 SUZLON
+Q: There is no pass-through provision in contracts for commodity FX. These you have to bear. 
+A: See, steel is a pass-through by and large. But rest, I think there are many commodities like copper, aluminium, carbon. These you need to absorb. At the same time, having said that, we have always programs running to improve our COGS. What Rahul mentioned just now, those programs are being further expedited. So I am sure part of
+
+#24 DIXON
+Q: So first question on the mobile side. So in overall scheme of things, you mentioned some customers, one Indian customer, some addition from Motorola. Is there any ramp down from any customers? So net-net, if we look at overall num
+A: So, as far as the volumes are concerned, as we mentioned that in this year we should close somewhere between 33 to 34 million without Vivo. We feel that although the market is going to be under pressure, but there is going to be a decent growth in these numbers itself because of acquisition of new customer that is an Indian bran
+
+#25 JUBLFOOD
+Q: Yeah, good morning, sir, Sameer and team, for a very steady performance during this time. Can you just give us some color about this near-term demand side, especially when we give 5% to 7% medium-term SSG, given at the first half 
+A: Yeah, I think we want to get to 5% to 7% for the year, right? I don't want to raise any expectations or throw cold water on any expectations. I think what should give you confidence is trajectory from Q4 to Q1 to Q2. Like I said, as far as Q3 is concerned, we seem to be on track to meet our plans that we have in the start. Beyon
+
+#26 ASIANPAINT
+Q: Understood. Okay. Secondly, with the price increases that you have taken and also 2Q will have a mixed impact because of no exterior sales which are higher margin. But in 3Q exterior sales will come back. So, with that mix coming 
+A: So, we have taken now further price increases. We have announced an almost 3.5% price increase for November, which has already been announced, which takes into account the impact of anti-dumping duties as well as what's coming in. So, what we are looking very clearly as we go forward, that calibration will continue. And from a g
+
+#27 HAL
+Q: Yes. Sir, what is the status of Uttam Radar integration? By when we will start producing Mk1A? Is the Uttam integrated on them? I believe the earlier plan was to start from the 41st unit. Is that still intact? 
+A: No. Because this is controlled by the DRDO. So we are only a production agency. Once they give the production clearance, we will go to the DCPP partner and we'll buy it. So as of now, it is not coming in the 83 program. So in the 97 program, we are planning to integrate this. 
+
+#28 KAYNES
+Q: Hi, I have two questions. First, if you can give the console capex guidance for FY27 and FY28? 
+A: Sir, we have communicated and we are standing by that. We said we will be funding for this capex for this year is about INR300 crores for OSAT, INR300 crores for PCB, and about INR250 crores for EMS business. We are on track for that. The first quarter spent is about INR90 plus INR90, INR180 plus INR50, INR230 crores, all put to
+
+#29 KAYNES
+Q: Sure. And my second question is again on the PCB business. While prices have increased, we have seen globally PCB margins have corrected because input costs have increased a lot more, CCL and other commodities. So, you mentioned t
+A: I'll leave it to Ramesh sir to answer. See, this is too early to talk about these things. However, I don't agree that margins in PCB companies have come down. Because as we catch up with the team, the last quarter, that is a second quarter of their financial year, they are all done fairly well. And this PCB crisis is going on fo
+
+#30 SUZLON
+Q: Okay. This INR12,000 crores, directly does it coordinate with what you are exporting? Or are there other elements in this INR12,000 crores which you will not qualify for at this point in time? 
+A: No, this is all put together. These are not our numbers. These are the industry numbers I'm telling you. What the whole wind industry... 
+
+#31 JUBLFOOD
+Q: Yeah, absolutely. Thanks, Sameer and Suman. I basically just wanted to check if that mix is improving, and clearly it is. Thanks again and wishing you a happy Diwali. 
+A: Thank you. Happy Diwali. Thank you. 
+
+#32 KAYNES
+Q: Since I didn't hear it properly, what was the debt date number that you spoke about, around INR800 crores? . 
+A: Yes, approximately It's around that number. We can give you the exact numbers soon. You can go to the next question. 
+
+#33 TCS
+Q: Yes, hi. Good evening. Thanks for the opportunity. Wanted your thoughts on the regional markets, more specifically in the context of the BSNL deal. Do you think that should sort of lend to some sort of support as we get into the s
+A: Nitin, I'll answer the questions on BSNL and Q3. Samir can take up the question on margin. BSNL can provide a cushion for the next couple of quarters. But the fact is regional markets will be volatile; we don't do that much of annuity-based work in the regional markets. And also, for some of the programs we do here, the deliveri
+
+#34 DIXON
+Q: So, thank you for the opportunity and congratulations on a very strong sales number. Sir, my question is firstly on the sales number itself. As compared to the run rate of the last few quarters, there has been a significant year-o
+A: So, Sonali, basically if you look at the volume growth, so year-on-year the volume has been slightly marginally lower. The reason the growth in mobile revenues are there or IT hardware revenues is there is basically because the selling prices have gone up. Selling prices also largely has gone up because of the component prices a
+
+#35 TCS
+Q: And, Aarthi, if I can just dwell a bit more on that. Are there any specific pockets or, let's say, verticals, maybe banking or hi-tech, some other verticals where we're seeing more of this at this point of time and some other key 
+A: Sure. I think that's a great question, Vibhor. What we are seeing is, first of all, when we look at the $3.1 billion annualized revenues, AI revenue is growing across every vertical. I think that's very positive. Now, there are three verticals which are leading in terms of growth rate, and the top three verticals are BFSI, Manuf
+
+#36 JUBLFOOD
+Q: No, sir, this is clear. Thanks a lot, sir, for all this, and wish the team a very happy Diwali. Thank you very much. 
+A: Thank you. Wish you a happy Diwali. Thanks. 
+
+#37 TCS
+Q: Thanks, and all the best. 
+A: Thank you. 
+
+#38 DIXON
+Q: One quick follow-up on the cost pass-through. I mean, these are smaller revenue contribution businesses. Can you tell us what the margin impact was because of cost pass-through not going through? 
+A: So let's say in a washing machine business, which is traditionally 11% EBITDA margin, between 10.5% to 11%, the margins compressed to 8.6%. 8.3. 8.3. Yes, so basically, Sameet, if you look at the first 6 months’ numbers, broadly 3% for washing machine business, and a similar number would be also there in our lighting business as
+
+#39 DIXON
+Q: Just to clarify on this IT thing, so 2-2.5 is the current situation because of per unit margin, but if you do more backward integration like a base case assuming these components come through, what could be a peak margin here, let
+A: So here also, Rahul, the idea is to backward integrate 25-30% of the bill of material. So yes, that can improve the margins by 80-100 bps there. 

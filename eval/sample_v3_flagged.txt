@@ -1,0 +1,85 @@
+pool 21
+
+#0 DIXON
+Q: Sir, any quantifiable estimate of margin uptick we can expect from these MPMS incentives? 
+A: That is slightly difficult at this stage. So let's see how it pans out. It is the start. Yes, basically the largest drivers are two. One is that your operating leverage will kick in on account of higher volumes and also the benefit of localization. Thereby, if you are able to localize 25% of your components, in our case it is ca
+
+#1 TCS
+Q: Sure, sir. Both BFSI and Hi-Tech verticals are reflecting a typical September quarter kind of seasonal strength this time. Given these two verticals also are the ones which are early adopters of technology, is it fair to sort of a
+A: I don't want to say it is complete, Sudheer, on one hand, there is a deflation because of the productivity benefit. But also, these industries use AI for modernization, and it also creates vendor consolidation opportunities. Also, for instance, if you take BFSI. BFSI is where our AI revenues, the percentage also grew very fast. 
+
+#2 HAL
+Q: But, sir, the delay in the delivery of the first 6 aircraft appears to be beyond the engine because those aircraft are ready. And based on media reports, and we don't know the reality, it looks like there is some software issue, e
+A: See, the testing, whatever has been done, is only for refining whatever has already been tested. So this is a continuous process. So since there are more technicalities involved in that, I will restrict myself to saying that we are moving in a very positive direction, and we are hopeful that by August or September, we should be 
+
+#3 KAYNES
+Q: Sure. And my second question is again on the PCB business. While prices have increased, we have seen globally PCB margins have corrected because input costs have increased a lot more, CCL and other commodities. So, you mentioned t
+A: I'll leave it to Ramesh sir to answer. See, this is too early to talk about these things. However, I don't agree that margins in PCB companies have come down. Because as we catch up with the team, the last quarter, that is a second quarter of their financial year, they are all done fairly well. And this PCB crisis is going on fo
+
+#4 DIXON
+Q: Just want to touch base on the BOM cost increases. So, given that memory prices have increased, we are seeing price pass-through and it is contributing to top line growth. So, maybe down the line when there is a reversal in the me
+A: So please appreciate, I mean, let's see how it pans out because final revenue is going to be a mix of product portfolio. Yes. It is going to be what growth volumes you are getting. So that is the way it is. So, revenue is a function of volume and revenue pricing. So yes, if tomorrow the pricing gets corrected and it becomes norm
+
+#5 SUZLON
+Q: Two questions from my side. The first one is if you could elaborate on your comments around the depressed contribution margin of 21.2% in Q2. Also, in what time will the higher fixed expenses in WTG business continue? You mentione
+A: Thank you, Sumit. I will take the question. The contribution margin -- the part of the margin impact is attributable to high volatility in FX and commodity, which is largely, I would say, due to the West Asia crisis. Now when we think about it, this is a crisis that has been ongoing, and all of us have been hoping that some of t
+
+#6 POLYCAB
+Q: And congratulations on great set. Wanted to understand on the export side in terms of what kind of cables you're seeing broader acceptability globally from Indian cable manufacturers. And if you can distinguish this between LV, MV
+A: I think I will take the second part first. In terms of the revenue, obviously, the copper prices are at a level where you will always see that will eventually benefit us at our EBITDA level. So if copper price, nobody has a view on copper right now. There is a global deficit for sure, but we per se don't have a view on copper, a
+
+#7 HAL
+Q: Okay. But any amount that you can suggest? What could be... 
+A: It's in the contract, so that's why we don't want to give any... It depends. And delivery will happen when the payment is made. At that time, we'll see what it will look like. It's not the right time to say what the penalties will be— we cannot quantify them right now. Let the delivery happen, then we'll see. 
+
+#8 KAYNES
+Q: Got it. Secondly, with respect to the revenue growth, you know, in the previous calls, you kind of indicated that 30%-35% kind of a growth, given what we have done, given the strategy we are playing with. What is the revenue growt
+A: Sir, revenue growth, we have committed the 2x of the market growth. The first quarter the market has grown at 17% and we have grown at more than 45% in our -- 48% in our EMS business. So we don't want to give an absolute number because there is so much of volatility in the market. The availability of material in this quarter and
+
+#9 POLYCAB
+Q: Okay. So an extension of that, in second half also, do you think wires could continue to grow faster than cables? Is that our base case expectation today based upon the trajectory we are seeing as we speak? 
+A: I mean we would not like to give any guidance on that. We never share that kind of a guidance. We have to wait to see how demand shapes up in the next quarter or so. So these will keep changing, Ashish. So it's very difficult to say if cables is going to outpace wires in the next quarter or so. So I think that's not the right wa
+
+#10 KAYNES
+Q: Yes, thank you for follow-up. One question is related to your order book. Can you give a indicative numbers, how has been the sector-wise or the segment-wise your order book right now? 
+A: Normally, we don't give sector-wise or segment-wise, but as of now, we have a very good order book. In the first quarter, our team has added more into the order book than what we have opened up or what we have delivered. So, very strong order book of more than about INR8,900 crores is in the system, and things are shaping up muc
+
+#11 SUZLON
+Q: I would like to ask basically three basic questions. One is, Adani and JSW have also entered into JSW -- wind energy. So how competitively we are getting impacted? Second is, the cash conversion cycle, I want to know about that. T
+A: Okay. Shakuntala, thanks for your questions. Let me address the question around the competition. You are right, we have Adani, JSW and many other competitors in the Indian wind sector. The good news is the sector is expanding. We are looking at close to 8 gigawatts January to September kind of demand already and Suzlon continues
+
+#12 POLYCAB
+Q: Got it. And just last one, between wires and cables, anything to highlight there? What led to wires kind of outpacing cables? Because from an underlying demand point of view, of course, you see more at a macro level, the demand dr
+A: So Ashish, I think the growth is largely coming from the demand that we are getting from the different manufacturing and the other mobility side of the space as well. The real estate market continues to be strong. I mean, it's not slowed down to that extent. If you see today's year-over- year number in terms of the launches, it'
+
+#13 HAL
+Q: Okay. And sir, lastly, just wanted to check on the AMCA program. I know you are not part of it, but is there a possibility during the production time that HAL could be involved? And secondly, is there a possibility of you getting 
+A: First, let me answer about AMCA. This, we have made clear last time also because the current tender, whatever the tender that is going to come is, is that RFI, which was placed, is for the D&D program only, that is to build prototypes. And they have not indicated that the same person will do production. So we are hopeful that we
+
+#14 SUZLON
+Q: Okay. On the fixed expenses? 
+A: So just to add to what Rahul just mentioned, if you look at the key components of the margin decline, one is the customer and scope mix. It's about 150 to 180 basis points. Segment mix, because we have our service business, which generates much higher EBITDA margin. But the share of that changes as the wind turbine revenues go u
+
+#15 POLYCAB
+Q: Okay, 30%. Okay. So our share would be, house share would be 30%? 
+A: Ravindra, we don't give a breakdown of our market share based on a segment. On a combined basis of cable and wire industry, even in the organized market, we have called out in our annual report that our market share is around 30% to 31%. 
+
+#16 KAYNES
+Q: Since I didn't hear it properly, what was the debt date number that you spoke about, around INR800 crores? . 
+A: Yes, approximately It's around that number. We can give you the exact numbers soon. You can go to the next question. 
+
+#17 KAYNES
+Q: And on the part of question where you mentioned that, you know, how is the shift from service model to supply model, how is that tracking? 
+A: We have done all the pre-requirement, study, everything. We are working with some partnership with many people, but nothing concrete as yet happened. You will hear in the coming quarters, may not be in the next quarter, the next quarter, third quarter, we will have some clear idea on it. 
+
+#18 POLYCAB
+Q: Okay. No, that I agree. But I'm just talking about only the house wire segment, that's why I'm asking? 
+A: Ravindra, we don't give segment breakdown. 
+
+#19 JUBLFOOD
+Q: Yeah. Hi. Good evening. So, two questions. Firstly, on innovation. Thanks for sharing some details on innovation in the quarter. Can you give us some sense of what the contribution from the innovation portfolio has been and how th
+A: I think the second question is easier. These are more choices or industry or consumer preferences, industry structures, or category structures. Our delivery dynamics will, in the medium term, not be very different. So, right now, we are, maybe, more focused on malls and more prominent high streets. As we penetrate, my own senses
+
+#20 TCS
+Q: Hi, Krithi. Thanks for the opportunity. My first question: Your core markets’ growth accelerated quite nicely in this quarter. Do you think the momentum in this part in the international business to continue in the coming quarters
+A: Sudheer, definitely, looking at all the parameters, I don't want to comment on the immediate next quarter basis, but on a medium-term basis, looking at the TCV, looking at the pipeline and the client conversations that we are having, we're confident that growth momentum will continue. 
