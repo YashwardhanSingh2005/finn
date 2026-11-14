@@ -12,9 +12,13 @@ const WINDOWS = [
 ];
 
 export default function Today({ prefs, setPrefs, rules, holdings, customHoldings, openCompany, toast }) {
-  const [win, setWin] = useState("7d");
+  // "since your last visit": the default window when you come back, so the digest is only what's new
+  const [lastSeen] = useState(() => { try { return Number(localStorage.getItem("finn:lastSeen")) || 0; } catch { return 0; } });
+  useEffect(() => { const t = setTimeout(() => { try { localStorage.setItem("finn:lastSeen", String(Date.now())); } catch {} }, 8000); return () => clearTimeout(t); }, []);
+  const sinceH = lastSeen ? Math.ceil((Date.now() - lastSeen) / 3600e3) : null;
+  const [win, setWin] = useState(sinceH && sinceH >= 2 && sinceH <= 24 * 30 ? "since" : "7d");
   const [custom, setCustom] = useState({ from: "", to: "" });
-  const w = WINDOWS.find((x) => x.k === win);
+  const w = win === "since" ? { k: "since", hours: sinceH, label: `since your last visit (${sinceH < 48 ? sinceH + "h" : Math.round(sinceH / 24) + "d"})` } : WINDOWS.find((x) => x.k === win);
   const params = {
     ...(win === "custom" && custom.from ? { from: new Date(custom.from).toISOString(), to: custom.to ? new Date(custom.to + "T23:59:59").toISOString() : undefined } : { hours: w?.hours || 168 }),
     prefs: JSON.stringify(prefs),
@@ -29,6 +33,7 @@ export default function Today({ prefs, setPrefs, rules, holdings, customHoldings
   return (
     <div className="fade-in">
       <div className="chips mt4" role="tablist" aria-label="Time window">
+        {sinceH && sinceH >= 2 && sinceH <= 24 * 30 && <button className={`chip ${win === "since" ? "on" : ""}`} onClick={() => setWin("since")}>Since last visit</button>}
         {WINDOWS.map((x) => (<button key={x.k} className={`chip ${win === x.k ? "on" : ""}`} onClick={() => setWin(x.k)}>{x.label}</button>))}
         <button className={`chip ${win === "custom" ? "on" : ""}`} onClick={() => setWin("custom")}>Custom…</button>
       </div>
@@ -41,7 +46,7 @@ export default function Today({ prefs, setPrefs, rules, holdings, customHoldings
 
       {loading && !data && (<><div className="skeleton mt12" style={{ height: 64 }} /><div className="mt12"><Skeleton h={96} n={4} /></div><p className="muted small mt8">Reading NSE + BSE filings for {holdings.length} holdings…</p></>)}
       {error && <div className="card mt12"><p className="err">Couldn’t load the digest: {error.message}</p><button className="btn" onClick={reload}>Retry</button></div>}
-      {data && <Digest data={data} win={win === "custom" ? "the chosen window" : w.label} mute={mute} boost={boost} openCompany={openCompany} reloading={loading} />}
+      {data && <Digest data={data} win={win === "custom" ? "the chosen window" : w.label.replace(/^since your last visit/, "since your last visit")} mute={mute} boost={boost} openCompany={openCompany} reloading={loading} />}
     </div>
   );
 }
@@ -91,7 +96,7 @@ function Digest({ data, win, mute, boost, openCompany, reloading }) {
         {" "}<span className="muted">{skim.length} routine filing{skim.length === 1 ? "" : "s"} filed away.</span>
       </h1>
       <div className="row between wrap">
-        <span className="muted small">{data.counts.total} filings · {data.counts.holdings} holdings · last {win} {reloading && <span className="spin" />}</span>
+        <span className="muted small">{data.counts.total} filings · {data.counts.holdings} holdings · {win.startsWith("since") ? win : `last ${win}`} {reloading && <span className="spin" />}</span>
         <Listen items={[...act, ...read]} alerts={data.alerts} />
       </div>
 
@@ -126,7 +131,7 @@ function Digest({ data, win, mute, boost, openCompany, reloading }) {
           <p className="muted tiny mt8">Routine = scored below 40. Open a group to see what was hidden and why.</p>
         </>
       )}
-      {data.failures.length > 0 && <p className="muted tiny mt12">Couldn’t read: {data.failures.map((f) => f.symbol).join(", ")}</p>}
+      {data.failures.filter((f) => !f.partial).length > 0 && <p className="muted tiny mt12">Couldn’t read: {data.failures.filter((f) => !f.partial).map((f) => f.symbol).join(", ")}</p>}
       <p className="muted tiny mt8">Sources: {srcs.join(", ") || "–"}. Filings de-duplicated across exchanges.</p>
     </>
   );
@@ -181,13 +186,14 @@ export function FilingCard({ x, ai, mute, boost, openCompany, defaultOpen }) {
         <ScoreRing score={x.score} tier={x.tier} />
       </div>
       {x.resultsCut && <ResultsCut r={x.resultsCut} />}
-      {open && <Expanded x={x} mute={mute} boost={boost} />}
+      {x.resultsPending && !open && <div className="small muted mt8">{x.resultsPending}</div>}
+      {open && <Expanded x={x} mute={mute} boost={boost} openCompany={openCompany} />}
       {!open && <button className="btn ghost small mt4" onClick={() => setOpen(true)}>Why this rank <Icon.chev /></button>}
     </article>
   );
 }
 
-function Expanded({ x, mute, boost }) {
+function Expanded({ x, mute, boost, openCompany }) {
   return (
     <div className="why fade-in">
       <div className="small" style={{ fontWeight: 600 }}>Why it’s ranked {x.score}/100</div>
@@ -202,6 +208,7 @@ function Expanded({ x, mute, boost }) {
       <div className="row wrap mt12">
         {x.url && <a className="btn" href={x.url} target="_blank" rel="noreferrer">Open filing <Icon.ext /></a>}
         {x.alsoOn?.url && <a className="btn" href={x.alsoOn.url} target="_blank" rel="noreferrer">{x.alsoOn.source} copy <Icon.ext /></a>}
+        {x.category === "earnings_call" && /transcript/i.test(`${x.subject} ${x.summary}`) && <button className="btn primary" onClick={() => openCompany(x.symbol, "ledger")}><Icon.ledger width="14" height="14" /> Audit its promises</button>}
         <button className="btn" onClick={() => mute(x.category, x.categoryLabel)}>Less of “{x.categoryLabel}”</button>
         <button className="btn" onClick={() => boost(x.category, x.categoryLabel)}>More</button>
       </div>
@@ -211,7 +218,7 @@ function Expanded({ x, mute, boost }) {
 
 /** Per-type enrichment, fetched only when a card is opened (pay for attention, not for volume). */
 function Enrichment({ x }) {
-  const auto = x.category === "management_change" && x.tier !== "skim";
+  const auto = (x.category === "management_change" && x.tier !== "skim") || !!x.resultsPending;
   const [state, setState] = useState({ loading: false, data: null, error: null });
   const run = async () => {
     setState({ loading: true });

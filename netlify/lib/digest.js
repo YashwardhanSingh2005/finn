@@ -20,13 +20,22 @@ function screenerDate(t, now = new Date()) {
 
 /** All the per-company context the scorer needs, cached ~30 min. */
 export async function companyContext(symbol) {
-  return memo(`ctx:v3:${symbol}`, 30 * 60e3, async () => {
+  return memo(`ctx:v4:${symbol}`, 30 * 60e3, async () => {
     const c = await fetchCompany(symbol);
     const prices = c.companyId ? await fetchPrices(c.companyId, 400).catch(() => []) : [];
     const st = priceStats(prices);
     const ttm = c.annual?.rows?.["Sales"] || c.annual?.rows?.["Revenue"];
+    // SEBI LODR Reg 30(4) quantitative materiality: lower of 2% turnover, 2% net worth, 5% of 3-yr avg |PAT|
+    const nwRow = c.balance?.rows, bp = c.balance?.periods || [];
+    const netWorth = nwRow ? (nwRow["Equity Capital"]?.at(-1) ?? 0) + (nwRow["Reserves"]?.at(-1) ?? 0) : null;
+    const patA = (c.annual?.rows?.["Net Profit"] || []).slice(0, (c.annual?.periods || []).filter((p) => p !== "TTM").length).slice(-3);
+    const avgPat = patA.length ? patA.reduce((s, v) => s + Math.abs(v ?? 0), 0) / patA.length : null;
+    const turnover = ttm ? ttm[ttm.length - 1] : null;
+    const cands = [turnover && 0.02 * turnover, netWorth && 0.02 * netWorth, avgPat && 0.05 * avgPat].filter((x) => x > 0);
     return {
       symbol: c.symbol, name: c.name, companyId: c.companyId, bseCode: c.bseCode,
+      sebiThresholdCr: cands.length ? Math.round(Math.min(...cands)) : null,
+      sebiBasis: { turnover2: turnover && Math.round(0.02 * turnover), netWorth2: netWorth && Math.round(0.02 * netWorth), pat5: avgPat && Math.round(0.05 * avgPat), asOf: bp.at(-1) },
       ttmSalesCr: ttm ? ttm[ttm.length - 1] : null,
       mcapCr: c.ratios?.["Market Cap"]?.value ?? null,
       stats: st,
@@ -82,14 +91,20 @@ export async function buildDigest({ from, to, holdings, prefs = {}, rules = DEFA
       const cls = classify(x.subject, x.summary);
       const day = x.time ? reactionDay(x.time) : null;
       const move = day && ctx.stats?.returnsByDate?.[nextTradingKey(ctx.stats.returnsByDate, day)];
-      const sc = score({ ...x, category: cls.category }, { weightPct: h.weight, ttmSalesCr: ctx.ttmSalesCr, dayMovePct: move ?? null, sigma: ctx.stats?.sigma, prefs });
+      const sc = score({ ...x, category: cls.category }, { weightPct: h.weight, ttmSalesCr: ctx.ttmSalesCr, sebiThresholdCr: ctx.sebiThresholdCr, dayMovePct: move ?? null, sigma: ctx.stats?.sigma, prefs });
       const item = {
         ...x, name: ctx.name, weight: h.weight,
         category: cls.category, categoryLabel: CATEGORIES[cls.category].label, icon: CATEGORIES[cls.category].icon, classifiedBy: cls.rule,
         ...sc, dayMove: move ?? null,
       };
-      // Results: attach the first cut straight away if the filing is the outcome (not a date notice)
-      if (cls.category === "results" && sc.score >= 60 && ctx.results) item.resultsCut = ctx.results;
+      // Results: attach the first cut straight away — but only if the standardised data already has
+      // the quarter this filing reports. Otherwise the card says so and offers to read the PDF itself.
+      if (cls.category === "results" && sc.score >= 60 && ctx.results) {
+        const pe = periodEnd(ctx.results.period), ft = x.time ? new Date(x.time) : null;
+        const fresh = pe && ft && ft - pe > -5 * 864e5 && ft - pe < 80 * 864e5;
+        if (fresh) item.resultsCut = ctx.results;
+        else item.resultsPending = `Standardised data still shows ${ctx.results.period}; tap to read this quarter's numbers from the filing itself.`;
+      }
       items.push(item);
     }
   }
@@ -115,4 +130,11 @@ function reactionDay(iso) {
 function nextTradingKey(map, day) {
   const keys = Object.keys(map).sort();
   return keys.find((k) => k >= day) || null;
+}
+
+function periodEnd(p) {
+  const m = p?.match(/^(Mar|Jun|Sep|Dec) (\d{4})$/);
+  if (!m) return null;
+  const mon = { Mar: 2, Jun: 5, Sep: 8, Dec: 11 }[m[1]];
+  return new Date(Date.UTC(+m[2], mon + 1, 0));
 }

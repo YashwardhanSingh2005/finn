@@ -125,7 +125,7 @@ export function callToFQ(period) {
 }
 
 export async function extractCall(call, { cache } = {}) {
-  const key = `claims:v5:${call.transcript}`;
+  const key = `claims:v6:${call.transcript}`;
   const hit = cache && (await cache.get(key));
   if (hit) return { ...hit, cached: true };
   const doc = await fetchPdfPages(call.transcript, { maxPages: 40 });
@@ -248,7 +248,7 @@ Return compact JSON {"threads":[{"title":"<= 9 words, e.g. 'Wires & cables EBITD
 async function threadClaims(claims, symbol, cache, cost) {
   if (!claims.length) return [];
   const lines = claims.map((c) => `${c.id} | ${c.callQuarter} | ${c.metric} | ${c.scope || "company"} | ${band(c) || "-"} | ${c.horizon || "-"} | ${c.statement}`).join("\n");
-  const key = `threads:v1:${symbol}:${hashStr(lines)}`;
+  const key = `threads:v2:${symbol}:${hashStr(lines)}`;
   let j = cache && (await cache.get(key));
   if (!j) {
     const r = await llmJSON({ tier: "extract", system: THREAD_SYSTEM, user: lines, maxTokens: 2500 });
@@ -275,18 +275,20 @@ For EACH thread decide, using ONLY these inputs (no outside knowledge):
  evidence_quote: VERBATIM 10-40 words from the excerpts supporting the status, else ""
  evidence_call: e.g. "Q2FY27"
  reason: <= 16 words
+Direction matters: for growth, margins, revenue, share and order book HIGHER is better; for working-capital days, costs, debt and leverage LOWER is better. An actual that beats the target in the favourable direction is "delivered" (or "on track"), never "missed".
+A target restated in later calls is still judged on the latest actual. If the period has not ended, use "on track"/"behind", not "delivered"/"missed".
 Return compact JSON {"verdicts":[{"id":"t0","status":...,"latest_actual":...,"evidence_quote":...,"evidence_call":...,"reason":...}]}. JSON only.`;
 
 async function judgeThreads(open, extracted, consol, symbol, cache, cost) {
   if (!open.length) return;
-  const pick = open.slice(0, 12);
+  const pick = open.slice(0, 16);
   pick.forEach((t, i) => (t.tid = `t${i}`));
   const recent = extracted.filter((e) => e.pages).slice(0, 2); // two newest calls
   const query = pick.map((t) => `${t.title} ${t.latest.statement}`).join(" ");
   const excerpts = recent.map((e) => `=== ${e.label} call ===\n${relevant(e.pages, query, 18)}`).join("\n\n");
   const threadsTxt = pick.map((t) => `${t.tid}: ${t.title} | latest (${t.latest.callQuarter}): "${t.latest.statement}" | band ${band(t.latest) || "-"} | horizon ${t.latest.horizon || "-"}`).join("\n");
   const computed = consol ? `Consolidated, last 4 reported quarters (${consol.periods.join(", ")}): EBITDA margin ${consol.margin}%, revenue YoY ${consol.revYoY}%, PAT YoY ${consol.patYoY}%. Latest quarter ${consol.lastQ.period}: revenue ₹${fmt(consol.lastQ.rev)} cr, PAT ₹${fmt(consol.lastQ.pat)} cr.` : "n/a";
-  const key = `judgeall:v2:${symbol}:${hashStr(threadsTxt + recent.map((e) => e.transcript).join())}`;
+  const key = `judgeall:v4:${symbol}:${hashStr(threadsTxt + recent.map((e) => e.transcript).join())}`;
   let j = cache && (await cache.get(key));
   if (!j) {
     const r = await llmJSON({ tier: "reason", system: JUDGE_ALL, user: `THREADS:\n${threadsTxt}\n\nCOMPUTED:\n${computed}\n\nEXCERPTS:\n${excerpts}`, maxTokens: 7000 });

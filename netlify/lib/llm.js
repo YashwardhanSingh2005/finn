@@ -28,13 +28,19 @@ export const llmAvailable = () => !!(process.env.ANTHROPIC_API_KEY || process.en
 export async function llmJSON({ tier = "extract", system, user, maxTokens = 2000 }) {
   const model = MODELS[tier];
   const t0 = Date.now();
+  // extraction: thinking off (Haiku 5.5 thinks adaptively by default, which silently eats the output
+  // budget on a copy-and-structure task). judgement: adaptive thinking at medium effort, headroom for it.
+  const thinkingCfg = tier === "extract"
+    ? { thinking: { type: "disabled" }, output_config: { effort: "low" } }
+    : { thinking: { type: "adaptive" }, output_config: { effort: "medium" } };
   const res = await anthropic().messages.create({
     model,
-    max_tokens: maxTokens,
+    max_tokens: tier === "extract" ? maxTokens : Math.max(maxTokens * 2, 12000),
+    ...thinkingCfg,
     system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-    messages: [{ role: "user", content: user }],
+    messages: [{ role: "user", content: user + "\n\nReply with the JSON object only, starting with {. No markdown fences, no commentary." }],
   });
-  const text = res.content.map((c) => c.text || "").join("");
+  const text = res.content.filter((c) => c.type === "text").map((c) => c.text).join("");
   const u = res.usage || {};
   const [pi, po] = PRICE[model] || [0, 0];
   const usd = ((u.input_tokens || 0) * pi + (u.output_tokens || 0) * po + (u.cache_read_input_tokens || 0) * pi * 0.1) / 1e6;
@@ -42,6 +48,7 @@ export async function llmJSON({ tier = "extract", system, user, maxTokens = 2000
   const json = parseJSON(text);
   meta.stop = res.stop_reason;
   if (json?._salvaged) meta.salvaged = true;
+  if (!json) { meta.rawHead = text.slice(0, 200); meta.rawTail = text.slice(-120); }
   return { json, meta };
 }
 

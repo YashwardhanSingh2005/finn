@@ -42,13 +42,13 @@ Use ONLY the transcript. JSON only.`;
 export async function businessBrief(c) {
   const call = pickCalls(c, 1)[0];
   if (!call) return { error: "No concall transcript linked for this company." };
-  return memo(`biz:v3:${call.transcript}`, Infinity, async () => {
+  return memo(`biz:v5:${call.transcript}`, Infinity, async () => {
     const doc = await fetchPdfPages(call.transcript, { maxPages: 30 });
-    const { json, meta } = await llmJSON({ tier: "extract", system: BUSINESS, user: withPageMarkers(doc.pages).slice(0, 120000), maxTokens: 1800 });
+    const { json, meta } = await llmJSON({ tier: "extract", system: BUSINESS, user: withPageMarkers(doc.pages).slice(0, 120000), maxTokens: 4000 });
     let dropped = 0;
     const ver = (arr) => (arr || []).filter((x) => { const v = verifyQuote(x.quote, doc.pages); if (v.ok) x.page = v.page; else dropped++; return v.ok; });
     if (json) { json.segments = ver(json.segments); json.guidance = ver(json.guidance); json.watch_items = ver(json.watch_items); }
-    return { call: call.period, url: call.transcript, data: json, dropped, meta };
+    return { call: call.period, url: call.transcript, data: json, dropped, meta, _noCache: !json };
   });
 }
 
@@ -72,18 +72,18 @@ export function evidenceList(a, ledger, biz) {
 
 export async function bullBear(symbol, a, ledger, biz) {
   const ev = evidenceList(a, ledger, biz);
-  const key = `bb:v2:${symbol}:${hash(JSON.stringify(ev.map((e) => e.text)))}`;
+  const key = `bb:v5:${symbol}:${hash(JSON.stringify(ev.map((e) => e.text)))}`;
   return memo(key, 7 * 864e5, async () => {
     const { json, meta } = await llmJSON({ tier: "reason", system: BULLBEAR, user: ev.map((e) => `${e.id} [${e.kind}] ${e.text}`).join("\n"), maxTokens: 900 });
     const ids = new Set(ev.map((e) => e.id));
     const keep = (arr) => (arr || []).map((p) => ({ ...p, refs: (p.refs || []).filter((r) => ids.has(r)) })).filter((p) => p.refs.length);
-    return { bull: keep(json?.bull), bear: keep(json?.bear), question: json?.verdict_question, evidence: ev, meta };
+    return { bull: keep(json?.bull), bear: keep(json?.bear), question: json?.verdict_question, evidence: ev, meta, _noCache: !json };
   });
 }
 
 export async function ledgerFor(symbol, { judge = true } = {}) {
   const { c } = await companyCore(symbol);
-  return memo(`ledger:v5:${judge ? "j" : "x"}:${c.symbol}:${pickCalls(c, 1)[0]?.transcript || "none"}`, 7 * 864e5, () => buildLedger(c, { n: 4, cache, judge }));
+  return memo(`ledger:v7:${judge ? "j" : "x"}:${c.symbol}:${pickCalls(c, 1)[0]?.transcript || "none"}`, 7 * 864e5, () => buildLedger(c, { n: 4, cache, judge }));
 }
 
 function hash(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }

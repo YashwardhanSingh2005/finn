@@ -14,8 +14,8 @@ const DEMO = [
   { s: "JUBLFOOD", why: "consumer slowdown" },
 ];
 
-export default function Research({ symbol, setSymbol }) {
-  if (symbol) return <Company symbol={symbol} back={() => setSymbol(null)} />;
+export default function Research({ symbol, setSymbol, startTab }) {
+  if (symbol) return <Company key={symbol} symbol={symbol} startTab={startTab} back={() => setSymbol(null)} />;
   return <Finder onPick={setSymbol} />;
 }
 
@@ -62,9 +62,9 @@ const TABS = [
   { k: "bb", label: "Bull vs bear" },
 ];
 
-function Company({ symbol, back }) {
+function Company({ symbol, back, startTab }) {
   const { data: c, loading, error } = useApi("company", { symbol });
-  const [tab, setTab] = useState("snap");
+  const [tab, setTab] = useState(startTab || "snap");
   const [recent, setRecent] = usePersist("recent", []);
   useEffect(() => { if (c?.symbol) setRecent([c.symbol, ...recent.filter((s) => s !== c.symbol)].slice(0, 8)); }, [c?.symbol]); // eslint-disable-line
   // Start the slow layers immediately in the background so they're warm when the tab is opened.
@@ -98,7 +98,7 @@ function Company({ symbol, back }) {
         {TABS.map((t) => <button key={t.k} className={tab === t.k ? "on" : ""} onClick={() => setTab(t.k)} role="tab" aria-selected={tab === t.k}>{t.label}{t.k === "ledger" && (judged.data || ledger.data)?.sayDo != null ? ` · ${(judged.data || ledger.data).sayDo}` : ""}</button>)}
       </div>
       <div className="mt12">
-        {tab === "snap" && <Snapshot c={c} biz={biz} />}
+        {tab === "snap" && <Snapshot c={c} biz={biz} L={judged.data || ledger.data} goLedger={() => setTab("ledger")} />}
         {tab === "ledger" && <Ledger st={ledger} judged={judged} />}
         {tab === "money" && <Money a={c.analysis} />}
         {tab === "bb" && <BullBear symbol={symbol} ready={!!judged.data || !!judged.error} />}
@@ -120,7 +120,7 @@ function Flags({ flags }) {
   );
 }
 
-function Snapshot({ c, biz }) {
+function Snapshot({ c, biz, L, goLedger }) {
   const a = c.analysis, t = a.trajectory;
   const b = biz.data?.data;
   return (
@@ -145,6 +145,12 @@ function Snapshot({ c, biz }) {
       {b?.guidance?.length > 0 && (
         <section className="card">
           <h3>What management guided (latest call)</h3>
+          {L?.sayDo != null && (
+            <button className="row small" style={{ background: "var(--surface-2)", borderRadius: 10, padding: "8px 10px", width: "100%", textAlign: "left", marginBottom: 6 }} onClick={goLedger}>
+              <span className="serif" style={{ fontSize: 22, fontWeight: 600 }}>{L.sayDo}</span>
+              <span className="grow ink2">say–do score across {L.sayDoBasis} checked promises{L.goalpostMoves ? `, ${L.goalpostMoves} goalpost move${L.goalpostMoves > 1 ? "s" : ""}` : ""}. Weigh this guidance accordingly.</span><Icon.chev />
+            </button>
+          )}
           {b.guidance.map((g, i) => (
             <details key={i} className="flag" style={{ display: "block" }}>
               <summary><span className="pill accent">{g.topic}</span> <span style={{ fontWeight: 500 }}>{g.statement}</span></summary>
@@ -196,21 +202,23 @@ function SegmentBar({ segs }) {
 
 function MiniBars({ periods, a, b, la, lb }) {
   if (!a?.length) return null;
-  const max = Math.max(...a.filter(Boolean), 1);
+  // two rows, each scaled to its own maximum: profit is ~10% of sales, one shared axis would flatten it
+  const Row = ({ vals, label, color }) => {
+    const max = Math.max(...vals.filter((v) => v != null).map(Math.abs), 1);
+    return (
+      <div className="mt8">
+        <div className="row between tiny muted"><span>{label}</span><span className="num">₹{Math.round(vals[vals.length - 1] ?? 0).toLocaleString("en-IN")} cr latest</span></div>
+        <div className="row" style={{ alignItems: "flex-end", height: 46, gap: 6 }}>
+          {vals.map((v, i) => <div key={i} className="grow" title={`${periods[i]}: ₹${Math.round(v ?? 0).toLocaleString("en-IN")} cr`} style={{ height: `${Math.max(3, (Math.abs(v || 0) / max) * 46)}px`, background: v < 0 ? "var(--risk)" : color, borderRadius: "4px 4px 0 0", opacity: 0.35 + (0.65 * (i + 1)) / vals.length }} />)}
+        </div>
+      </div>
+    );
+  };
   return (
     <div>
-      <div className="row" style={{ alignItems: "flex-end", height: 90, gap: 6 }}>
-        {a.map((v, i) => (
-          <div key={i} className="grow" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-            <div className="row" style={{ alignItems: "flex-end", gap: 2, height: 72 }}>
-              <div title={`${la} ${fmtCr(v)} cr`} style={{ width: 9, height: `${Math.max(2, ((v || 0) / max) * 72)}px`, background: "var(--ink-3)", borderRadius: "3px 3px 0 0" }} />
-              <div title={`${lb} ${fmtCr(b?.[i])} cr`} style={{ width: 9, height: `${Math.max(2, ((b?.[i] || 0) / max) * 72)}px`, background: "var(--accent)", borderRadius: "3px 3px 0 0" }} />
-            </div>
-            <span className="tiny muted">{periods[i]?.replace("Mar ", "FY").replace(/FY20(\d\d)/, "FY$1")}</span>
-          </div>
-        ))}
-      </div>
-      <div className="legend mt4"><span><i style={{ background: "var(--ink-3)" }} />{la}</span><span><i style={{ background: "var(--accent)" }} />{lb}</span><span>₹ cr, latest {fmtCr(a[a.length - 1])} / {fmtCr(b?.[b.length - 1])}</span></div>
+      <Row vals={a} label={la} color="var(--ink-2)" />
+      <Row vals={b || []} label={lb} color="var(--accent)" />
+      <div className="row" style={{ gap: 6 }}>{periods.map((p, i) => <span key={i} className="grow tiny muted" style={{ textAlign: "center" }}>{p?.replace("Mar 20", "FY")}</span>)}</div>
     </div>
   );
 }

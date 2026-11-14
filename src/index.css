@@ -158,7 +158,7 @@ table.fig td.lab { color: var(--ink-2); white-space: normal; }
 .skeleton { background: linear-gradient(90deg, var(--surface-2), var(--surface), var(--surface-2)); background-size: 200% 100%; animation: sh 1.4s infinite; border-radius: 10px; }
 @keyframes sh { to { background-position: -200% 0; } }
 .fade-in { animation: fi 0.25s ease; }
-@keyframes fi { from { opacity: 0; transform: translateY(4px); } }
+@keyframes fi { from { opacity: 0.4; transform: translateY(4px); } }
 .spin { width: 14px; height: 14px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: rot 0.8s linear infinite; display: inline-block; }
 @keyframes rot { to { transform: rotate(360deg); } }
 
@@ -190,3 +190,6 @@ table.fig td.lab { color: var(--ink-2); white-space: normal; }
 details > summary { list-style: none; cursor: pointer; }
 details > summary::-webkit-details-marker { display: none; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* Netlify free-tier badge: keep it, but lift it above the tab bar so it never covers navigation */
+#nl-badge-frame { bottom: calc(72px + env(safe-area-inset-bottom)) !important; }

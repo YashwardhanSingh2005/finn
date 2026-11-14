@@ -1,16 +1,157 @@
-# React + Vite
+# FINN: a financial investment agent that shows its work
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+**Live (open it on a phone):** https://finn-investor.netlify.app
+**Deep links:** [Polycab: promise ledger](https://finn-investor.netlify.app/?c=POLYCAB) · [Kaynes](https://finn-investor.netlify.app/?c=KAYNES) · [Your rules](https://finn-investor.netlify.app/?tab=rules)
 
-Currently, two official plugins are available:
+> An investor doesn't need more summaries; they need to know **what to read** and **whether to believe it**.
+> FINN does both, and every judgement comes with a receipt.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## The point of view
 
-## React Compiler
+Most "AI for investors" tools put a summary on top of the firehose. That makes the feed longer, not more useful. FINN is built on three opinions.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+1. **Triage, not a feed.** The Push side sorts every filing into *Needs you*, *Worth a read* or *Filed away*. It also shows why each item landed where it did: an itemised score you can read in five seconds. *Filed away* is still one tap away, and each hidden item says why it was hidden.
+2. **Analyse management; don't summarise them.** The centrepiece of the Pull side is the **Promise Ledger**:
+   - It reads the last four earnings calls and extracts every forward-looking promise.
+   - It links the same promise across calls into a *thread*.
+   - It catches management **moving the goalposts**: a target raised, lowered, or pushed out a year.
+   - It checks each promise against reported numbers and outputs a **say–do score**.
+3. **No claim without a receipt.** Numbers are computed in code, never by a model. Every quote a model returns is checked against the source PDF's text before it is shown. Quotes that can't be found are dropped, and the number dropped is shown. The bull and bear cases may cite only evidence IDs produced by earlier, verified layers.
 
-## Expanding the Oxlint configuration
+## What's built
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+### Push: the Today tab
+- **Windowed digest** across an 18-stock demo portfolio (large, mid and small caps; banks, an NBFC, IT, FMCG, capital goods, autos, pharma, metals, internet, electronics manufacturing, wind, market infrastructure).
+  - Windows: 24h, 3d, 7d, 30d, custom dates, or **since your last visit**.
+  - Sources: NSE announcements, plus BSE where reachable. Filings posted on both exchanges are de-duplicated.
+- **Explainable 0–100 priority.** Every card opens to an itemised breakdown:
+  - **Category base:** from the reference taxonomy. The classifier is a readable rule and shows the phrase it matched; no model is involved.
+  - **Stage:** a results *date notice* or a newspaper ad of already-published results is pushed down.
+  - **Seniority:** a CXO, MD or board change ranks above lower-level changes.
+  - **Deal size:** the amount parsed from the filing, as a percentage of trailing-twelve-month revenue.
+  - **SEBI Reg 30 materiality:** whether the amount clears the legal threshold, which is the lowest of 2% of turnover, 2% of net worth and 5% of three-year average absolute PAT.
+  - **Market reaction:** the next-session move, in units of *this stock's own* volatility.
+  - **Rating direction:** a downgrade counts up; a reaffirmation counts down.
+  - **Position weight:** the stock's share of your portfolio.
+  - **Your own rules:** any mute or boost you set.
+- **Triggered alerts:** price ±X%, volume ≥ N× its 20-day average, or a move ≥ kσ for that stock. All three thresholds are user-set on the Rules tab.
+- **Management changes.** FINN reads the filing PDF and returns:
+  - who joined or left, their role, and the stated reason;
+  - a short profile from the *filing's own "brief profile" section*, which SEBI requires, with a verified quote and page number;
+  - a LinkedIn link.
+- **Quarterly results:**
+  - A first cut of Revenue, EBITDA, PBT and PAT, QoQ and YoY, appears instantly from standardised data, with the EBITDA margin trend.
+  - **"Read the filing"** extracts the same lines from the results PDF. EBITDA is then *computed in code* as PBT + finance costs + depreciation − other income − exceptional items. The two sources are reconciled, and the card shows ✓ when they match.
+  - If the standardised data hasn't caught up with a fresh filing yet, FINN says so and reads the PDF automatically. It never shows last quarter's numbers under this quarter's headline.
+- **Plain English instead of boilerplate.** The exchange's one-liners ("X has informed the Exchange about…") are replaced with a one-line *what happened* and *so what*, read from the PDF, with a verified quote. This is done only for items that earned attention; routine filings never cost a token.
+- **New transcript filed → "Audit its promises":** a filed earnings-call transcript links straight to that company's ledger.
+- **Listen (60 s):** the browser reads the top items aloud, for the commute. It costs nothing and runs no server code.
+
+### Pull: the Research tab, for any NSE ticker
+- **Snapshot:**
+  - the business and its segments, in management's own words from the latest call, with verified quotes;
+  - the latest quarter, QoQ and YoY;
+  - guidance, shown next to the company's **say–do score** so you know how much weight to give it;
+  - the five-year trajectory: revenue and PAT, CAGRs and margin trend, with rule flags;
+  - "what management admitted is hard".
+- **Promises (the Promise Ledger):** promise threads across four calls, the goalpost history of each, and a verdict: *Delivered, On track, Behind, Missed, Too early* or *No evidence*. Each verdict is labelled with how it was reached:
+  - **computed:** checked in code against the reported quarters for the promised period. Open-ended targets are checked against the trailing four quarters.
+  - **judgement:** a stronger model. It must cite a quote that passes verification, or the verdict is withheld.
+- **Balance and cash.** Each flag shows the rule that fired, e.g. `rule: Σ CFO / Σ PAT < 70%`. Covers:
+  - cash conversion: Σ operating cash flow ÷ Σ PAT, with the yearly table;
+  - debt-to-equity;
+  - the working-capital cycle;
+  - capital work in progress as a share of fixed assets;
+  - promoter and institutional holding changes.
+- **Bull vs bear:** three points each. Every point cites evidence IDs, and tapping one shows the underlying fact. It ends with *the one question that decides it*.
+- **Primary sources only:** annual reports, results and transcripts. No news, no broker notes, and the model is told not to use outside knowledge.
+
+### Rules: "your rules are the algorithm"
+- Alert thresholds, plus a mute or boost toggle for each category.
+- The scoring formula, written out in plain words.
+- The portfolio editor.
+- A live **AI cost meter**: model calls, cache hits and spend in $ and ₹.
+
+## Architecture
+
+```
+React (Vite) PWA, mobile-first ──► Netlify Functions (Node 22) ──► sources
+                                        │                       ├─ NSE corporate announcements (JSON)
+                                        │                       ├─ BSE announcements (fallback; blocked from some hosts)
+                                        │                       ├─ screener.in: standardised statements, EOD price & volume,
+                                        │                       │    links to annual reports, results PDFs, concall transcripts
+                                        │                       └─ the primary PDFs themselves (unpdf → per-page text)
+                                        ├─ Netlify Blobs cache (every model output keyed by source-document URL)
+                                        └─ Netlify AI Gateway → Claude Haiku 5.5 (extract) / Claude Sonnet 5.5 (judge)
+```
+
+### Model routing and cost
+
+| Layer | What runs | Cost |
+|---|---|---|
+| Triage (classify and score every filing) | Regex classifier and arithmetic scorer | ₹0 |
+| Numbers (results cut, ratios, CAGRs, cash conversion, alerts) | Plain code over standardised statements | ₹0 |
+| Reading PDFs (filing one-liners, management bios, results lines, business snapshot, guidance claims) | **Claude Haiku 5.5**, thinking off, low effort | ≈ $0.002 per document |
+| Linking promises across calls into threads | Haiku 5.5 | ≈ $0.001 per company |
+| Judging open promises, and bull vs bear | **Claude Sonnet 5.5**, adaptive thinking, medium effort; one *batched* call per company | ≈ $0.04 per company |
+| Verification (quotes exist in source; cited evidence IDs exist) | Plain code (4-gram shingle match) | ₹0 |
+
+A full research page for a company FINN has never seen (four transcripts, snapshot, ledger, bull vs bear) costs about **$0.06 ≈ ₹5**. It then costs **₹0** for every later viewer, because outputs are cached by document URL and the cache key changes only when a new call is filed.
+
+## Key decisions and trade-offs
+
+- **Rules before models for triage.** Exchange subjects are formulaic, so a readable rule beats a model call on cost, latency *and* explainability. The trade-off is that unusual wording can fall through to "routine". That is visible in the *Filed away* groups, and the fix is one more rule.
+- **Models locate and quote; code computes and judges numbers.** This removes the most common failure of financial LLM apps: plausible, wrong numbers. On FinanceBench, GPT-4 with retrieval failed or refused about 81% of questions.
+- **Quote verification is mandatory.** Any promise or evidence quote that can't be found in the source text is dropped (fuzzy 4-gram match, 60% threshold), and the count shows on screen.
+- **Promise threads and a goalpost detector, not a flat list of promises.** The research shows guidance is "walked down" to beatable levels (Richardson, Teoh & Wysocki 2004). It also shows that forecasts from managers with an accurate record move prices more (Hutton & Stocken 2009). Credibility is the signal, and a flat list would hide it.
+- **The strong model only where reasoning needs it:** one batched Sonnet call per company for segment and qualitative promises, and one for bull vs bear. Everything else is Haiku or plain code.
+- **Pay for attention, not volume.** Filing PDFs are read only for items that scored into *Needs you* or *Worth a read*, or that you open.
+- **Standardised statements and prices come via screener.in.** That data is derived from company filings and links back to each raw results PDF, which FINN can read and reconcile against. Transcripts and annual reports are always read from the company or exchange PDF.
+- **Competitive context:**
+  - Concall summaries and filing alerts are commodity features in India (Trendlyne, Tijori, Screener).
+  - The closest products to the ledger are Tijori's narrative "what they said then vs now" and Arthneeti's quarter-on-quarter scorecard.
+  - Neither verifies quotes, threads promises across calls, detects goalpost moves, or explains why an alert ranks where it does.
+
+## What I deliberately left out
+
+- **Push delivery (Web Push, WhatsApp, email).** The digest and triggers are computed on demand. Delivery is a cron job plus a notification channel; I spent the time on making *what* gets pushed right.
+- **Deep reads of annual reports (300+ pages).** Guidance lives in transcripts, so the ledger and snapshot use those. Annual-report extraction would reuse the same verify-every-quote pipeline, with chunking.
+- **Login and multiple users.** Preferences and the portfolio live in the browser.
+- **A chat box.** Chat invites unanswerable questions and unverifiable answers. FINN gives structured views with receipts instead. A question box scoped to one company's documents, under the same evidence-ID rule, is the natural next step.
+
+## Where I'd take it next
+
+1. **A credibility-weighted view of guidance:** discount each new guidance figure by the management team's historical say–do score, and keep that score per CEO or CFO across job changes.
+2. **Backtest the triage score:** do *Needs you* filings precede bigger moves than *Filed away* ones? Tune the weights in the open based on the result.
+3. **Delivery:** a scheduled end-of-day job, then Web Push or WhatsApp for the *Needs you* tier only.
+4. **Silence as a signal:** promises management stops mentioning are already counted as "not in latest call". Next, alert on them.
+5. **Annual-report diffs:** year-over-year changes in risk factors, contingent liabilities, related-party transactions and auditor remarks.
+
+## Running it
+
+```bash
+npm install
+npm run build           # frontend → dist/
+npx netlify dev         # functions; AI Gateway credentials are injected after one production deploy,
+                        # or set ANTHROPIC_API_KEY yourself
+```
+
+Model tiers are configurable with `FINN_MODEL_EXTRACT` and `FINN_MODEL_REASON`.
+
+## Repository map
+
+| Path | What it does |
+|---|---|
+| `netlify/lib/screener.js` | Statements, document index and EOD prices |
+| `netlify/lib/exchanges.js` | NSE and BSE announcement feeds; cross-exchange de-duplication |
+| `netlify/lib/classify.js` | Rule classifier and itemised priority score, including SEBI Reg 30 materiality |
+| `netlify/lib/alerts.js` | End-of-day price and volume triggers, in absolute and σ terms |
+| `netlify/lib/fundamentals.js` | Results cut, trajectory, balance sheet, cash quality and shareholding flags (pure code) |
+| `netlify/lib/ledger.js` | Promise Ledger: extraction, quote verification, threads, goalposts, computed checks, batched judge |
+| `netlify/lib/filing.js` | Per-filing enrichment: management bio, results lines with EBITDA computed in code, one-liners |
+| `netlify/lib/research.js` | Layered research view; bull vs bear restricted to evidence IDs |
+| `netlify/lib/llm.js` | Model router, cost accounting, recovery of truncated JSON |
+| `netlify/lib/pdf.js` | PDF to per-page text; the quote verifier |
+| `src/` | The mobile UI (`Today.jsx`, `Research.jsx`, `Rules.jsx`) |
+
+Built with Claude Code; see `BUILD_LOG.md` for how.

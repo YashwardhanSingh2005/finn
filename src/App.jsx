@@ -31,7 +31,8 @@ export default function App() {
     history.replaceState(null, "", u);
   }, [tab, symbol]);
 
-  const openCompany = (s) => { setSymbol(s); setTab("research"); window.scrollTo(0, 0); };
+  const [startTab, setStartTab] = useState(null);
+  const openCompany = (s, sub) => { setSymbol(s); setStartTab(sub || null); setTab("research"); window.scrollTo(0, 0); };
   const h = holdings || PORTFOLIO;
 
   return (
@@ -44,7 +45,7 @@ export default function App() {
       </header>
       <main>
         {tab === "today" && <Today prefs={prefs} setPrefs={setPrefs} rules={rules} holdings={h} customHoldings={!!holdings} openCompany={openCompany} toast={setToast} />}
-        {tab === "research" && <Research symbol={symbol} setSymbol={setSymbol} />}
+        {tab === "research" && <Research symbol={symbol} setSymbol={setSymbol} startTab={startTab} />}
         {tab === "rules" && <Rules prefs={prefs} setPrefs={setPrefs} rules={rules} setRules={setRules} holdings={h} setHoldings={setHoldings} resetHoldings={() => setHoldings(null)} theme={theme} setTheme={setTheme} />}
       </main>
       <nav className="tabs" aria-label="Main">

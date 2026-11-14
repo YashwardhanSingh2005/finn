@@ -37,6 +37,7 @@ export async function memo(key, maxAgeMs, fn) {
   const hit = await cache.get(key, maxAgeMs);
   if (hit) return { ...hit, _cached: true };
   const v = await fn();
+  if (v && v._noCache) { delete v._noCache; return v; } // producer says: don't persist (e.g. model output failed to parse)
   await cache.set(key, v);
   return v;
 }

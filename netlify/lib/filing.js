@@ -22,7 +22,7 @@ const GENERIC = `You read one Indian stock-exchange filing. Return JSON {"one_li
 
 export async function enrichFiling({ url, category }) {
   const kind = category === "management_change" ? "mgmt" : category === "results" ? "results" : "generic";
-  const key = `filing:v3:${kind}:${url}`;
+  const key = `filing:v5:${kind}:${url}`;
   const hit = await cache.get(key);
   if (hit) return { ...hit, cached: true };
 
@@ -36,6 +36,7 @@ export async function enrichFiling({ url, category }) {
   const system = kind === "mgmt" ? MGMT : kind === "results" ? RESULTS : GENERIC;
   const { json, meta } = await llmJSON({ tier: "extract", system, user: text, maxTokens: kind === "results" ? 1200 : 900 });
   const out = { kind, url, nPages: doc.nPages, meta, data: json };
+  if (!json) return out; // parse failure: return but don't cache
 
   if (kind === "mgmt" && json?.changes) {
     for (const ch of json.changes) {

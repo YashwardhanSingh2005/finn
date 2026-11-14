@@ -103,6 +103,10 @@ export function score(item, ctx = {}) {
     const v = share >= 10 ? 25 : share >= 3 ? 15 : share >= 1 ? 5 : -10;
     parts.push({ k: "Size", v, why: `₹${Math.round(amt).toLocaleString("en-IN")} cr ≈ ${share.toFixed(1)}% of TTM revenue` });
   }
+  if (amt != null && ctx.sebiThresholdCr) {
+    const above = amt >= ctx.sebiThresholdCr;
+    parts.push({ k: "SEBI materiality", v: above ? 10 : 0, why: `${above ? "above" : "below"} the Reg 30 threshold for this company (₹${ctx.sebiThresholdCr.toLocaleString("en-IN")} cr = lowest of 2% turnover, 2% net worth, 5% avg PAT)` });
+  }
   if (ctx.dayMovePct != null && ctx.sigma) {
     const z = Math.abs(ctx.dayMovePct) / ctx.sigma;
     if (z >= 2) parts.push({ k: "Market reaction", v: +15, why: `stock moved ${ctx.dayMovePct.toFixed(1)}% that day (${z.toFixed(1)}σ)` });

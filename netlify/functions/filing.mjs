@@ -1,7 +1,7 @@
 import { enrichFiling } from "../lib/filing.js";
 import { llmAvailable } from "../lib/llm.js";
 import { json, fail } from "../lib/http.js";
-const OK = /^https:\/\/(www\.bseindia\.com|nsearchives\.nseindia\.com|archives\.nseindia\.com)\//;
+const OK = /^https:\/\/(www\.bseindia\.com|(nsearchives|archives)\.nseindia\.(com|in))\//;
 export default async (req) => {
   const q = new URL(req.url).searchParams;
   const url = q.get("url"), category = q.get("category") || "generic";
