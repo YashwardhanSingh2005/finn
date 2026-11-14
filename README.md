@@ -81,8 +81,12 @@ React (Vite) PWA, mobile-first ──► Netlify Functions (Node 22) ──► s
                                         │                       ├─ screener.in: standardised statements, EOD price & volume,
                                         │                       │    links to annual reports, results PDFs, concall transcripts
                                         │                       └─ the primary PDFs themselves (unpdf → per-page text)
-                                        ├─ Netlify Blobs cache (every model output keyed by source-document URL)
-                                        └─ Netlify AI Gateway → Claude Haiku 5.5 (extract) / Claude Sonnet 5.5 (judge)
+                                        ├─ Blob cache: every model output keyed by source-document URL
+                                        └─ AI Gateway → Claude Haiku 5.5 (extract) / Claude Sonnet 5.5 (judge)
+
+Host-agnostic: the same handlers run as Vercel functions (`api/`, Mumbai region next to NSE/BSE,
+Vercel Blob + Vercel AI Gateway via the deployment's OIDC token, so no key to manage) or Netlify functions
+(`netlify/functions/`, Netlify Blobs + Netlify AI Gateway). A plain ANTHROPIC_API_KEY also works.
 ```
 
 ### Model routing and cost

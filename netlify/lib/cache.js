@@ -1,12 +1,27 @@
 // Two-level cache: in-memory (per warm function instance) + Netlify Blobs (shared, persistent).
 // Every LLM output is keyed by the source document URL, so a filing/transcript is paid for once, ever.
+// Persistent layer is host-specific: Vercel Blob (BLOB_READ_WRITE_TOKEN) or Netlify Blobs; else memory only.
 import { getStore } from "@netlify/blobs";
+import { put, head } from "@vercel/blob";
 
 const mem = new Map();
 let store = null;
 function blobs() {
   if (store !== null) return store;
-  try { store = getStore({ name: "finn-cache", consistency: "eventual" }); } catch { store = false; }
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    store = {
+      async get(k) {
+        try {
+          const h = await head(`finn-cache/${k}.json`);
+          const r = await fetch(h.url, { cache: "no-store" });
+          return r.ok ? await r.json() : null;
+        } catch { return null; }
+      },
+      async setJSON(k, v) { await put(`finn-cache/${k}.json`, JSON.stringify(v), { access: "public", addRandomSuffix: false, allowOverwrite: true, contentType: "application/json" }); },
+    };
+    return store;
+  }
+  try { store = process.env.NETLIFY || process.env.NETLIFY_BLOBS_CONTEXT ? getStore({ name: "finn-cache", consistency: "eventual" }) : false; } catch { store = false; }
   return store;
 }
 const safe = (k) => k.replace(/[^A-Za-z0-9._-]/g, "_").slice(0, 600);

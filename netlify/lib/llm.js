@@ -4,6 +4,7 @@
 //   reason  : cross-quarter judgement (promise ledger verdicts, bull/bear) — the only place we pay up
 // Numbers are NEVER produced by these models: they only locate/quote; arithmetic happens in code.
 import Anthropic from "@anthropic-ai/sdk";
+import { getVercelOidcToken } from "@vercel/oidc";
 
 export const MODELS = {
   extract: process.env.FINN_MODEL_EXTRACT || "claude-haiku-5-5",
@@ -16,10 +17,20 @@ const PRICE = {
   "claude-haiku-4-5": [1, 5],
 };
 
-let client;
-const anthropic = () => (client ||= new Anthropic());
+// Provider plumbing (same Anthropic SDK, three ways in):
+//  - ANTHROPIC_API_KEY            → Anthropic directly
+//  - Netlify AI Gateway            → injects ANTHROPIC_API_KEY + ANTHROPIC_BASE_URL
+//  - Vercel AI Gateway             → AI_GATEWAY_API_KEY or the deployment's VERCEL_OIDC_TOKEN, Anthropic-compatible endpoint
+const viaVercel = () => !process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_BASE_URL && !!(process.env.AI_GATEWAY_API_KEY || process.env.VERCEL);
+async function anthropic() {
+  if (!viaVercel()) return new Anthropic({ maxRetries: 1, timeout: 55e3 });
+  // on Vercel the deployment's short-lived OIDC token authenticates to the AI Gateway (no key to manage)
+  const key = process.env.AI_GATEWAY_API_KEY || (await getVercelOidcToken());
+  return new Anthropic({ apiKey: key, authToken: key, baseURL: "https://ai-gateway.vercel.sh", maxRetries: 1, timeout: 55e3 });
+}
+const wireModel = (m) => (viaVercel() ? `anthropic/${m.replace(/-(\d+)-(\d+)$/, "-$1.$2")}` : m);
 
-export const llmAvailable = () => !!(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_BASE_URL);
+export const llmAvailable = () => !!(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_BASE_URL || process.env.AI_GATEWAY_API_KEY || process.env.VERCEL);
 
 /**
  * Call a model and parse a JSON object out of the reply.
@@ -33,8 +44,8 @@ export async function llmJSON({ tier = "extract", system, user, maxTokens = 2000
   const thinkingCfg = tier === "extract"
     ? { thinking: { type: "disabled" }, output_config: { effort: "low" } }
     : { thinking: { type: "adaptive" }, output_config: { effort: "medium" } };
-  const res = await anthropic().messages.create({
-    model,
+  const res = await (await anthropic()).messages.create({
+    model: wireModel(model),
     max_tokens: tier === "extract" ? maxTokens : Math.max(maxTokens * 2, 12000),
     ...thinkingCfg,
     system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],

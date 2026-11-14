@@ -20,6 +20,8 @@ export default function Rules({ prefs, setPrefs, rules, setRules, holdings, setH
       <h1 className="headline mt8">Your rules are <em>the algorithm.</em></h1>
       <p className="muted small">FINN ranks filings with the points below. Nothing is learned silently: every “less / more” you tap lands here, where you can read and undo it.</p>
 
+      <Backtest />
+
       <h2 className="section">Price & volume triggers (end of day)</h2>
       <div className="card stack">
         <Slider label="Price move" value={rules.movePct} min={1} max={15} step={0.5} unit="%" note="absolute day move, either direction" onChange={(v) => set("movePct", v)} />
@@ -52,8 +54,6 @@ export default function Rules({ prefs, setPrefs, rules, setRules, holdings, setH
           <li>≥ 70 <b>Needs you</b> · 40–69 <b>Worth a read</b> · below 40 <b>Filed away</b> (still one tap away).</li>
         </ul>
       </details>
-
-      <Backtest />
 
       <h2 className="section">Portfolio <span className="count">{holdings.length}</span></h2>
       <div className="card flat" style={{ padding: "4px 14px" }}>

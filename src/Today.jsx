@@ -30,8 +30,20 @@ export default function Today({ prefs, setPrefs, rules, holdings, customHoldings
   const mute = (cat, label) => { setPrefs({ ...prefs, muted: { ...prefs.muted, [cat]: true } }); toast(`Muted ${label}. Undo in Rules.`); };
   const boost = (cat, label) => { setPrefs({ ...prefs, boost: { ...prefs.boost, [cat]: 25 } }); toast(`${label} will rank higher from now on.`); };
 
+  const [intro, setIntro] = useState(() => { try { return !localStorage.getItem("finn:introSeen"); } catch { return true; } });
+  const closeIntro = () => { setIntro(false); try { localStorage.setItem("finn:introSeen", "1"); } catch {} };
   return (
     <div className="fade-in">
+      {intro && (
+        <div className="card mt4" style={{ background: "var(--accent-soft)", borderColor: "transparent" }}>
+          <div className="row between top"><strong className="serif" style={{ fontSize: 18 }}>FINN reads every filing so you read three.</strong><button className="iconbtn" aria-label="Dismiss" onClick={closeIntro}><Icon.x /></button></div>
+          <ul className="small ink2" style={{ paddingLeft: 18, margin: "6px 0 0" }}>
+            <li><b>Ranked, with reasons.</b> Tap any card for “why it’s ranked” — every point of the score is itemised, and backtested (Rules tab).</li>
+            <li><b>Receipts.</b> Numbers are computed, not generated; every quote is checked against the source PDF.</li>
+            <li><b>Promise Ledger.</b> In Research, see what management promised over four calls vs what they delivered.</li>
+          </ul>
+        </div>
+      )}
       <div className="chips mt4" role="tablist" aria-label="Time window">
         {sinceH && sinceH >= 2 && sinceH <= 24 * 30 && <button className={`chip ${win === "since" ? "on" : ""}`} onClick={() => setWin("since")}>Since last visit</button>}
         {WINDOWS.map((x) => (<button key={x.k} className={`chip ${win === x.k ? "on" : ""}`} onClick={() => setWin(x.k)}>{x.label}</button>))}
