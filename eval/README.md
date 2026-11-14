@@ -65,6 +65,19 @@ FINN reads the filing date from the exchange cover letter and the call date from
 - **Fix:** dates preceded by "ended / ending / quarter / period" are ignored. A unit test pins this.
 - **After the fix:** 24 calls across 13 holdings, all within the limit (0–5 working days). Tata Steel and L&T were skipped because they have no cover letter. The feature shows up as a hygiene row; it would flag a late filer.
 
+### 1e. Does dodging predict the stock's reaction? (mini event study, inconclusive)
+
+This tests Gow et al.'s finding on our own data. The sample is 40 recent calls across 16 holdings, dated with the transcript-lag parser. The return measure is the post-call cumulative return in units of each stock's own 60-day σ.
+
+| Calls | n | Next session | Next 5 sessions |
+|---|---|---|---|
+| Above-median non-answer rate (> 5.9%) | 19 | −0.18σ | +0.29σ |
+| At or below median | 21 | +0.07σ | +0.12σ |
+
+The correlation between non-answer rate and the next-session return is −0.08, and −0.13 over five sessions.
+
+**Reading:** the next-day difference points the way the literature predicts, but at n=40 it is not statistically meaningful (t ≈ −0.8), and over 5 days the sign reverses. **We do not claim that Candour predicts returns.** We present it as an explainable credibility lens with a verbatim receipt for every dodge. A proper test needs hundreds of calls (all NSE-500 companies over several years), which is the obvious next step once transcripts are cached at scale. Data: `candour_event_study.json`; script: `scripts/event_study_candour.mjs`.
+
 ## 2. Triage score (Push): backtest
 
 This is reproduced in the app under Rules → *Does the score work?* and in the main README.

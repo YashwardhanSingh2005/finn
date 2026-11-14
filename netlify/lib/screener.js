@@ -176,6 +176,8 @@ export async function fetchCompany(symbol) {
 
 /** End-of-day price & volume series from screener's chart API (same data as NSE bhavcopy). */
 export async function fetchPrices(companyId, days = 400) {
+  // NB: screener returns DAILY points up to ~400 days (verified: 400d → 270 daily points); 450d+ comes back weekly-sampled.
+  days = Math.min(days, 400);
   const r = await get(`${BASE}/api/company/${companyId}/chart/?q=Price-Volume&days=${days}&consolidated=true`);
   const j = await r.json();
   const price = j.datasets.find((d) => d.metric === "Price")?.values || [];
