@@ -10,7 +10,7 @@ export default async (req) => {
   try {
     const { c } = await companyCore(s);
     const calls = pickCalls(c, 4);
-    return json(await memo(`candour:v3:${c.symbol}:${calls[0]?.transcript || "none"}`, 7 * 864e5, () => candour(c, calls)));
+    return json(await memo(`candour:v4:${c.symbol}:${calls[0]?.transcript || "none"}`, 7 * 864e5, () => candour(c, calls)));
   } catch (e) { return fail(e); }
 };
 export const config = { path: "/api/candour" };

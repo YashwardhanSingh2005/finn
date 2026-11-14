@@ -494,6 +494,7 @@ function Candour({ symbol, st }) {
             <tr><td className="lab">Uncertainty words /1k (Q&A)</td>{calls.map((x) => <td key={x.period}>{x.qa.uncPer1k}</td>)}</tr>
             <tr><td className="lab">Hedges /1k (Q&A)</td>{calls.map((x) => <td key={x.period}>{x.qa.hedgePer1k}</td>)}</tr>
             <tr><td className="lab">Analysts / questions</td>{calls.map((x) => <td key={x.period}>{x.analysts}/{x.questions}</td>)}</tr>
+            <tr><td className="lab">Transcript filed (working days; SEBI ≤ 5)</td>{calls.map((x) => <td key={x.period} className={x.lag?.late ? "down" : ""} title={x.lag ? `call ${x.lag.callDate}, filed ${x.lag.filedDate}` : "dates not found"}>{x.lag ? `${x.lag.workingDays}d${x.lag.late ? " ⚠" : ""}` : "–"}</td>)}</tr>
             <tr><td className="lab">Analyst praise (“congratulations…”)</td>{calls.map((x) => <td key={x.period}>{x.praiseRate ?? "–"}%</td>)}</tr>
             <tr><td className="lab">Dodged: hard vs routine Qs</td>{calls.map((x) => <td key={x.period} title={`${x.pushback?.hard} hard / ${x.pushback?.easy} routine questions`}>{x.pushback?.hard >= 6 ? `${x.pushback.hardRate}% / ${x.pushback.easyRate}%` : "–"}</td>)}</tr>
           </tbody>

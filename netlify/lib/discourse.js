@@ -202,6 +202,36 @@ function echo(answer, scriptGrams) {
   return n ? hit / n : 0;
 }
 
+// ---- SEBI LODR: transcript within 5 working days of the call -----------------------------------
+const MONTHS = "january february march april may june july august september october november december".split(" ");
+const DATE_RE = /\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+(\d{1,2}),?\s+(20\d{2})\b|\b(\d{1,2})(?:st|nd|rd|th)?\s+(january|february|march|april|may|june|july|august|september|october|november|december),?\s+(20\d{2})\b/gi;
+function datesIn(t) {
+  const out = [];
+  for (const m of t.matchAll(DATE_RE)) {
+    const [mon, d, y] = m[1] ? [m[1], m[2], m[3]] : [m[5], m[4], m[6]];
+    out.push({ date: new Date(Date.UTC(+y, MONTHS.indexOf(mon.toLowerCase()), +d)), at: m.index });
+  }
+  return out;
+}
+const workdays = (a, b) => { let n = 0; for (let d = new Date(a); d < b; d.setUTCDate(d.getUTCDate() + 1)) { const w = d.getUTCDay(); if (w && w !== 6) n++; } return n; };
+
+/** Filing date from the exchange cover letter (page 1), call date from the transcript header. */
+export function transcriptLag(pages) {
+  const p1 = pages[0] || "";
+  const isCover = /BSE Limited|National Stock Exchange|Listing Department|Corporate Relationship|Dept\.? of Corporate Services/i.test(p1);
+  if (!isCover) return null;
+  const filed = datesIn(p1)[0]?.date;
+  const head = pages.slice(1, 3).join("\n");
+  const anchor = head.search(/conference call|earnings call|investor call|analyst call|transcript/i);
+  // ignore period-end dates ("quarter ended September 30") — they're not the call date
+  const cands = datesIn(head).filter((d) => (!filed || d.date <= filed) && !/(?:ended|ending|end of|period|quarter|year|as on|as at)\s*(?:on\s*)?$/i.test(head.slice(Math.max(0, d.at - 25), d.at)));
+  if (!filed || !cands.length) return null;
+  const call = (anchor >= 0 ? cands.sort((a, b) => Math.abs(a.at - anchor) - Math.abs(b.at - anchor))[0] : cands[0]).date;
+  const lag = workdays(new Date(call.getTime() + 864e5), new Date(filed.getTime() + 864e5));
+  if (lag < 0 || lag > 60) return null;
+  return { callDate: call.toISOString().slice(0, 10), filedDate: filed.toISOString().slice(0, 10), workingDays: lag, late: lag > 5, rule: "SEBI LODR Reg 46(2)(oa): transcript within 5 working days of the call (weekends excluded; exchange holidays not)" };
+}
+
 export function analyseCall(pages) {
   const { turns } = parseTranscript(pages);
   const prepared = turns.filter((t) => t.section === "prepared" && t.role === "management").map((t) => t.text).join("\n");
@@ -231,6 +261,7 @@ export function analyseCall(pages) {
   const scripted = echoes.filter((e) => e >= 0.15).length;
   const scriptedHard = pairs.filter((p, i) => echoes[i] >= 0.15 && PUSHBACK.test(p.q.text)).length;
   return {
+    lag: transcriptLag(pages),
     praiseRate: pairs.length ? +(praised / pairs.length * 100).toFixed(1) : null,
     pushback: { hard: hard.length, easy: easy.length, hardRate: hardRate == null ? null : +(hardRate * 100).toFixed(1), easyRate: easyRate == null ? null : +(easyRate * 100).toFixed(1) },
     scriptedRate: pairs.length ? +(scripted / pairs.length * 100).toFixed(1) : null,

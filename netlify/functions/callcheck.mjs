@@ -12,7 +12,7 @@ export default async (req) => {
   const url = q.get("url"), s = sym(q.get("symbol"));
   if (!url || !OK.test(url) || !s) return json({ error: "symbol and an NSE/BSE transcript url required" }, 400);
   try {
-    return json(await memo(`callcheck:v2:${url}`, Infinity, async () => {
+    return json(await memo(`callcheck:v3:${url}`, Infinity, async () => {
       const doc = await fetchPdfPages(url, { maxPages: 45 });
       const now = analyseCall(doc.pages);
       // previous call = the most recent transcript in the company's index that isn't this one
@@ -25,7 +25,7 @@ export default async (req) => {
           if (p.parsed) { prev = { period: pc.period, url: pc.transcript, ...p }; break; }
         }
       } catch {}
-      const strip = (x) => x && { nonAnswerCount: x.nonAnswers.length, questions: x.questions, analysts: x.analysts, nonAnswerRate: x.nonAnswerRate, nonAnswers: x.nonAnswers.slice(0, 3), toneQA: x.qa.tone, tonePrep: x.prepared.tone, uncQA: x.qa.uncPer1k, period: x.period, url: x.url, parsed: x.parsed };
+      const strip = (x) => x && { lag: x.lag, nonAnswerCount: x.nonAnswers.length, questions: x.questions, analysts: x.analysts, nonAnswerRate: x.nonAnswerRate, nonAnswers: x.nonAnswers.slice(0, 3), toneQA: x.qa.tone, tonePrep: x.prepared.tone, uncQA: x.qa.uncPer1k, period: x.period, url: x.url, parsed: x.parsed };
       return { url, now: strip(now), prev: strip(prev) };
     }));
   } catch (e) { return fail(e); }

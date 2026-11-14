@@ -373,6 +373,7 @@ function CallCheck({ x }) {
         {dRate != null && <span className={dRate > 2 ? "down" : dRate < -2 ? "up" : "muted"}> · {dRate > 0 ? "up" : dRate < 0 ? "down" : "flat"} {Math.abs(dRate)} pts vs {p.period}</span>}
         {dTone != null && Math.abs(dTone) >= 0.05 && <span className="muted"> · Q&A tone {dTone > 0 ? "warmer" : "cooler"}</span>}
       </div>
+      {n.lag && <div className={`tiny mt4 ${n.lag.late ? "down" : "muted"}`}>Transcript filed {n.lag.workingDays} working day{n.lag.workingDays === 1 ? "" : "s"} after the call{n.lag.late ? ": later than SEBI’s 5-day rule" : " (SEBI limit: 5)"}.</div>}
       {n.nonAnswers[0] && <div className="small ink2 mt4">e.g. “{n.nonAnswers[0].answer}” <Receipt url={x.url} page={n.nonAnswers[0].page} label="p" /></div>}
       <div className="tiny muted mt4">Computed from the transcript text with published word lists. Free and instant; no AI model.</div>
     </div>

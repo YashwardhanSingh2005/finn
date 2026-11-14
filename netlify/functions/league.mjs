@@ -14,7 +14,7 @@ async function one(symbol) {
   let lastErr = "transcript layout not recognised";
   for (const call of calls) {
     try {
-      const r = await memo(`callstat:v2:${call.transcript}`, Infinity, async () => {
+      const r = await memo(`callstat:v3:${call.transcript}`, Infinity, async () => {
         const a = analyseCall((await fetchPdfPages(call.transcript, { maxPages: 45 })).pages);
         return { parsed: a.parsed, questions: a.questions, analysts: a.analysts, nonAnswerRate: a.nonAnswerRate, nonAnswers: a.nonAnswers.length, praiseRate: a.praiseRate, toneQA: a.qa.tone, uncQA: a.qa.uncPer1k, hard: a.pushback };
       });

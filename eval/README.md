@@ -58,6 +58,13 @@ A header-line normaliser classifies each speaker by affiliation: brokerages and 
 - 1 links a non-PDF (Maruti).
 - The remaining holdings parse.
 
+### 1d. Transcript lag (SEBI LODR: transcript within 5 working days)
+
+FINN reads the filing date from the exchange cover letter and the call date from the transcript header.
+- **First run:** Bharti Airtel showed as 31 working days late. That was a false positive: the parser had taken "Q2 *ended* September 30, 2026" as the call date.
+- **Fix:** dates preceded by "ended / ending / quarter / period" are ignored. A unit test pins this.
+- **After the fix:** 24 calls across 13 holdings, all within the limit (0–5 working days). Tata Steel and L&T were skipped because they have no cover letter. The feature shows up as a hygiene row; it would flag a late filer.
+
 ## 2. Triage score (Push): backtest
 
 This is reproduced in the app under Rules → *Does the score work?* and in the main README.

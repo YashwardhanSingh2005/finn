@@ -139,3 +139,16 @@ test("credibility: Beta posterior quantiles and style labels", () => {
   assert.equal(c.style, "walks down, then beats");
   assert.equal(credibility([{ verdict: "too early", history: [] }]), null);
 });
+
+import { transcriptLag } from "../netlify/lib/discourse.js";
+test("transcript lag: cover-letter date vs call date, in working days", () => {
+  const pages = ["Date: October 19, 2026\nTo BSE Limited, Listing Department", "Polycab India Limited Q2 FY27 Earnings Conference Call\nOctober 15, 2026"];
+  const r = transcriptLag(pages);
+  assert.equal(r.callDate, "2026-10-15");
+  assert.equal(r.filedDate, "2026-10-19");
+  assert.equal(r.workingDays, 2); // Fri 16, Mon 19
+  assert.equal(r.late, false);
+  assert.equal(transcriptLag(["no cover letter here", "x"]), null);
+  const airtel = transcriptLag(["Date: November 12, 2026\nBSE Limited", "Transcript of Bharti Airtel Q2 ended September 30, 2026 Earnings Webinar held on November 10, 2026"]);
+  assert.equal(airtel.callDate, "2026-11-10", "quarter-end date is not the call date");
+});
