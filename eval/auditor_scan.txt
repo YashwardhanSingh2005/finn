@@ -16,3 +16,11 @@ Warning: TT: undefined function: 32
 Warning: TT: undefined function: 21
 ===== BAJFINANCE 2026 pages 515 clean false 
 Warning: TT: undefined function: 21
+===== SUNPHARMA 2026 pages 345 clean true 
+  report standalone p149 unmodified EoM: - GC: - KAM× 10 | op ev: 146Sun Pharmaceutical Industries Limited | Annual Report 2025-26 Independent Auditor’s Rep
+  report standalone p231 unmodified EoM: - GC: - KAM× 14 | op ev: 228Sun Pharmaceutical Industries Limited | Annual Report 2025-26 Independent Auditor’s Rep
+===== MARUTI 2026 pages 270 clean false 
+Warning: TT: undefined function: 21
+===== TATASTEEL 2026 pages 584 clean true 
+  report standalone p286 unmodified EoM: - GC: - KAM× 9 | op ev: In our opinion and to the best of our information and according to the explanations given 
+  report consolidated p410 unmodified EoM: - GC: - KAM× 7 | op ev: In our opinion and to the best of our information and according to the explanations given 

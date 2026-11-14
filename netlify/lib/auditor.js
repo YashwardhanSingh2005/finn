@@ -62,7 +62,10 @@ export function analyseAudit(pages, nPages) {
     const span = pageNums.filter((p) => p >= s && p < s + 9);
     const text = span.map((p) => pages[p]).join("\n");
     const at = (re) => { for (const p of span) { const m = pages[p].match(re); if (m) return { page: p, quote: sentence(pages[p], m.index) }; } return null; };
-    const consolidated = /consolidated financial statements/i.test(pages[s].slice(0, 1500));
+    // basis = the word right after "Report on the Audit of the …" (falls back to first mention)
+    const head = pages[s].slice(0, 2500);
+    const bm = head.match(/report on the audit of the\s+(standalone|consolidated)/i) || head.match(/\b(standalone|consolidated)\s+financial statements/i);
+    const consolidated = bm ? /consolidated/i.test(bm[1]) : false;
     let opinion = "unmodified", opinionEv = at(/give a true and fair view|present fairly/i);
     const adv = at(/adverse opinion/i), disc = at(/disclaimer of opinion|do not express an opinion/i), qual = at(/qualified opinion/i);
     if (disc) { opinion = "disclaimer"; opinionEv = disc; } else if (adv) { opinion = "adverse"; opinionEv = adv; } else if (qual && /basis for qualified opinion/i.test(text)) { opinion = "qualified"; opinionEv = at(/basis for qualified opinion/i) || qual; }
