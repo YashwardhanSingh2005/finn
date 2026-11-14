@@ -63,6 +63,9 @@ Most "AI for investors" tools put a summary on top of the firehose. That makes t
   - **Narrative vs numbers:** a flag for when management's tone moves opposite to reported growth, e.g. *"story ahead of numbers"* or *"numbers ahead of story (possible sandbagging)"*.
   - Evaluated by hand-labelling: about 86–92% precision and about 55–60% recall over three rounds, each measured on fresh samples (see `eval/README.md`).
   - Because the same rules apply to every company, the trends and comparisons are valid even though absolute counts are lower bounds.
+- **Portfolio candour league** (on the Research landing page): every holding's latest call, ranked by the share of analyst questions met with a non-answer. Holdings that can't be ranked say why, e.g. "doesn't publish transcripts". On the demo portfolio, SUNPHARMA dodged 19% and POLYCAB 17.9%; L&T, Reliance and Bajaj Finance were near 0%.
+- **Promises × Candour:** each promise thread shows whether analysts asked about it and management dodged, with the matched terms displayed.
+- **SEBI transcript-lag check:** the call date and the filing date are read from the PDF and checked against the 5-working-day rule.
 - **Chance the next promise is kept.** Investors weight a manager's forecasts by that manager's track record (Hutton & Stocken 2009). FINN makes the weight explicit: a Beta(1,1) prior updated by the ledger's kept and not-kept verdicts gives a probability with an 80% range. Few promises gives a wide range, honestly shown. A style label comes from goalpost history: *walks down, then beats* (Richardson, Teoh & Wysocki 2004), *raises, then misses*, or *reliable*.
 - **Balance and cash.** Each flag shows the rule that fired, e.g. `rule: Σ CFO / Σ PAT < 70%`. Covers:
   - cash conversion: Σ operating cash flow ÷ Σ PAT, with the yearly table;
@@ -161,7 +164,9 @@ This covers one portfolio, one year, and next-session moves only: a sanity check
 
 ## Quality
 
-- **Unit tests:** `npm test` runs 15 tests over the deterministic core: the classifier and its rule order, the scorer, the amount parser, SEBI materiality, the quote verifier, the fiscal calendar, horizon resolution, numeric verdicts, actuals for the year to date, the non-answer lexicon, transcript parsing, alerts, and the credibility posterior.
+- **Unit tests:** `npm test` runs 16 tests over the deterministic core: the classifier and its rule order, the scorer, the amount parser, SEBI materiality, the quote verifier, the fiscal calendar, horizon resolution, numeric verdicts, actuals for the year to date, the non-answer lexicon, transcript parsing, alerts, and the credibility posterior.
+- **Parser regression set:** `test/parse_regression.mjs` covers 9 real transcripts across 5 layouts.
+- **UI smoke test:** `test/ui_smoke.py` opens every screen and sub-tab in a 390 px headless browser, in light and dark mode, and fails on any JavaScript error. It caught a crash on directly opening the Candour tab.
 - **Evaluations:** `eval/README.md` covers the triage backtest (tuned on one half, validated out of sample) and three precision/recall rounds for the non-answer detector. It also records the model-routing finding (thinking off for extraction) and the judge-direction bug found by inspection.
 - **Caching:** PDF text and every model output are cached by document URL, so an exchange PDF is downloaded once, ever. That's kind to NSE and BSE as well as fast.
 
