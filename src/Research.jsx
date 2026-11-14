@@ -14,12 +14,13 @@ const DEMO = [
   { s: "JUBLFOOD", why: "consumer slowdown" },
 ];
 
-export default function Research({ symbol, setSymbol, startTab }) {
-  if (symbol) return <Company key={symbol} symbol={symbol} startTab={startTab} back={() => setSymbol(null)} />;
-  return <Finder onPick={setSymbol} />;
+export default function Research({ symbol, setSymbol, startTab, holdings }) {
+  const [sub, setSub] = useState(startTab);
+  if (symbol) return <Company key={symbol + (sub || "")} symbol={symbol} startTab={sub || startTab} back={() => { setSymbol(null); setSub(null); }} />;
+  return <Finder onPick={(s, t) => { setSub(t || null); setSymbol(s); }} holdings={holdings} />;
 }
 
-function Finder({ onPick }) {
+function Finder({ onPick, holdings }) {
   const [q, setQ] = useState("");
   const [hits, setHits] = useState([]);
   const [recent] = usePersist("recent", []);
@@ -43,6 +44,7 @@ function Finder({ onPick }) {
         </div>
       )}
       {recent.length > 0 && (<><h2 className="section">Recent</h2><div className="chips wrap">{recent.map((s) => <button key={s} className="chip" onClick={() => go(s)}>{s}</button>)}</div></>)}
+      {holdings?.length > 0 && <League holdings={holdings} onPick={onPick} />}
       <h2 className="section">Try</h2>
       <div className="stack">
         {DEMO.map((d) => (
@@ -508,4 +510,53 @@ function mcap(t) {
   const v = Number(String(t).replace(/[^\d.]/g, ""));
   if (!v) return t;
   return v >= 1e5 ? `₹${(v / 1e5).toFixed(2)} L cr` : `₹${Math.round(v).toLocaleString("en-IN")} cr`;
+}
+
+/** Your holdings' managements, ranked by how often they dodged analysts on the latest call. Loads progressively. */
+function League({ holdings, onPick }) {
+  const [rows, setRows] = useState({});
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    let alive = true, i = 0;
+    const list = holdings.map((h) => h.symbol);
+    const worker = async () => {
+      while (alive && i < list.length) {
+        const s = list[i++];
+        try { const r = await api("league", { symbol: s }); if (alive) setRows((m) => ({ ...m, [s]: r })); }
+        catch { if (alive) setRows((m) => ({ ...m, [s]: { symbol: s, error: true } })); }
+      }
+    };
+    Promise.all([worker(), worker(), worker()]);
+    return () => { alive = false; };
+  }, [open]); // eslint-disable-line
+  const ok = Object.values(rows).filter((r) => !r.error && r.nonAnswerRate != null).sort((a, b) => b.nonAnswerRate - a.nonAnswerRate);
+  const pending = holdings.length - Object.keys(rows).length;
+  const max = Math.max(20, ...ok.map((r) => r.nonAnswerRate));
+  const med = ok.length ? ok.map((r) => r.nonAnswerRate).sort((a, b) => a - b)[Math.floor(ok.length / 2)] : null;
+  return (
+    <>
+      <h2 className="section">Your holdings, by candour</h2>
+      <div className="card">
+        {!open ? (
+          <button className="row between" style={{ width: "100%", textAlign: "left" }} onClick={() => setOpen(true)}>
+            <span className="small"><b>Which managements dodge their analysts?</b><br /><span className="muted">Reads each holding’s latest earnings call and ranks them by the share of analyst questions met with a non-answer. Free, no AI model.</span></span><Icon.chev />
+          </button>
+        ) : (<>
+          {ok.map((r) => (
+            <button key={r.symbol} className="list-row" style={{ width: "100%", textAlign: "left" }} onClick={() => onPick(r.symbol, "candour")}>
+              <span className="tick" style={{ width: 92, textAlign: "center" }}>{r.symbol}</span>
+              <div className="grow">
+                <div className="bar" style={{ height: 8 }}><i style={{ width: `${(r.nonAnswerRate / max) * 100}%`, background: r.nonAnswerRate > (med ?? 0) * 1.5 ? "var(--risk)" : "var(--accent)" }} /></div>
+                <div className="tiny muted mt4">{r.nonAnswers}/{r.questions} questions dodged · {r.period} call · praise {r.praiseRate}%</div>
+              </div>
+              <span className="num small" style={{ width: 44, textAlign: "right", fontWeight: 600 }}>{r.nonAnswerRate}%</span>
+            </button>
+          ))}
+          {pending > 0 && <div className="row small muted mt8"><span className="spin" /> Reading {pending} more call{pending > 1 ? "s" : ""}…</div>}
+          {med != null && <p className="tiny muted mt8">Portfolio median {med}%. Red = more than 1.5× the median. Tap a name for the dodged questions, verbatim. Counts are lower bounds (detector recall ≈ 55–60%), with the same rules for every company.</p>}
+        </>)}
+      </div>
+    </>
+  );
 }

@@ -16,7 +16,7 @@ export default async (req) => {
     if (q.get("part") !== "bullbear") return json(biz);
     const ledger = await ledgerFor(s).catch(() => null);
     const calls = pickCalls(core.c, 4);
-    const cand = await memo(`candour:v1:${core.c.symbol}:${calls[0]?.transcript || "none"}`, 7 * 864e5, () => candour(core.c, calls)).catch(() => null);
+    const cand = await memo(`candour:v2:${core.c.symbol}:${calls[0]?.transcript || "none"}`, 7 * 864e5, () => candour(core.c, calls)).catch(() => null);
     return json(await bullBear(s, core.a, ledger, biz, cand));
   } catch (e) { return fail(e); }
 };

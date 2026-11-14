@@ -45,7 +45,7 @@ export default function App() {
       </header>
       <main>
         {tab === "today" && <Today prefs={prefs} setPrefs={setPrefs} rules={rules} holdings={h} customHoldings={!!holdings} openCompany={openCompany} toast={setToast} />}
-        {tab === "research" && <Research symbol={symbol} setSymbol={setSymbol} startTab={startTab} />}
+        {tab === "research" && <Research symbol={symbol} setSymbol={setSymbol} startTab={startTab} holdings={h} />}
         {tab === "rules" && <Rules prefs={prefs} setPrefs={setPrefs} rules={rules} setRules={setRules} holdings={h} setHoldings={setHoldings} resetHoldings={() => setHoldings(null)} theme={theme} setTheme={setTheme} />}
       </main>
       <nav className="tabs" aria-label="Main">
