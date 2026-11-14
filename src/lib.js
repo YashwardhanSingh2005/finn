@@ -18,7 +18,7 @@ const spend = { usd: 0, calls: 0, cached: 0, byModel: {} };
 const listeners = new Set();
 export function recordMeta(meta, cached) {
   const ms = Array.isArray(meta) ? meta : meta ? [meta] : [];
-  if (cached) spend.cached += 1;
+  if (cached) { spend.cached += 1; listeners.forEach((f) => f({ ...spend })); return; }
   for (const m of ms) {
     if (!m?.model) continue;
     spend.usd += m.usd || 0; spend.calls += 1;

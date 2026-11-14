@@ -46,7 +46,34 @@ export default function Today({ prefs, setPrefs, rules, holdings, customHoldings
   );
 }
 
+/**
+ * Exchange one-liners are boilerplate ("X has informed the Exchange about…"). For the items that
+ * earned attention (act + read), read the actual PDF with the cheap model, a few at a time, cached
+ * server-side by filing URL. Routine items never cost a token.
+ */
+function useSummaries(items) {
+  const [sum, setSum] = useState({});
+  useEffect(() => {
+    let alive = true;
+    const queue = items.filter((x) => x.tier !== "skim" && x.url && x.category !== "management_change").slice(0, 14);
+    let i = 0;
+    const worker = async () => {
+      while (alive && i < queue.length) {
+        const x = queue[i++];
+        try {
+          const d = await api("filing", { url: x.url, category: x.category === "results" ? "generic" : x.category });
+          if (alive && d?.data?.one_line) setSum((m) => ({ ...m, [x.id]: d }));
+        } catch {}
+      }
+    };
+    Promise.all([worker(), worker(), worker()]);
+    return () => { alive = false; };
+  }, [items]);
+  return sum;
+}
+
 function Digest({ data, win, mute, boost, openCompany, reloading }) {
+  const sums = useSummaries(data.items);
   const act = data.items.filter((x) => x.tier === "act");
   const read = data.items.filter((x) => x.tier === "read");
   const skim = data.items.filter((x) => x.tier === "skim");
@@ -85,10 +112,10 @@ function Digest({ data, win, mute, boost, openCompany, reloading }) {
       )}
 
       {act.length > 0 && <h2 className="section">Needs you <span className="count">{act.length}</span></h2>}
-      <div className="stack">{act.map((x) => <FilingCard key={x.id} x={x} mute={mute} boost={boost} openCompany={openCompany} defaultOpen={x === act[0]} />)}</div>
+      <div className="stack">{act.map((x) => <FilingCard key={x.id} x={x} ai={sums[x.id]} mute={mute} boost={boost} openCompany={openCompany} defaultOpen={x === act[0]} />)}</div>
 
       {read.length > 0 && <h2 className="section">Worth a read <span className="count">{read.length}</span></h2>}
-      <div className="stack">{read.map((x) => <FilingCard key={x.id} x={x} mute={mute} boost={boost} openCompany={openCompany} />)}</div>
+      <div className="stack">{read.map((x) => <FilingCard key={x.id} x={x} ai={sums[x.id]} mute={mute} boost={boost} openCompany={openCompany} />)}</div>
 
       {groups.length > 0 && (
         <>
@@ -123,7 +150,9 @@ function RoutineGroup({ label, xs }) {
   );
 }
 
-export function FilingCard({ x, mute, boost, openCompany, defaultOpen }) {
+const BOILER = /has informed the Exchange|wish to inform|please find (enclosed|attached)|pursuant to regulation|in continuation of our/i;
+
+export function FilingCard({ x, ai, mute, boost, openCompany, defaultOpen }) {
   const [open, setOpen] = useState(!!defaultOpen);
   return (
     <article className="card fade-in">
@@ -135,8 +164,19 @@ export function FilingCard({ x, mute, boost, openCompany, defaultOpen }) {
             <span className="muted tiny">· {istTime(x.time)}</span>
             {x.dayMove != null && Math.abs(x.dayMove) >= 1 && <span className={`pill ${x.dayMove > 0 ? "good" : "risk"}`}>{fmtPct(x.dayMove)} that day</span>}
           </div>
-          <div className="item-title">{x.summary || x.subject}</div>
-          {x.summary && <div className="muted tiny ellipsis">{x.subject}</div>}
+          {ai?.data?.one_line ? (
+            <>
+              <div className="item-title fade-in">{ai.data.one_line}</div>
+              {ai.data.so_what && !/^routine/i.test(ai.data.so_what) && <div className="item-sum">{ai.data.so_what}</div>}
+              <div className="muted tiny ellipsis">{x.subject} · <span title="Summary written by a model from the filing PDF; quote checked against the source">read from filing{ai.data.verified ? " ✓" : ""}</span></div>
+            </>
+          ) : (
+            <>
+              <div className="item-title">{x.summary && !BOILER.test(x.summary) ? x.summary : x.subject}</div>
+              {x.summary && BOILER.test(x.summary) && <div className="muted tiny ellipsis">{x.summary}</div>}
+              {x.summary && !BOILER.test(x.summary) && <div className="muted tiny ellipsis">{x.subject}</div>}
+            </>
+          )}
         </div>
         <ScoreRing score={x.score} tier={x.tier} />
       </div>

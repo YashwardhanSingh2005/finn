@@ -68,7 +68,8 @@ function Company({ symbol, back }) {
   const [recent, setRecent] = usePersist("recent", []);
   useEffect(() => { if (c?.symbol) setRecent([c.symbol, ...recent.filter((s) => s !== c.symbol)].slice(0, 8)); }, [c?.symbol]); // eslint-disable-line
   // Start the slow layers immediately in the background so they're warm when the tab is opened.
-  const ledger = useApi("ledger", { symbol }, [], { enabled: !!c });
+  const ledger = useApi("ledger", { symbol, judge: 0 }, [], { enabled: !!c });
+  const judged = useApi("ledger", { symbol, judge: 1 }, [], { enabled: !!ledger.data });
   const biz = useApi("brief", { symbol, part: "business" }, [], { enabled: !!c });
 
   if (loading) return <><button className="btn ghost" onClick={back}><Icon.back width="18" height="18" /> Back</button><Skeleton h={120} n={3} /></>;
@@ -94,13 +95,13 @@ function Company({ symbol, back }) {
         ))}
       </div>
       <div className="segmented mt12" role="tablist">
-        {TABS.map((t) => <button key={t.k} className={tab === t.k ? "on" : ""} onClick={() => setTab(t.k)} role="tab" aria-selected={tab === t.k}>{t.label}{t.k === "ledger" && ledger.data?.sayDo != null ? ` · ${ledger.data.sayDo}` : ""}</button>)}
+        {TABS.map((t) => <button key={t.k} className={tab === t.k ? "on" : ""} onClick={() => setTab(t.k)} role="tab" aria-selected={tab === t.k}>{t.label}{t.k === "ledger" && (judged.data || ledger.data)?.sayDo != null ? ` · ${(judged.data || ledger.data).sayDo}` : ""}</button>)}
       </div>
       <div className="mt12">
         {tab === "snap" && <Snapshot c={c} biz={biz} />}
-        {tab === "ledger" && <Ledger st={ledger} />}
+        {tab === "ledger" && <Ledger st={ledger} judged={judged} />}
         {tab === "money" && <Money a={c.analysis} />}
-        {tab === "bb" && <BullBear symbol={symbol} ready={!ledger.loading} />}
+        {tab === "bb" && <BullBear symbol={symbol} ready={!!judged.data || !!judged.error} />}
       </div>
       <p className="costbar">Numbers: {c.consolidated ? "consolidated" : "standalone"} statements as filed (via screener.in) · fetched {new Date(c.fetchedAt).toLocaleString("en-IN")}</p>
     </div>
@@ -214,17 +215,19 @@ function MiniBars({ periods, a, b, la, lb }) {
   );
 }
 
-function Ledger({ st }) {
-  const { data: L, loading, error, reload } = st;
-  if (loading) return (
+function Ledger({ st, judged }) {
+  const { data: L0, loading, error, reload } = st;
+  const L = judged.data || L0;
+  if (loading && !L) return (
     <div className="card"><div className="row"><span className="spin" /> <strong>Building the promise ledger…</strong></div>
-      <p className="small muted">Reading the last 4 earnings calls, extracting every forward-looking promise, verifying each quote against the transcript, then checking it against what was actually reported. First run ≈ 30–50 s; then it’s cached.</p></div>);
-  if (error) return <div className="card"><p className="err">{error.status === 503 ? "AI layer offline on this deployment." : error.message}</p><button className="btn" onClick={reload}>Retry</button></div>;
+      <p className="small muted">Reading the last 4 earnings calls, pulling out every forward-looking promise, checking each quote really appears in the transcript, linking the same promise across calls, then checking it against reported numbers. About 30 s the first time, then cached.</p></div>);
+  if (error && !L) return <div className="card"><p className="err">{error.status === 503 ? "AI layer offline on this deployment." : error.message}</p><button className="btn" onClick={reload}>Retry</button></div>;
   if (!L) return null;
   const order = ["missed", "behind", "partly", "on track", "delivered", "beat", "too early", "no evidence", "pending"];
-  const rows = [...L.rows].sort((a, b) => order.indexOf(a.verdict || "pending") - order.indexOf(b.verdict || "pending"));
-  const total = rows.length || 1;
-  const segs = [["delivered", "var(--good)"], ["beat", "var(--good)"], ["on track", "color-mix(in srgb, var(--good) 60%, transparent)"], ["partly", "var(--watch)"], ["behind", "var(--watch)"], ["missed", "var(--risk)"], ["too early", "var(--line)"], ["no evidence", "var(--line)"]];
+  const moved = (t) => t.history.some((h) => ["raised", "lowered", "pushed out", "pulled in"].includes(h.change));
+  const threads = [...L.threads].sort((a, b) => (moved(b) - moved(a)) || order.indexOf(a.verdict || "pending") - order.indexOf(b.verdict || "pending") || b.versions.length - a.versions.length);
+  const total = threads.length || 1;
+  const segs = [["delivered", "var(--good)"], ["beat", "var(--good)"], ["on track", "color-mix(in srgb, var(--good) 55%, var(--surface))"], ["partly", "var(--watch)"], ["behind", "var(--watch)"], ["missed", "var(--risk)"], ["too early", "var(--line)"], ["no evidence", "var(--line)"], ["pending", "var(--line)"]];
   return (
     <div className="stack">
       <section className="card">
@@ -232,47 +235,71 @@ function Ledger({ st }) {
           <div className="big">{L.sayDo ?? "–"}</div>
           <div className="grow">
             <div style={{ fontWeight: 650 }}>Say–do score</div>
-            <div className="small ink2">{L.sayDo == null ? "Not enough checkable promises yet." : `Across ${L.sayDoBasis} promise${L.sayDoBasis === 1 ? "" : "s"} that can be scored. 100 = everything delivered.`}</div>
+            <div className="small ink2">{L.sayDo == null ? "Not enough checkable promises yet." : `From ${L.sayDoBasis} promise${L.sayDoBasis === 1 ? "" : "s"} that can be scored. 100 = all delivered or on track.`}</div>
           </div>
         </div>
         <div className="bar mt12">{segs.map(([k, col]) => L.tally[k] ? <i key={k} style={{ width: `${(L.tally[k] / total) * 100}%`, background: col }} /> : null)}</div>
         <div className="legend mt4">{Object.entries(L.tally).map(([k, n]) => <span key={k}>{VERDICT[k]?.label || k} {n}</span>)}</div>
-        <div className="tiny muted mt8">
-          {L.calls.map((c) => <span key={c.url} style={{ marginRight: 10 }}><a className="linkish" href={c.url} target="_blank" rel="noreferrer">{c.callQuarter || c.period}</a> {c.claims} found{c.dropped ? `, ${c.dropped} dropped (quote not in transcript)` : ""}</span>)}
+        <div className="kpis mt12">
+          <div className="kpi"><div className="k">Promises tracked</div><div className="v">{L.threads.length}</div></div>
+          <div className="kpi"><div className="k">Goalposts moved</div><div className={`v ${L.goalpostMoves ? "down" : ""}`}>{L.goalpostMoves}</div></div>
+          <div className="kpi"><div className="k">Not repeated in latest call</div><div className="v">{L.notRepeated}</div></div>
         </div>
+        <div className="tiny muted mt8">
+          Calls read: {L.calls.map((c) => <span key={c.url} style={{ marginRight: 8 }}><a className="linkish" href={c.url} target="_blank" rel="noreferrer">{c.callQuarter}</a> ({c.claims}{c.dropped ? `, ${c.dropped} unverifiable dropped` : ""})</span>)}
+        </div>
+        {!L.judged && <div className="row small muted mt8"><span className="spin" /> Checking open promises against the latest calls…</div>}
       </section>
-      {rows.length === 0 && <p className="empty">No forward-looking guidance found in the last four calls. This management team doesn’t guide.</p>}
-      {rows.map((r, i) => <PromiseRow key={i} r={r} />)}
-      <p className="tiny muted">How verdicts are made: numeric promises (growth, margin) are checked in code against reported quarterly numbers for the promised period, with ±0.5 pt tolerance. If the period isn’t over, they show as on track or behind on the quarters reported so far. Qualitative promises are judged by a stronger model, using only later transcripts; those are labelled “judgement”.</p>
+      {threads.length === 0 && <p className="empty">No forward-looking guidance in the last four calls. This management team doesn’t guide.</p>}
+      {threads.map((t, i) => <Thread key={i} t={t} />)}
+      <p className="tiny muted">How verdicts are made. <b>Computed</b>: consolidated growth or margin promises are checked in code against reported quarterly numbers for the promised period (±0.5 pt tolerance). Open-ended targets (“medium term”) are checked against the last four quarters. <b>Judgement</b>: segment-level or non-financial promises are judged by a stronger model, using only the latest transcripts. Each judgement must quote the transcript, and the quote is checked, or the verdict is withheld.</p>
     </div>
   );
 }
 
-function PromiseRow({ r }) {
+const UP_GOOD = new Set(["ebitda_margin", "revenue_growth", "pat_growth", "ebitda_growth"]);
+// direction only means good/bad for metrics where higher is unambiguously better; else just "revised"
+const changeCls = (h, metric) => h.change === "pushed out" ? "risk" : h.change === "pulled in" ? "good" : ["raised", "lowered"].includes(h.change) ? (UP_GOOD.has(metric) ? (h.change === "raised" ? "good" : "risk") : "watch") : "neutral";
+const changeLabel = (h, metric) => ["raised", "lowered"].includes(h.change) && !UP_GOOD.has(metric) ? `revised ${h.change === "raised" ? "↑" : "↓"}` : h.change;
+
+function Thread({ t }) {
   const [open, setOpen] = useState(false);
-  const v = VERDICT[r.verdict || "pending"] || VERDICT.pending;
+  const v = VERDICT[t.verdict || "pending"] || VERDICT.pending;
+  const l = t.latest;
+  const moves = t.history.filter((h) => !["reiterated", "first said"].includes(h.change));
   return (
     <article className="card">
       <button className="row top" style={{ width: "100%", textAlign: "left" }} onClick={() => setOpen(!open)} aria-expanded={open}>
         <div className="grow">
-          <div className="row wrap" style={{ gap: 6 }}>
-            <span className="tick">{r.callQuarter}</span>
-            <span className="muted tiny">promised for {r.horizonResolved || r.horizon}</span>
-            <span className="pill neutral tiny">{r.check === "computed" ? "computed" : r.check === "judgement" ? "judgement" : r.check}</span>
+          <div className="item-title" style={{ marginTop: 0 }}>{t.title}</div>
+          <div className="row wrap mt4" style={{ gap: 4 }}>
+            {t.history.map((h, i) => (
+              <span key={i} className={`pill ${changeCls(h, l.metric)}`} title={`${h.call}: ${h.band || ""} ${h.horizon || ""}`}>{h.call}{h.change !== "first said" && h.change !== "reiterated" ? ` · ${changeLabel(h, l.metric)}` : ""}</span>
+            ))}
+            {t.notRepeated && <span className="pill neutral">not in latest call</span>}
           </div>
-          <div className="item-title">{r.statement}</div>
-          {r.actual && <div className="small"><span className="muted">target</span> {r.target} <span className="muted">· actual</span> <strong>{r.actual}</strong>{r.partial && <span className="muted"> ({r.coverage})</span>}</div>}
-          {r.reason && !r.actual && <div className="small ink2">{r.reason}</div>}
+          {t.actual && <div className="small mt4"><span className="muted">target</span> {t.target} <span className="muted">· actual</span> <strong>{t.actual}</strong>{t.coverage && <span className="muted"> ({t.coverage})</span>}</div>}
+          {!t.actual && t.actualText && <div className="small mt4"><span className="muted">latest:</span> {t.actualText}</div>}
+          {t.reason && <div className="small ink2 mt4">{t.reason}</div>}
+          {moves.length > 0 && <div className={`small mt4 ${moves.some((m) => changeCls(m, l.metric) === "risk") ? "down" : ""}`} style={{ fontWeight: 500 }}>Goalpost {moves.map((m) => { const prev = t.history[t.history.indexOf(m) - 1]; return `${changeLabel(m, l.metric)} in ${m.call}${prev?.band && m.band ? `: ${prev.band} → ${m.band}` : m.band ? ` (to ${m.band})` : ""}${m.change.startsWith("pushed") || m.change.startsWith("pulled") ? `: ${prev?.horizon} → ${m.horizon}` : ""}`; }).join("; ")}</div>}
         </div>
-        <span className={`pill ${v.cls}`}>{v.label}</span>
+        <div style={{ textAlign: "right" }}>
+          <span className={`pill ${v.cls}`}>{v.label}</span>
+          <div className="tiny muted mt4">{t.check || "open"}</div>
+        </div>
       </button>
       {open && (
         <div className="why fade-in">
-          <div className="small muted">{r.speaker ? `${r.speaker} said` : "Management said"} on the {r.callQuarter} call:</div>
-          <div className="quote">“{r.quote}”</div>
-          <Receipt url={r.transcript} page={r.page} label="transcript" extra={`quote match ${Math.round((r.verifyScore || 1) * 100)}%`} />
-          {r.calc && <div className="mt8 small"><span className="muted">Check:</span> {r.calc}</div>}
-          {r.evidence && (<><div className="small muted mt8">Evidence from the {r.evidence.call} call:</div><div className="quote">“{r.evidence.quote}”</div><Receipt url={r.evidence.url} page={r.evidence.page} label="later transcript" /></>)}
+          <div className="small muted">{l.speaker ? `${l.speaker}` : "Management"}, {l.callQuarter} call:</div>
+          <div className="quote">“{l.quote}”</div>
+          <Receipt url={l.transcript} page={l.page} label="transcript" extra={`quote match ${Math.round((l.verifyScore || 1) * 100)}%`} />
+          {t.calc && <div className="mt8 small"><span className="muted">Check:</span> {t.calc}</div>}
+          {t.evidence && (<><div className="small muted mt8">Evidence, {t.evidence.call} call:</div><div className="quote">“{t.evidence.quote}”</div><Receipt url={t.evidence.url} page={t.evidence.page} label="transcript" extra="verified" /></>)}
+          {t.versions.length > 1 && (
+            <details className="mt8"><summary className="small linkish">How the wording changed across {t.versions.length} calls</summary>
+              {t.versions.map((x, i) => <div key={i} className="small mt8"><span className="tick">{x.callQuarter}</span> {x.statement} <Receipt url={x.transcript} page={x.page} label="p" /></div>)}
+            </details>
+          )}
         </div>
       )}
     </article>

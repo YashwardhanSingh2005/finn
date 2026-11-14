@@ -75,11 +75,12 @@ export async function buildDigest({ from, to, holdings, prefs = {}, rules = DEFA
   for (const { h, ctx, f, error } of per) {
     if (error) { failures.push({ symbol: h.symbol, error }); continue; }
     sources[h.symbol] = f.source;
+    if (f.errors?.length) failures.push({ symbol: h.symbol, error: f.errors.join('; '), partial: true });
     // price/volume alerts (EOD)
     for (const a of evaluate(ctx.stats, rules)) alerts.push({ ...a, symbol: h.symbol, name: ctx.name, date: ctx.stats.date, stats: pickStats(ctx.stats) });
     for (const x of f.items) {
       const cls = classify(x.subject, x.summary);
-      const day = x.time ? toISTDate(x.time) : null;
+      const day = x.time ? reactionDay(x.time) : null;
       const move = day && ctx.stats?.returnsByDate?.[nextTradingKey(ctx.stats.returnsByDate, day)];
       const sc = score({ ...x, category: cls.category }, { weightPct: h.weight, ttmSalesCr: ctx.ttmSalesCr, dayMovePct: move ?? null, sigma: ctx.stats?.sigma, prefs });
       const item = {
@@ -103,7 +104,13 @@ export async function buildDigest({ from, to, holdings, prefs = {}, rules = DEFA
 }
 
 const pickStats = (s) => ({ close: s.close, ret1d: s.ret1d, sigma: s.sigma, z: s.z, volX: s.volX, vol: s.vol, avgVol: s.avgVol, spark: s.spark.slice(-30), date: s.date });
-const toISTDate = (iso) => new Date(new Date(iso).getTime() + 5.5 * 3600e3).toISOString().slice(0, 10);
+// filings after the 15:30 IST close are priced by the next session
+function reactionDay(iso) {
+  const ist = new Date(new Date(iso).getTime() + 5.5 * 3600e3);
+  const afterClose = ist.getUTCHours() * 60 + ist.getUTCMinutes() > 15 * 60 + 30;
+  if (afterClose) ist.setUTCDate(ist.getUTCDate() + 1);
+  return ist.toISOString().slice(0, 10);
+}
 // a filing after market close moves the NEXT session's price
 function nextTradingKey(map, day) {
   const keys = Object.keys(map).sort();

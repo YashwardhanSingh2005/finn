@@ -39,11 +39,57 @@ export async function llmJSON({ tier = "extract", system, user, maxTokens = 2000
   const [pi, po] = PRICE[model] || [0, 0];
   const usd = ((u.input_tokens || 0) * pi + (u.output_tokens || 0) * po + (u.cache_read_input_tokens || 0) * pi * 0.1) / 1e6;
   const meta = { model, tier, ms: Date.now() - t0, inTok: u.input_tokens, outTok: u.output_tokens, usd: +usd.toFixed(5) };
-  return { json: parseJSON(text), meta };
+  const json = parseJSON(text);
+  meta.stop = res.stop_reason;
+  if (json?._salvaged) meta.salvaged = true;
+  return { json, meta };
 }
 
 function parseJSON(t) {
   const s = t.indexOf("{"), e = t.lastIndexOf("}");
   if (s < 0 || e < 0) return null;
-  try { return JSON.parse(t.slice(s, e + 1)); } catch { return null; }
+  try { return JSON.parse(t.slice(s, e + 1)); } catch {}
+  return salvage(t.slice(s));
+}
+
+/**
+ * Output got cut off (max_tokens) or has a stray character: recover every COMPLETE object inside
+ * each top-level array, plus complete top-level scalar fields. Better 7 verified claims than none.
+ */
+function salvage(t) {
+  const out = {};
+  const keyRe = /"([a-zA-Z_]+)"\s*:\s*/g;
+  let m;
+  // only scan depth-1 keys
+  let depth = 0, inStr = false, esc = false;
+  const depthAt = [];
+  for (let i = 0; i < t.length; i++) {
+    const ch = t[i];
+    depthAt[i] = depth;
+    if (inStr) { if (esc) esc = false; else if (ch === "\\") esc = true; else if (ch === '"') inStr = false; continue; }
+    if (ch === '"') inStr = true;
+    else if (ch === "{" || ch === "[") depth++;
+    else if (ch === "}" || ch === "]") depth--;
+  }
+  while ((m = keyRe.exec(t))) {
+    if (depthAt[m.index] !== 1) continue;
+    const start = m.index + m[0].length;
+    if (t[start] === "[") {
+      const items = [];
+      let d = 0, s0 = -1, str = false, e2 = false;
+      for (let i = start + 1; i < t.length; i++) {
+        const ch = t[i];
+        if (str) { if (e2) e2 = false; else if (ch === "\\") e2 = true; else if (ch === '"') str = false; continue; }
+        if (ch === '"') { str = true; continue; }
+        if (ch === "{") { if (d === 0) s0 = i; d++; }
+        else if (ch === "}") { d--; if (d === 0 && s0 >= 0) { try { items.push(JSON.parse(t.slice(s0, i + 1))); } catch {} s0 = -1; } }
+        else if (ch === "]" && d === 0) break;
+      }
+      out[m[1]] = items;
+    } else {
+      const sm = t.slice(start).match(/^("(?:[^"\\]|\\.)*"|-?\d+(?:\.\d+)?|true|false|null)/);
+      if (sm) try { out[m[1]] = JSON.parse(sm[1]); } catch {}
+    }
+  }
+  return Object.keys(out).length ? { ...out, _salvaged: true } : null;
 }

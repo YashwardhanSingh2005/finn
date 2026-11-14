@@ -42,7 +42,7 @@ Use ONLY the transcript. JSON only.`;
 export async function businessBrief(c) {
   const call = pickCalls(c, 1)[0];
   if (!call) return { error: "No concall transcript linked for this company." };
-  return memo(`biz:v2:${call.transcript}`, Infinity, async () => {
+  return memo(`biz:v3:${call.transcript}`, Infinity, async () => {
     const doc = await fetchPdfPages(call.transcript, { maxPages: 30 });
     const { json, meta } = await llmJSON({ tier: "extract", system: BUSINESS, user: withPageMarkers(doc.pages).slice(0, 120000), maxTokens: 1800 });
     let dropped = 0;
@@ -64,7 +64,7 @@ export function evidenceList(a, ledger, biz) {
   if (r) add("numbers", `Latest quarter ${r.period}: ` + r.rows.map((x) => `${x.label} ₹${x.cur} cr (QoQ ${x.qoq ?? "–"}%, YoY ${x.yoy ?? "–"}%)`).join("; "), "reported results");
   for (const k of ["trajectory", "balance", "cash", "holders"]) for (const f of a[k]?.flags || []) add(k, `${f.title}: ${f.detail}`, `rule: ${f.rule}`);
   if (a.trajectory) add("trajectory", `${a.trajectory.years}y revenue CAGR ${a.trajectory.revCagr}%, PAT CAGR ${a.trajectory.patCagr}%`, "annual statements");
-  for (const row of ledger?.rows || []) if (row.verdict) add("ledger", `Promise (${row.callQuarter} call): "${row.statement}" → ${row.verdict}${row.actual ? ` (target ${row.target}, actual ${row.actual})` : ""}`, `transcript p.${row.page}`);
+  for (const t of ledger?.threads || []) if (t.verdict && t.verdict !== "no evidence") add("ledger", `Promise "${t.title}" (said in ${t.callsMentioned.join(", ")}) → ${t.verdict}${t.actual ? ` (target ${t.target}, actual ${t.actual})` : t.actualText ? ` (${t.actualText})` : ""}${t.history.some((h) => ["raised", "lowered", "pushed out"].includes(h.change)) ? `; goalpost: ${t.history.map((h) => h.change).join(" → ")}` : ""}`, `transcript p.${t.latest.page}`);
   for (const g of biz?.data?.guidance || []) add("guidance", `Guidance: ${g.statement}`, `latest call p.${g.page}`);
   for (const w of biz?.data?.watch_items || []) add("mgmt-acknowledged", w.item, `latest call p.${w.page}`);
   return ev;
@@ -81,9 +81,9 @@ export async function bullBear(symbol, a, ledger, biz) {
   });
 }
 
-export async function ledgerFor(symbol) {
+export async function ledgerFor(symbol, { judge = true } = {}) {
   const { c } = await companyCore(symbol);
-  return memo(`ledger:v2:${c.symbol}:${pickCalls(c, 1)[0]?.transcript || "none"}`, 7 * 864e5, () => buildLedger(c, { n: 4, cache }));
+  return memo(`ledger:v5:${judge ? "j" : "x"}:${c.symbol}:${pickCalls(c, 1)[0]?.transcript || "none"}`, 7 * 864e5, () => buildLedger(c, { n: 4, cache, judge }));
 }
 
 function hash(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }

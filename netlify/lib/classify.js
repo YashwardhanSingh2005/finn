@@ -24,8 +24,8 @@ export const CATEGORIES = {
 
 // Order matters: first match wins. Each rule is shown to the user verbatim ("why this category").
 const RULES = [
-  ["earnings_call", /transcript|audio recording|video recording|earnings call|con\.? ?call|conference call/i],
-  ["investor_meetings", /analyst|institutional investor|investor meet|non-deal roadshow|investor conference/i],
+  ["earnings_call", /transcript|audio recording|video recording|recording of|earnings call/i],
+  ["investor_meetings", /analyst|institutional investor|investor meet|roadshow|investor conference|con\.? ?call|conference call/i],
   ["results", /financial results|\bresults\b|outcome of board meeting.*(result|financial)|integrated filing.*financ|board meeting.*(approve|consider).*(result|financial)|unaudited|audited financial/i],
   ["management_change", /appoint|resign|cessation|change in (director|management|key managerial|kmp|senior management)|managing director|chief (executive|financial|operating)|\bc[efo]o\b|\bkmp\b|re-?designat|retire/i],
   ["M&A", /acqui|amalgamat|merger|demerger|scheme of arrangement|joint venture|\bjv\b|stake sale|divest|wholly[- ]owned subsidiary|incorporation of (a )?subsidiary|slump sale|takeover/i],
