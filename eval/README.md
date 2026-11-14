@@ -31,6 +31,15 @@ The categories follow Gow, Larcker & Zakolyukina (2021), *Non-answers during con
 - `nonanswers_raw.json` and `nonanswers_labelled.json`: v1 census of detections and their labels.
 - `recall_sample*.txt` and `sample_v3_*.txt`: the random samples, with seeds in `scripts/eval_recall.mjs`.
 
+### 1b. Candour features that were tested and kept or dropped
+
+| Feature | Source | Result on 24 calls (6 companies) | Decision |
+|---|---|---|---|
+| Analyst praise rate | Milian & Smith 2017 | Varies widely and meaningfully: POLYCAB 11–22%, TCS about 0%, KAYNES 0%; trends move between calls | **Kept** (Candour table) |
+| Recurring topics (bigrams asked by 3 or more different analysts) | analyst-skepticism literature; Chen, Nagar & Schoenfeld 2018 | After a finance stop-list: "volume growth (5)", "order book / working capital / metering (3)", "gross margin (4)" | **Kept** |
+| Pushback asymmetry (dodge rate on hard vs routine questions) | GLZ 2021 + question-tone cue list | Informative but small-sample (5–18 hard questions per call); POLYCAB's latest call 23% vs 13% | **Kept, guarded**: shown only when there are 6 or more hard questions, with raw counts |
+| Script echo (5-gram overlap of answers with prepared remarks) | Lee 2016, TAR | Almost never fires: 0% in 23 of 24 calls. Indian concall answers aren't read from a script | **Dropped**: computed, not shown |
+
 ## 2. Triage score (Push): backtest
 
 This is reproduced in the app under Rules → *Does the score work?* and in the main README.

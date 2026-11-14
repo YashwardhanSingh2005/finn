@@ -127,6 +127,44 @@ const sentenceAround = (text, idx) => {
   return text.slice(s ? s + 1 : 0, e + 1).replace(/\s+/g, " ").trim();
 };
 
+// Analyst praise (Milian & Smith 2017): compliments to management in the question opener.
+const PRAISE = /\b(?:congratulat|congrats|great (?:set|quarter|numbers|results|performance)|good (?:set|quarter|numbers|results)|excellent (?:set|quarter|numbers|results|performance|show)|strong (?:set|quarter|numbers|results)|well done|commendable|stellar)/i;
+
+const STOP = new Set("the a an and or of to in on for with from by at as is are was were be been this that these those it its we you your our their they them he she i me my sir madam thanks thank question questions just like also so if can could would will should may might any some what which how why when where who whether there here about into over than then very more most much many few one two three first second last next quarter year years term side point part number numbers kind sort basically actually really bit lot get got give given going see seen look looking mean understand understanding regarding related etc okay yes no not now currently overall total sense color colour broadly help clarify follow followup up out on off all both each other same new old high higher low lower good great strong inr rs crore crores lakh lakhs billion million percent bps basis points set fair assume let say have has had taken take think want wanted check trying try ask asking talk talking said saying mentioned mention speak spoke idea guidance sir ma'am thank ladies gentlemen congratulations congratulation hi hello morning evening afternoon opportunity team management call previous similar same possible right now today least maybe already still even well across within around per versus vs data".split(" "));
+
+/** Topics raised by several different analysts in one call: the street's worry list. */
+function recurringTopics(pairs) {
+  const byTopic = new Map();
+  for (const p of pairs) {
+    const ws = (p.q.text.toLowerCase().match(/[a-z][a-z&-]{2,}/g) || []).filter((w) => !STOP.has(w));
+    const grams = new Set();
+    for (let i = 0; i + 1 < ws.length; i++) grams.add(ws[i] + " " + ws[i + 1]);
+    for (const g of grams) {
+      if (!byTopic.has(g)) byTopic.set(g, { analysts: new Set(), examples: [] });
+      const t = byTopic.get(g);
+      if (!t.analysts.has(p.q.speaker)) { t.analysts.add(p.q.speaker); if (t.examples.length < 3) t.examples.push({ analyst: p.q.speaker, q: clip(p.q.text, 160), page: p.q.page }); }
+    }
+  }
+  const out = [...byTopic.entries()].filter(([, t]) => t.analysts.size >= 3).map(([g, t]) => ({ topic: g, analysts: t.analysts.size, examples: t.examples }));
+  out.sort((a, b) => b.analysts - a.analysts);
+  // drop topics that are sub-phrases of a stronger one with the same analysts count
+  const kept = [];
+  for (const t of out) if (!kept.some((k) => k.analysts >= t.analysts && (k.topic.includes(t.topic.split(" ")[0]) && k.topic.includes(t.topic.split(" ")[1])))) kept.push(t);
+  return kept.slice(0, 4);
+}
+
+// Pushback (challenging) questions: cues of doubt or bad news in the analyst's question.
+const PUSHBACK = /\bwhy\b|\bbut\b|concern|worr|declin|drop|fall|fell|pressure|disappoint|miss|weak|slow|delay|lower than|below|risk|problem|issue|challeng|competit|loss|negative|reconcil|discrepan|explain/i;
+
+/** Lee (2016): share of an answer's 5-grams that also occur in the prepared remarks ("script echo"). */
+function echo(answer, scriptGrams) {
+  const w = words(answer);
+  if (w.length < 25) return 0;
+  let hit = 0, n = 0;
+  for (let i = 0; i + 5 <= w.length; i++) { n++; if (scriptGrams.has(w.slice(i, i + 5).join(" "))) hit++; }
+  return n ? hit / n : 0;
+}
+
 export function analyseCall(pages) {
   const { turns } = parseTranscript(pages);
   const prepared = turns.filter((t) => t.section === "prepared" && t.role === "management").map((t) => t.text).join("\n");
@@ -138,15 +176,32 @@ export function analyseCall(pages) {
     for (const [re, kind] of NON_ANSWER) {
       const m = ansText.match(re);
       if (m) {
-        nonAnswers.push({ kind, phrase: m[0], analyst: p.q.speaker, question: clip(p.q.text, 220), answer: clip(sentenceAround(ansText, m.index), 240), responder: p.a[0].speaker, page: p.a[0].page });
+        nonAnswers.push({ _pair: p, kind, phrase: m[0], analyst: p.q.speaker, question: clip(p.q.text, 220), answer: clip(sentenceAround(ansText, m.index), 240), responder: p.a[0].speaker, page: p.a[0].page });
         break;
       }
     }
   }
+  const praised = pairs.filter((p) => PRAISE.test(p.q.text.slice(0, 220))).length;
+  // pushback asymmetry: are hard questions dodged more than routine ones?
+  const naSet = new Set(nonAnswers.map((x) => x._pair));
+  const hard = pairs.filter((p) => PUSHBACK.test(p.q.text)), easy = pairs.filter((p) => !PUSHBACK.test(p.q.text));
+  const rate = (arr) => (arr.length ? arr.filter((p) => naSet.has(p)).length / arr.length : null);
+  const hardRate = rate(hard), easyRate = rate(easy);
+  // script echo on answers
+  const sw = words(prepared), scriptGrams = new Set();
+  for (let i = 0; i + 5 <= sw.length; i++) scriptGrams.add(sw.slice(i, i + 5).join(" "));
+  const echoes = pairs.map((p) => echo(p.a.map((x) => x.text).join(" "), scriptGrams));
+  const scripted = echoes.filter((e) => e >= 0.15).length;
+  const scriptedHard = pairs.filter((p, i) => echoes[i] >= 0.15 && PUSHBACK.test(p.q.text)).length;
   return {
+    praiseRate: pairs.length ? +(praised / pairs.length * 100).toFixed(1) : null,
+    pushback: { hard: hard.length, easy: easy.length, hardRate: hardRate == null ? null : +(hardRate * 100).toFixed(1), easyRate: easyRate == null ? null : +(easyRate * 100).toFixed(1) },
+    scriptedRate: pairs.length ? +(scripted / pairs.length * 100).toFixed(1) : null,
+    scriptedHard,
+    topics: recurringTopics(pairs),
     turns: turns.length, questions: pairs.length,
     analysts: [...new Set(pairs.map((p) => p.q.speaker))].length,
-    nonAnswers, nonAnswerRate: pairs.length ? +(nonAnswers.length / pairs.length * 100).toFixed(1) : null,
+    nonAnswers: nonAnswers.map(({ _pair, ...x }) => x), nonAnswerRate: pairs.length ? +(nonAnswers.length / pairs.length * 100).toFixed(1) : null,
     prepared: lex(prepared), qa: lex(answers),
     parsed: pairs.length >= 3, // too few pairs => layout we couldn't parse; don't over-interpret
   };

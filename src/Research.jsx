@@ -467,10 +467,24 @@ function Candour({ symbol }) {
             <tr><td className="lab">Uncertainty words /1k (Q&A)</td>{calls.map((x) => <td key={x.period}>{x.qa.uncPer1k}</td>)}</tr>
             <tr><td className="lab">Hedges /1k (Q&A)</td>{calls.map((x) => <td key={x.period}>{x.qa.hedgePer1k}</td>)}</tr>
             <tr><td className="lab">Analysts / questions</td>{calls.map((x) => <td key={x.period}>{x.analysts}/{x.questions}</td>)}</tr>
+            <tr><td className="lab">Analyst praise (“congratulations…”)</td>{calls.map((x) => <td key={x.period}>{x.praiseRate ?? "–"}%</td>)}</tr>
+            <tr><td className="lab">Dodged: hard vs routine Qs</td>{calls.map((x) => <td key={x.period} title={`${x.pushback?.hard} hard / ${x.pushback?.easy} routine questions`}>{x.pushback?.hard >= 6 ? `${x.pushback.hardRate}% / ${x.pushback.easyRate}%` : "–"}</td>)}</tr>
           </tbody>
         </table>
-        <p className="tiny muted mt4">Tone = (positive − negative) / (positive + negative) finance words. 1 = all positive.</p>
+        <p className="tiny muted mt4">Tone = (positive − negative) / (positive + negative) finance words; 1 = all positive. Praise: share of questions opening with a compliment. Analysts praise more when the news is good, so a drop is a quiet skepticism signal (Milian & Smith 2017). “Hard” questions contain doubt or bad-news cues (why, but, concern, decline, delay…); a much higher dodge rate on them than on routine questions is the evasive pattern. Shown only when there are at least 6 hard questions.</p>
       </section>
+      {calls.length > 0 && calls[calls.length - 1].topics?.length > 0 && (
+        <section className="card">
+          <h3>What the street kept asking about ({calls[calls.length - 1].period} call)</h3>
+          <p className="tiny muted" style={{ marginTop: 0 }}>Topics raised by three or more <i>different</i> analysts. Repetition across analysts marks the real worry.</p>
+          {calls[calls.length - 1].topics.map((t) => (
+            <details key={t.topic} className="flag" style={{ display: "block" }}>
+              <summary><span className="pill accent">{t.analysts} analysts</span> <b style={{ textTransform: "capitalize" }}>{t.topic}</b></summary>
+              {t.examples.map((e, i) => <div key={i} className="small ink2 mt4">{e.analyst}: “{e.q}” <Receipt url={calls[calls.length - 1].url} page={e.page} label="p" /></div>)}
+            </details>
+          ))}
+        </section>
+      )}
       {d.calls.filter((x) => x.parsed).map((x) => x.nonAnswers.length > 0 && (
         <section key={x.period} className="card">
           <h3>{x.period} call: {x.nonAnswers.length} non-answer{x.nonAnswers.length > 1 ? "s" : ""}</h3>
