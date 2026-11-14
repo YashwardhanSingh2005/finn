@@ -109,7 +109,10 @@ function Digest({ data, win, mute, boost, openCompany, reloading }) {
       </h1>
       <div className="row between wrap">
         <span className="muted small">{data.counts.total} events{data.counts.collapsed ? ` (${data.counts.collapsed} duplicate filings merged)` : ""} · {data.counts.holdings} holdings · {win.startsWith("since") ? win : `last ${win}`} {reloading && <span className="spin" />}</span>
-        <Listen items={[...act, ...read]} alerts={data.alerts} />
+        <div className="row" style={{ gap: 6 }}>
+          <ShareBrief act={act} read={read} alerts={data.alerts} win={win} />
+          <Listen items={[...act, ...read]} alerts={data.alerts} />
+        </div>
       </div>
 
       {data.alerts.length > 0 && (
@@ -378,4 +381,22 @@ function CallCheck({ x }) {
       <div className="tiny muted mt4">Computed from the transcript text with published word lists. Free and instant; no AI model.</div>
     </div>
   );
+}
+
+/** Push without infrastructure: the ranked brief as a WhatsApp-ready message (share sheet or wa.me). */
+function ShareBrief({ act, read, alerts, win }) {
+  const text = () => {
+    const L = [`*FINN brief*: ${win.startsWith("since") ? win : `last ${win}`}`];
+    if (act.length) { L.push("", "*Needs you*"); act.slice(0, 5).forEach((x) => L.push(`• ${x.symbol}: ${(x.summary || x.subject).slice(0, 110)} (${x.score})`)); }
+    if (alerts.length) { L.push("", "*Triggers*"); alerts.slice(0, 4).forEach((a) => L.push(`• ${a.symbol}: ${a.title}`)); }
+    if (read.length) L.push("", `${read.length} more worth a read.`);
+    L.push("", location.origin);
+    return L.join("\n");
+  };
+  const go = async () => {
+    const t = text();
+    if (navigator.share) { try { await navigator.share({ text: t }); return; } catch {} }
+    window.open(`https://wa.me/?text=${encodeURIComponent(t)}`, "_blank", "noopener");
+  };
+  return <button className="listen" onClick={go} aria-label="Send brief to WhatsApp" style={{ background: "var(--good-soft)", color: "var(--good)" }}>↗ WhatsApp</button>;
 }
