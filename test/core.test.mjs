@@ -17,6 +17,7 @@ test("classifier: routine phrasings are caught before the material categories th
   assert.equal(classify("Analysts/Institutional Investor Meet/Con. Call Updates", "Transcript of the earnings call").category, "earnings_call");
   assert.equal(classify("Analysts/Institutional Investor Meet/Con. Call Updates", "schedule of analyst meet").category, "investor_meetings");
   assert.equal(classify("Acquisition", "acquisition of 100% stake in XYZ").category, "M&A");
+  assert.equal(classify("Reference To The Financial Results Issued By Suzuki Motor Corporation", "").category, "press_release", "parent's results are not the filer's results");
 });
 
 test("classifier: every decision carries a readable reason", () => {

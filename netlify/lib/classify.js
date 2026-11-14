@@ -29,6 +29,8 @@ const RULES = [
   ["agm_egm", /\bagm\b|\begm\b|annual general meeting|extra-?ordinary general meeting|shareholders'? meeting/i],
   ["postal_ballot", /postal ballot|e-?voting/i],
   ["insider_trading", /takeover regulations|\bsast\b|regulation 29|reg(ulation)?\.? ?7\(2\)|insider trading|regulation 31/i],
+  // another company's results (parent / group company) are news, not the filer's own results
+  ["press_release", /(?:financial )?results (?:issued|declared|announced|published) by (?!the company|us\b)|results of (?:the )?(?:parent|holding|promoter) company/i],
   ["earnings_call", /transcript|audio recording|video recording|recording of|earnings call/i],
   ["investor_meetings", /analyst|institutional investor|investor meet|roadshow|investor conference|con\.? ?call|conference call/i],
   ["results", /financial results|\bresults\b|outcome of board meeting.*(result|financial)|integrated filing.*financ|board meeting.*(approve|consider).*(result|financial)|unaudited|audited financial/i],
