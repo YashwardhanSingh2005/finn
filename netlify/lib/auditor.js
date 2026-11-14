@@ -46,6 +46,11 @@ const CARO_FLAGS = [
 export async function auditorFindings(ar) {
   if (!ar?.url) return { error: "no annual report linked" };
   const { nPages, pages } = await arPages(ar.url);
+  return { year: ar.year, url: ar.url, ...analyseAudit(pages, nPages) };
+}
+
+/** Pure analysis over {pageNumber: text} — unit-testable. */
+export function analyseAudit(pages, nPages) {
   const reports = [];
   const pageNums = Object.keys(pages).map(Number).sort((a, b) => a - b);
   // auditor's report starts: a page that has the title and an Opinion heading nearby
@@ -84,5 +89,5 @@ export async function auditorFindings(ar) {
     if (r.emphasisOfMatter) flags.push({ level: "watch", title: `Emphasis of matter (${r.basis})`, ev: r.emphasisOfMatter });
   }
   for (const c of dedup) flags.push({ level: "watch", title: `CARO: ${c.label}`, ev: c });
-  return { year: ar.year, url: ar.url, nPages, reports, flags, clean: reports.length > 0 && !flags.length };
+  return { nPages, reports, flags, clean: reports.length > 0 && !flags.length };
 }

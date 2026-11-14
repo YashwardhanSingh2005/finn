@@ -161,3 +161,22 @@ test("revenue mix parsed from the cited investor-presentation breakup", () => {
   assert.equal(r.label, "Q2 FY27");
   assert.equal(revenueMix("Leader in wires with 25% share"), null);
 });
+
+import { analyseAudit } from "../netlify/lib/auditor.js";
+test("auditor scan: opinion type, emphasis of matter, CARO flags (and negations ignored)", () => {
+  const clean = analyseAudit({
+    10: "Independent Auditor’s Report\nTo the Members of X Limited\nReport on the Audit of the Standalone Financial Statements\nOpinion\nIn our opinion the financial statements give a true and fair view.\nKey Audit Matters\nRevenue recognition",
+    20: "Annexure A to the Independent Auditor’s Report\nCompanies (Auditor's Report) Order, 2020\nThere were no defaults in repayment of loans. The Company has not incurred cash losses.",
+  }, 30);
+  assert.equal(clean.reports.length, 1);
+  assert.equal(clean.reports[0].opinion, "unmodified");
+  assert.equal(clean.clean, true, "negated CARO phrases must not flag");
+  const bad = analyseAudit({
+    10: "Independent Auditor’s Report\nTo the Members of Y Limited\nReport on the Audit of the Consolidated Financial Statements\nQualified Opinion\nBasis for Qualified Opinion\nThe company has not provided for interest.\nEmphasis of Matter\nWe draw attention to Note 17 which describes the restatement of comparative figures. Our opinion is not modified in respect of this matter.",
+    20: "Annexure A to the Independent Auditor’s Report\nCompanies (Auditor's Report) Order, 2020\nThe Company has defaulted in the repayment of loans to a bank.",
+  }, 30);
+  assert.equal(bad.reports[0].opinion, "qualified");
+  assert.ok(bad.flags.some((f) => /Qualified audit opinion/.test(f.title)));
+  assert.ok(bad.flags.some((f) => /Emphasis of matter/.test(f.title) && /restatement/.test(f.ev.quote)));
+  assert.ok(bad.flags.some((f) => /Default on borrowings/.test(f.title)));
+});

@@ -1,0 +1,18 @@
+===== RELIANCE 2026 pages 187 clean true 
+  report consolidated p133 unmodified EoM: - GC: - KAM× 15 | op ev: Consolidated Financial StatementsReliance Industries Limited Integrated Annual Report 2025
+Warning: TT: undefined function: 21
+===== BHARTIARTL 2026 pages 303 clean true 
+  report standalone p166 unmodified EoM: - GC: - KAM× 7 | op ev: No.: 6832/2025 Makarand Joshi Partner FCS No.: 5533 Date: May 13, 2026 CP No.: 3662 Place:
+  report consolidated p211 unmodified EoM: - GC: - KAM× 10 | op ev: Independent Auditor’s Report To The Members of BHARTI AIRTEL LIMITED Report on the Audit o
+Warning: TT: undefined function: 21
+Warning: TT: undefined function: 21
+===== LT 2026 pages 756 clean true 
+  report standalone p484 unmodified EoM: - GC: - KAM× 8 | op ev: We have nothing to report in this regard. Responsibilities of Management and Board of Dire
+  report consolidated p605 unmodified EoM: - GC: - KAM× 16 | op ev: 604Integrated Annual Report 2025-26 Auditor’s Report on Consolidated Financial Statements 
+Warning: TT: undefined function: 32
+===== ITC 2026 pages 416 clean true 
+  report standalone p232 unmodified EoM: - GC: - KAM× 8 | op ev: We have nothing to report in this regard. Responsibilities of Management for the Standalon
+  report standalone p340 unmodified EoM: - GC: - KAM× 9 | op ev: We have nothing to report in this regard. Responsibilities of Management for the Consolida
+Warning: TT: undefined function: 21
+===== BAJFINANCE 2026 pages 515 clean false 
+Warning: TT: undefined function: 21
