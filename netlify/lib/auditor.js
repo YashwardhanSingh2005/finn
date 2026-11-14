@@ -54,7 +54,7 @@ export function analyseAudit(pages, nPages) {
   const reports = [];
   const pageNums = Object.keys(pages).map(Number).sort((a, b) => a - b);
   // auditor's report starts: a page that has the title and an Opinion heading nearby
-  const starts = pageNums.filter((p) => /independent auditor[’']?s[’']? report\s*\n?\s*(?:to the members|report on the audit)/i.test(pages[p]) || (/independent auditor[’']?s[’']? report/i.test(pages[p]) && /report on the audit of the (?:standalone |consolidated )?financial statements/i.test(pages[p]) && /\bopinion\b/i.test(pages[p])));
+  const starts = pageNums.filter((p) => /independent\s+auditor[’']?s[’']?\s+report\s*\n?\s*(?:to\s+the\s+members|to\s*,?\s*the\s+members|report\s+on\s+the\s+audit)/i.test(pages[p]) || (/independent\s+auditor[’']?s[’']?\s+report/i.test(pages[p]) && /report\s+on\s+the\s+audit\s+of\s+the\s+(?:standalone\s+|consolidated\s+)?(?:ind\s*as\s+)?financial\s+statements/i.test(pages[p]) && /\bopinion\b/i.test(pages[p])));
   const seen = new Set();
   for (const s of starts) {
     if ([...seen].some((x) => Math.abs(x - s) < 6)) continue;

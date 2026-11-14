@@ -41,3 +41,27 @@ Warning: TT: undefined function: 21
 ===== CDSL 2026 pages 354 clean true 
   report standalone p216 unmodified EoM: - GC: - KAM× 6 | op ev: Independent Auditor’s Report To the Members of Central Depository Services (India) Limited
 Warning: TT: undefined function: 21
+===== KPITTECH 2026 pages 210 clean true 
+  report standalone p100 unmodified EoM: - GC: - KAM× 6 | op ev: 2 Annual Report 2025-262 Annual Report 2025-26 Financial Statements 2 Annual Report 2025-2
+  report consolidated p143 unmodified EoM: - GC: - KAM× 8 | op ev: Financial Statements 282 Annual Report 2025-26 INDEPENDENT AUDITOR’S REPORT To the Members
+===== ASIANPAINT 2026 pages 294 clean true 
+  report standalone p180 unmodified EoM: - GC: - KAM× 4 | op ev: Asian Paints Limited354 355Integrated Annual Report 2025-26Financial Statements Independen
+  report consolidated p229 unmodified EoM: - GC: - KAM× 5 | op ev: Asian Paints Limited452 453Integrated Annual Report 2025-26Financial Statements Independen
+===== HAL 2026 pages 414 clean false 
+  report standalone p156 unmodified EoM: 156 GC: - KAM× 11 | op ev: We have nothing to report in this regard. Responsibility of Management and Those Charged w
+  report consolidated p296 unmodified EoM: 296 GC: 298 KAM× 10 | op ev: We have nothing to report in this regard. Responsibilities of management and Those charged
+  FLAG watch Emphasis of matter (standalone) p156 | (I) Attention is invited to Notes to the Standalone Financial Statements extracted below: Note 49: Clause - 43G Revision of pay scales of executives and workmen
+  FLAG risk Going-concern uncertainty (consolidated) p298 | The Company, as on March 31, 2026 has a net liability of ` 1279.95 lakhs (March 31st 2025: ` 1,015.30 lakhs) and a net current liability of ` 1355.33 lakhs (Mar
+  FLAG watch Emphasis of matter (consolidated) p296 | 1) Attention is invited to Notes to the Consolidated Financial Statements extracted below: Emphasis of Matter (I) Attention is invited to Notes to the Consolida
+Warning: TT: undefined function: 21
+Warning: TT: undefined function: 21
+Warning: TT: undefined function: 21
+Warning: TT: undefined function: 21
+Warning: TT: undefined function: 21
+Warning: TT: undefined function: 21
+Warning: TT: undefined function: 21
+Warning: TT: undefined function: 21
+Warning: TT: undefined function: 21
+===== JUBLFOOD 2026 pages 165 clean true 
+  report standalone p82 unmodified EoM: - GC: - KAM× 7 | op ev: Independent Auditor’s Report To the Members of JUBILANT FOODWORKS LIMITED Report on the Au
+  report consolidated p119 unmodified EoM: - GC: - KAM× 8 | op ev: Independent Auditor’s Report To The Members of JUBILANT FOODWORKS LIMITED Report on the Au

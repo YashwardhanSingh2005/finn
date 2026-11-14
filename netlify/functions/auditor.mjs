@@ -9,7 +9,7 @@ export default async (req) => {
   try {
     const { c } = await companyCore(s);
     const ar = c.docs.annualReports[0];
-    return json(await memo(`auditor:v1:${ar?.url || s}`, Infinity, () => auditorFindings(ar)));
+    return json(await memo(`auditor:v2:${ar?.url || s}`, Infinity, () => auditorFindings(ar)));
   } catch (e) { return fail(e); }
 };
 export const config = { path: "/api/auditor" };

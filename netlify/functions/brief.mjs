@@ -19,7 +19,7 @@ export default async (req) => {
     const calls = pickCalls(core.c, 4);
     const cand = await memo(`candour:v4:${core.c.symbol}:${calls[0]?.transcript || "none"}`, 7 * 864e5, () => candour(core.c, calls)).catch(() => null);
     const ar = core.c.docs.annualReports[0];
-    const aud = await memo(`auditor:v1:${ar?.url || s}`, Infinity, () => auditorFindings(ar)).catch(() => null);
+    const aud = await memo(`auditor:v2:${ar?.url || s}`, Infinity, () => auditorFindings(ar)).catch(() => null);
     return json(await bullBear(s, core.a, ledger, biz, cand, aud));
   } catch (e) { return fail(e); }
 };
