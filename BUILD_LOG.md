@@ -24,6 +24,15 @@ FINN was built in one overnight session (14–15 Nov 2026) with **Claude Code** 
 | 10 | **Backtest v1**: almost no separation; 17% of filings ranked "Needs you" | Broke it down by category. Results and management changes carried signal; M&A, fund raises, litigation and ratings didn't; ESOP, takeover-code and AGM filings were misfiled. Fixed the rule order and lowered four base scores. |
 | 11 | Backtest v2, validated on the *previous* six months | "Needs you" filings were followed by a ≥2σ move 27% of the time, vs 11% for routine filings. Only 6% of filings now reach "Needs you". |
 
+| 12 | Netlify free credits ran out mid-night (17 deploys plus AI calls); the site paused | I made the code host-agnostic: Vercel entry points in `api/`, Vercel Blob plus AI Gateway via OIDC. All further work was local, against a dev server and a headless phone browser. |
+| 13 | A second literature scan (non-answers, analyst praise, script echo, Indian concall tone) | Built **Candour**: a deterministic non-answer detector (Gow et al. 2021), Loughran–McDonald tone and uncertainty, a narrative-vs-numbers divergence check, analyst praise, pushback asymmetry and recurring topics, plus a portfolio league. |
+| 14 | Hand-labelled the detector over 3 rounds, each on a fresh sample | Precision 86–92%, recall about 55–60%; it plateaus as a lexicon. Reported honestly. Script echo (Lee 2016) didn't transfer to Indian calls, so I dropped it. |
+| 15 | Six holdings "didn't parse" | 2 publish no transcripts, 1 links HTML, and 3 used new layouts (Airtel, Tata Steel, Eternal). I wrote a generic speaker-header normaliser. **A regression set caught it breaking TCS** (28 → 15 questions), and I fixed it before moving on. |
+| 16 | Credibility as a probability | Beta posterior over the ledger verdicts (Hutton & Stocken 2009), with style labels (walks down then beats, raises then misses). |
+| 17 | A UI smoke test found a crash on directly opening the Candour tab | Fixed. The test now runs light and dark across every tab. |
+| 18 | SEBI 5-working-day transcript rule | The first run flagged Airtel as 31 days late. That was a false positive (it read "quarter *ended* Sep 30" as the call date). Fixed and pinned with a test. |
+| 19 | Event study: does dodging predict returns? | n=40, inconclusive. Written up as such, not claimed. |
+
 ## Things the agent did *not* get to decide
 - Scraping NSE/BSE with browser headers: the agent's safety layer blocked it until I approved it explicitly.
 - Creating the GitHub repo and token scopes, and deploying to my Netlify account: I did those or approved them.
