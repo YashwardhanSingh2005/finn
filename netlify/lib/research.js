@@ -13,15 +13,36 @@ import { memo, cache } from "./cache.js";
 import { buildLedger, pickCalls } from "./ledger.js";
 
 export async function companyCore(symbol) {
-  return memo(`core:v3:${symbol.toUpperCase()}`, 6 * 3600e3, async () => {
+  return memo(`core:v4:${symbol.toUpperCase()}`, 6 * 3600e3, async () => {
     const c = await fetchCompany(symbol);
     const prices = c.companyId ? await fetchPrices(c.companyId, 400).catch(() => []) : [];
     return { c, a: analyse(c), stats: priceStats(prices) };
   });
 }
 
+/** Revenue mix from the company's own investor-presentation breakup (as cited on its screener page). */
+export function revenueMix(keyPoints) {
+  if (!keyPoints) return null;
+  const src = "company investor presentation / annual report (as cited on screener.in)";
+  // format 1: "Revenue Breakup (Q2 FY27):[1] - BFSI: 32.8% - Consumer: 14.9% ..."
+  const head = keyPoints.match(/(?:Revenue|Segment|Business)\s+(?:Break[- ]?up|Mix|Split)([^:]{0,40}):?/i);
+  if (head) {
+    const body = keyPoints.slice(head.index + head[0].length).split(/(?:Revenue|Segment|Business)\s+(?:Break[- ]?up|Mix|Split|Segments)/i)[0];
+    const parts = [...body.matchAll(/-?\s*([A-Z][A-Za-z&,'()\/\- ]{1,48}?)\s*:\s*~?(\d{1,2}(?:\.\d+)?)\s*%/g)].map((x) => ({ name: x[1].trim(), share_pct: +x[2] }));
+    const total = parts.reduce((t, p) => t + p.share_pct, 0);
+    if (parts.length >= 2 && total >= 60 && total <= 110) return { label: (head[1].match(/\(([^)]*)\)/) || [])[1] || null, segments: parts.slice(0, 8), total: +total.toFixed(1), source: src };
+  }
+  // format 2: "a) Wires & Cables (87% in FY26 vs 84% in FY25): ... b) FMEG (9% in FY26 ...)"
+  const parts2 = [...keyPoints.matchAll(/(?:^|\s)[a-z0-9]\)\s*([A-Z][A-Za-z&,'\/\- ]{1,48}?)\s*\(\s*~?(\d{1,2}(?:\.\d+)?)\s*%\s*(?:in\s+(FY\s?\d{2}))?/g)].map((x) => ({ name: x[1].trim(), share_pct: +x[2], fy: x[3] }));
+  const total2 = parts2.reduce((t, p) => t + p.share_pct, 0);
+  if (parts2.length >= 2 && total2 >= 60 && total2 <= 110) return { label: parts2[0].fy || null, segments: parts2.slice(0, 8).map(({ fy, ...x }) => x), total: +total2.toFixed(1), source: src };
+  if (parts2.length === 1 && parts2[0].share_pct >= 60) return { label: parts2[0].fy || null, segments: [...parts2.map(({ fy, ...x }) => x), { name: "Others", share_pct: +(100 - parts2[0].share_pct).toFixed(1) }], total: 100, source: src };
+  return null;
+}
+
 export function publicCompany({ c, a, stats }) {
   return {
+    revenueMix: revenueMix(c.keyPoints),
     symbol: c.symbol, name: c.name, url: c.url, consolidated: c.consolidated, resolvedFrom: c.resolvedFrom || null,
     ratios: Object.fromEntries(Object.entries(c.ratios).map(([k, v]) => [k, v.text])),
     analysis: a,

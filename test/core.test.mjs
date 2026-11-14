@@ -152,3 +152,12 @@ test("transcript lag: cover-letter date vs call date, in working days", () => {
   const airtel = transcriptLag(["Date: November 12, 2026\nBSE Limited", "Transcript of Bharti Airtel Q2 ended September 30, 2026 Earnings Webinar held on November 10, 2026"]);
   assert.equal(airtel.callDate, "2026-11-10", "quarter-end date is not the call date");
 });
+
+import { revenueMix } from "../netlify/lib/research.js";
+test("revenue mix parsed from the cited investor-presentation breakup", () => {
+  const r = revenueMix("Revenue Breakup (Q2 FY27):[1] - BFSI: 32.8% - Consumer Business: 14.9% - Life Sciences & Healthcare: 10.3% - Manufacturing: 9.0% - Technology & Services: 8.6% - Energy, Resources & Utilities: 6.2% - Communication & Media: 5.8% - Regional Markets & Others: 12.4%");
+  assert.equal(r.segments.length, 8);
+  assert.equal(r.segments[0].name, "BFSI");
+  assert.equal(r.label, "Q2 FY27");
+  assert.equal(revenueMix("Leader in wires with 25% share"), null);
+});

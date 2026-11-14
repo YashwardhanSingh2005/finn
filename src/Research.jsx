@@ -134,9 +134,10 @@ function Snapshot({ c, biz, L, goLedger }) {
         <h3>What it does</h3>
         {biz.loading && <div className="row small muted"><span className="spin" /> Reading the latest earnings call…</div>}
         {biz.error && <p className="muted small">{biz.error.status === 503 ? "AI layer offline: showing numbers only." : biz.error.message}</p>}
+        {!b && c.revenueMix && (<><SegmentBar segs={c.revenueMix.segments} /><div className="tiny muted">Revenue mix{c.revenueMix.label ? ` (${c.revenueMix.label})` : ""}: {c.revenueMix.source}</div></>)}
         {b && (<>
           <p style={{ margin: "0 0 8px" }}>{b.what_it_does}</p>
-          {b.segments?.length > 0 && <SegmentBar segs={b.segments} />}
+          {b.segments?.filter((x) => x.share_pct != null).length >= 2 ? <SegmentBar segs={b.segments} /> : c.revenueMix && (<><SegmentBar segs={c.revenueMix.segments} /><div className="tiny muted">Revenue mix{c.revenueMix.label ? ` (${c.revenueMix.label})` : ""}: {c.revenueMix.source}</div></>)}
           {b.segments?.map((s, i) => <div key={i} className="small mt4"><strong>{s.name}</strong>{s.share_pct != null && ` · ${s.share_pct}%`} <span className="ink2">{s.comment}</span></div>)}
           <div className="mt8"><Receipt url={biz.data.url} label={`${biz.data.call} earnings call`} extra={`${(b.segments?.length || 0) + (b.guidance?.length || 0) + (b.watch_items?.length || 0)} quotes verified${biz.data.dropped ? `, ${biz.data.dropped} unverifiable dropped` : ""}`} /></div>
         </>)}
