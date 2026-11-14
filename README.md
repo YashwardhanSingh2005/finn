@@ -44,7 +44,7 @@ Most "AI for investors" tools put a summary on top of the firehose. That makes t
   - **"Read the filing"** extracts the same lines from the results PDF. EBITDA is then *computed in code* as PBT + finance costs + depreciation − other income − exceptional items. The two sources are reconciled, and the card shows ✓ when they match.
   - If the standardised data hasn't caught up with a fresh filing yet, FINN says so and reads the PDF automatically. It never shows last quarter's numbers under this quarter's headline.
 - **Plain English instead of boilerplate.** The exchange's one-liners ("X has informed the Exchange about…") are replaced with a one-line *what happened* and *so what*, read from the PDF, with a verified quote. This is done only for items that earned attention; routine filings never cost a token.
-- **New transcript filed → "Audit its promises":** a filed earnings-call transcript links straight to that company's ledger.
+- **New transcript filed → instant call check, with no model:** "Dodged 5 of 28 analyst questions (17.9%), up 4.9 pts vs the July call; Q&A tone cooler", plus the first dodge, quoted. Then **"Audit its promises"** a filed earnings-call transcript links straight to that company's ledger.
 - **Listen (60 s):** the browser reads the top items aloud, for the commute. It costs nothing and runs no server code.
 
 ### Pull: the Research tab, for any NSE ticker
@@ -57,6 +57,13 @@ Most "AI for investors" tools put a summary on top of the firehose. That makes t
 - **Promises (the Promise Ledger):** promise threads across four calls, the goalpost history of each, and a verdict: *Delivered, On track, Behind, Missed, Too early* or *No evidence*. Each verdict is labelled with how it was reached:
   - **computed:** checked in code against the reported quarters for the promised period. Open-ended targets are checked against the trailing four quarters.
   - **judgement:** a stronger model. It must cite a quote that passes verification, or the verdict is withheld.
+- **Candour: how management talks, measured without a model.** Three published ideas, stitched together:
+  - **Non-answers:** analyst questions met with a refusal, an inability or a deferral, following Gow, Larcker & Zakolyukina (2021). Every one is shown verbatim with its page.
+  - **Uncertainty and tone:** measured with the Loughran–McDonald finance word lists, separately for prepared remarks and Q&A.
+  - **Narrative vs numbers:** a flag for when management's tone moves opposite to reported growth, e.g. *"story ahead of numbers"* or *"numbers ahead of story (possible sandbagging)"*.
+  - Evaluated by hand-labelling: about 86–92% precision and about 55–60% recall over three rounds, each measured on fresh samples (see `eval/README.md`).
+  - Because the same rules apply to every company, the trends and comparisons are valid even though absolute counts are lower bounds.
+- **Chance the next promise is kept.** Investors weight a manager's forecasts by that manager's track record (Hutton & Stocken 2009). FINN makes the weight explicit: a Beta(1,1) prior updated by the ledger's kept and not-kept verdicts gives a probability with an 80% range. Few promises gives a wide range, honestly shown. A style label comes from goalpost history: *walks down, then beats* (Richardson, Teoh & Wysocki 2004), *raises, then misses*, or *reliable*.
 - **Balance and cash.** Each flag shows the rule that fired, e.g. `rule: Σ CFO / Σ PAT < 70%`. Covers:
   - cash conversion: Σ operating cash flow ÷ Σ PAT, with the yearly table;
   - debt-to-equity;
@@ -151,6 +158,12 @@ This covers one portfolio, one year, and next-session moves only: a sanity check
 3. **Delivery:** a scheduled end-of-day job, then Web Push or WhatsApp for the *Needs you* tier only.
 4. **Silence as a signal:** promises management stops mentioning are already counted as "not in latest call". Next, alert on them.
 5. **Annual-report diffs:** year-over-year changes in risk factors, contingent liabilities, related-party transactions and auditor remarks.
+
+## Quality
+
+- **Unit tests:** `npm test` runs 15 tests over the deterministic core: the classifier and its rule order, the scorer, the amount parser, SEBI materiality, the quote verifier, the fiscal calendar, horizon resolution, numeric verdicts, actuals for the year to date, the non-answer lexicon, transcript parsing, alerts, and the credibility posterior.
+- **Evaluations:** `eval/README.md` covers the triage backtest (tuned on one half, validated out of sample) and three precision/recall rounds for the non-answer detector. It also records the model-routing finding (thinking off for extraction) and the judge-direction bug found by inspection.
+- **Caching:** PDF text and every model output are cached by document URL, so an exchange PDF is downloaded once, ever. That's kind to NSE and BSE as well as fast.
 
 ## Running it
 
