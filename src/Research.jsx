@@ -104,7 +104,7 @@ function Company({ symbol, back, startTab }) {
       <div className="mt12">
         {tab === "snap" && <Snapshot c={c} biz={biz} L={judged.data || ledger.data} goLedger={() => setTab("ledger")} />}
         {tab === "ledger" && <Ledger st={ledger} judged={judged} cand={cand.data} />}
-        {tab === "money" && <Money a={c.analysis} />}
+        {tab === "money" && <><Auditor symbol={symbol} /><div className="mt12" /><Money a={c.analysis} /></>}
         {tab === "candour" && <Candour symbol={symbol} st={cand} />}
         {tab === "bb" && <BullBear symbol={symbol} ready={!!judged.data || !!judged.error} />}
       </div>
@@ -589,5 +589,32 @@ function League({ holdings, onPick }) {
         </>)}
       </div>
     </>
+  );
+}
+
+/** What the auditor said: opinion, emphasis of matter, going concern, CARO remarks. From the annual report. */
+function Auditor({ symbol }) {
+  const { data: d, loading, error } = useApi("auditor", { symbol });
+  if (loading) return <div className="card"><div className="row small muted"><span className="spin" /> Reading the auditor’s report in the latest annual report…</div></div>;
+  if (error || !d || d.error) return <div className="card"><h3>What the auditor said</h3><p className="muted small">{d?.error || error?.message || "Annual report unavailable."}</p></div>;
+  return (
+    <section className="card">
+      <div className="row between"><h3 style={{ margin: 0 }}>What the auditor said</h3><span className={`pill ${d.clean ? "good" : d.flags.some((f) => f.level === "risk") ? "risk" : "watch"}`}>{d.clean ? "clean" : `${d.flags.length} flag${d.flags.length > 1 ? "s" : ""}`}</span></div>
+      <div className="tiny muted mt4">Annual report {d.year} ({d.nPages} pages), auditor’s reports and CARO annexure</div>
+      {d.reports.map((r) => (
+        <div key={r.basis + r.startPage} className="list-row">
+          <span className="grow small"><b style={{ textTransform: "capitalize" }}>{r.basis}</b>: opinion <b className={r.opinion === "unmodified" ? "up" : "down"}>{r.opinion}</b>{r.kamMentions ? ` · key audit matters discussed` : ""}</span>
+          <a className="linkish" href={`${d.url}#page=${r.startPage}`} target="_blank" rel="noreferrer">p.{r.startPage}</a>
+        </div>
+      ))}
+      {d.flags.map((f, i) => (
+        <div key={i} className="flag">
+          <span className={`dot ${f.level}`} />
+          <div><div style={{ fontWeight: 600, fontSize: 14 }}>{f.title}</div>{f.ev?.quote && <div className="quote" style={{ fontSize: 14 }}>“{f.ev.quote}”</div>}<Receipt url={d.url} page={f.ev?.page} label="annual report" /></div>
+        </div>
+      ))}
+      {d.clean && <p className="small ink2 mt8">Unmodified opinions, with no emphasis of matter, going-concern doubt or adverse CARO remark found.</p>}
+      <p className="tiny muted mt4">Read with rules, not a model: audit reports follow the auditing standards (SA 700/705/706/570) and CARO 2020, so these signals are phrase-detectable. “Emphasis of matter” isn’t a qualification, but it is the auditor pointing at something you should read.</p>
+    </section>
   );
 }

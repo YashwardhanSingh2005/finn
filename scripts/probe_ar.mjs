@@ -1,0 +1,16 @@
+import { fetchCompany } from "../netlify/lib/screener.js";
+import { extractText, getDocumentProxy } from "unpdf";
+const c = await fetchCompany(process.argv[2]);
+const ar = c.docs.annualReports[0];
+console.log(ar);
+const t0 = Date.now();
+const r = await fetch(ar.url, { headers: { "user-agent": "FINN-prototype/0.1", accept: "application/pdf,*/*", "accept-language": "en-IN,en" } });
+const buf = new Uint8Array(await r.arrayBuffer());
+console.log("status", r.status, "MB", (buf.length / 1e6).toFixed(1), "dl s", (Date.now() - t0) / 1000);
+const t1 = Date.now();
+const pdf = await getDocumentProxy(buf);
+const { text } = await extractText(pdf, { mergePages: false });
+console.log("pages", pdf.numPages, "extract s", (Date.now() - t1) / 1000);
+const idx = text.map((t, i) => [i + 1, t]).filter(([, t]) => /independent auditor'?s'? report|key audit matter|emphasis of matter|qualified opinion|basis for (?:qualified )?opinion|material uncertainty related to going concern/i.test(t)).map(([i]) => i);
+console.log("audit pages", idx.slice(0, 30));
+const p = text[idx[0] - 1] || ""; console.log(p.slice(0, 1200));

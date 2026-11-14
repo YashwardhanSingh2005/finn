@@ -2,6 +2,7 @@ import { companyCore, businessBrief, bullBear, ledgerFor } from "../lib/research
 import { candour } from "../lib/discourse.js";
 import { pickCalls } from "../lib/ledger.js";
 import { memo } from "../lib/cache.js";
+import { auditorFindings } from "../lib/auditor.js";
 import { llmAvailable } from "../lib/llm.js";
 import { json, fail, sym } from "../lib/http.js";
 // ?symbol=X&part=business|bullbear
@@ -17,7 +18,9 @@ export default async (req) => {
     const ledger = await ledgerFor(s).catch(() => null);
     const calls = pickCalls(core.c, 4);
     const cand = await memo(`candour:v4:${core.c.symbol}:${calls[0]?.transcript || "none"}`, 7 * 864e5, () => candour(core.c, calls)).catch(() => null);
-    return json(await bullBear(s, core.a, ledger, biz, cand));
+    const ar = core.c.docs.annualReports[0];
+    const aud = await memo(`auditor:v1:${ar?.url || s}`, Infinity, () => auditorFindings(ar)).catch(() => null);
+    return json(await bullBear(s, core.a, ledger, biz, cand, aud));
   } catch (e) { return fail(e); }
 };
 export const config = { path: "/api/brief" };

@@ -78,7 +78,7 @@ You receive an EVIDENCE list; each item has an id. Every point you make MUST cit
 Return JSON {"bull":[{"point":"<= 22 words","refs":["E3"]}] (3 points), "bear":[...] (3 points), "verdict_question":"<= 20 words: the single question that decides which case wins"}. JSON only.`;
 
 /** Collect evidence items with stable ids from all earlier layers. */
-export function evidenceList(a, ledger, biz, cand) {
+export function evidenceList(a, ledger, biz, cand, aud) {
   const ev = [];
   const add = (kind, text, src) => ev.push({ id: `E${ev.length + 1}`, kind, text, src });
   const r = a.results;
@@ -89,15 +89,17 @@ export function evidenceList(a, ledger, biz, cand) {
   for (const t of ledger?.threads || []) if (t.verdict && t.verdict !== "no evidence") add("ledger", `Promise "${t.title}" (said in ${t.callsMentioned.join(", ")}) → ${t.verdict}${t.actual ? ` (target ${t.target}, actual ${t.actual})` : t.actualText ? ` (${t.actualText})` : ""}${t.history.some((h) => ["raised", "lowered", "pushed out"].includes(h.change)) ? `; goalpost: ${t.history.map((h) => h.change).join(" → ")}` : ""}`, `transcript p.${t.latest.page}`);
   for (const g of biz?.data?.guidance || []) add("guidance", `Guidance: ${g.statement}`, `latest call p.${g.page}`);
   for (const w of biz?.data?.watch_items || []) add("mgmt-acknowledged", w.item, `latest call p.${w.page}`);
+  for (const f of aud?.flags || []) add("auditor", `${f.title}: “${(f.ev?.quote || "").slice(0, 200)}”`, `annual report p.${f.ev?.page}`);
+  if (aud?.clean) add("auditor", "Auditor's reports (standalone + consolidated): unmodified, no emphasis of matter, no going-concern doubt, no adverse CARO remarks", "annual report");
   const ok = (cand?.calls || []).filter((x) => x.parsed);
   if (ok.length) add("candour", `Non-answer rate to analyst questions by call (newest first): ${ok.map((x) => `${x.period} ${x.nonAnswerRate}%`).join(", ")}`, "transcript lexicon (Gow et al. 2021)");
   if (cand?.divergence && cand.divergence.verdict !== "aligned") add("candour", `Narrative vs numbers: ${cand.divergence.verdict}. ${cand.divergence.why}`, cand.divergence.rule);
   return ev;
 }
 
-export async function bullBear(symbol, a, ledger, biz, cand) {
-  const ev = evidenceList(a, ledger, biz, cand);
-  const key = `bb:v6:${symbol}:${hash(JSON.stringify(ev.map((e) => e.text)))}`;
+export async function bullBear(symbol, a, ledger, biz, cand, aud) {
+  const ev = evidenceList(a, ledger, biz, cand, aud);
+  const key = `bb:v7:${symbol}:${hash(JSON.stringify(ev.map((e) => e.text)))}`;
   return memo(key, 7 * 864e5, async () => {
     const { json, meta } = await llmJSON({ tier: "reason", system: BULLBEAR, user: ev.map((e) => `${e.id} [${e.kind}] ${e.text}`).join("\n"), maxTokens: 900 });
     const ids = new Set(ev.map((e) => e.id));
