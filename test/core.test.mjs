@@ -122,3 +122,19 @@ test("alerts: volume and sigma triggers explain themselves", () => {
   assert.ok(al.some((a) => a.kind === "volume" && /5× normal/.test(a.title)));
   assert.ok(al.some((a) => a.kind === "move"));
 });
+
+import { betaQuantile, credibility } from "../netlify/lib/credibility.js";
+test("credibility: Beta posterior quantiles and style labels", () => {
+  assert.ok(Math.abs(betaQuantile(0.5, 1, 1) - 0.5) < 1e-6);
+  assert.ok(Math.abs(betaQuantile(0.1, 2, 2) - 0.1958) < 1e-3);
+  const c = credibility([
+    { verdict: "delivered", history: [{ change: "first said" }, { change: "lowered" }] },
+    { verdict: "delivered", history: [{ change: "first said" }] },
+    { verdict: "missed", history: [{ change: "first said" }] },
+    { verdict: "too early", history: [] },
+  ]);
+  assert.equal(c.scored, 3);
+  assert.equal(c.pNext, 60); // Beta(3,2) mean
+  assert.equal(c.style, "walks down, then beats");
+  assert.equal(credibility([{ verdict: "too early", history: [] }]), null);
+});

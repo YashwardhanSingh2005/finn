@@ -92,7 +92,7 @@ function Company({ symbol, back, startTab }) {
       </div>
       <div className="kpis mt8">
         {["Market Cap", "Stock P/E", "ROCE", "ROE", "Dividend Yield", "Book Value"].filter((k) => c.ratios[k]).slice(0, 6).map((k) => (
-          <div className="kpi" key={k}><div className="k">{k}</div><div className="v">{c.ratios[k].replace("Cr.", "cr")}</div></div>
+          <div className="kpi" key={k}><div className="k">{k}</div><div className="v">{k === "Market Cap" ? mcap(c.ratios[k]) : c.ratios[k].replace("Cr.", "cr")}</div></div>
         ))}
       </div>
       <div className="segmented mt12" role="tablist">
@@ -150,7 +150,7 @@ function Snapshot({ c, biz, L, goLedger }) {
           {L?.sayDo != null && (
             <button className="row small" style={{ background: "var(--surface-2)", borderRadius: 10, padding: "8px 10px", width: "100%", textAlign: "left", marginBottom: 6 }} onClick={goLedger}>
               <span className="serif" style={{ fontSize: 22, fontWeight: 600 }}>{L.sayDo}</span>
-              <span className="grow ink2">say–do score across {L.sayDoBasis} checked promises{L.goalpostMoves ? `, ${L.goalpostMoves} goalpost move${L.goalpostMoves > 1 ? "s" : ""}` : ""}. Weigh this guidance accordingly.</span><Icon.chev />
+              <span className="grow ink2">{L.credibility ? `${L.credibility.pNext}% chance management keeps its next promise (range ${L.credibility.lo}–${L.credibility.hi}%)` : `say–do score across ${L.sayDoBasis} checked promises`}{L.goalpostMoves ? `, ${L.goalpostMoves} goalpost move${L.goalpostMoves > 1 ? "s" : ""}` : ""}. Weigh this guidance accordingly.</span><Icon.chev />
             </button>
           )}
           {b.guidance.map((g, i) => (
@@ -250,6 +250,24 @@ function Ledger({ st, judged }) {
         </div>
         <div className="bar mt12">{segs.map(([k, col]) => L.tally[k] ? <i key={k} style={{ width: `${(L.tally[k] / total) * 100}%`, background: col }} /> : null)}</div>
         <div className="legend mt4">{Object.entries(L.tally).map(([k, n]) => <span key={k}>{VERDICT[k]?.label || k} {n}</span>)}</div>
+        {L.credibility && (
+          <div className="mt12" style={{ background: "var(--surface-2)", borderRadius: 12, padding: "10px 12px" }}>
+            <div className="row between wrap">
+              <div className="small"><b>Chance the next promise is kept</b></div>
+              {L.credibility.style && <span className={`pill ${L.credibility.style === "reliable" ? "good" : "watch"}`} title={L.credibility.styleWhy}>{L.credibility.style}</span>}
+            </div>
+            <div className="row" style={{ alignItems: "baseline", gap: 10 }}>
+              <span className="serif" style={{ fontSize: 30, fontWeight: 600 }}>{L.credibility.pNext}%</span>
+              <span className="small ink2">80% range {L.credibility.lo}–{L.credibility.hi}% · from {L.credibility.kept} of {L.credibility.scored} kept</span>
+            </div>
+            <div style={{ position: "relative", height: 8, background: "var(--line)", borderRadius: 4, marginTop: 6 }}>
+              <div style={{ position: "absolute", left: `${L.credibility.lo}%`, width: `${L.credibility.hi - L.credibility.lo}%`, top: 0, bottom: 0, background: "color-mix(in srgb, var(--accent) 45%, transparent)", borderRadius: 4 }} />
+              <div style={{ position: "absolute", left: `calc(${L.credibility.pNext}% - 1px)`, width: 3, top: -3, bottom: -3, background: "var(--accent)", borderRadius: 2 }} />
+            </div>
+            {L.credibility.styleWhy && <div className="tiny muted mt4">{L.credibility.styleWhy}.</div>}
+            <div className="tiny muted mt4">A manager’s track record is priced: investors weight forecasts by past accuracy (Hutton & Stocken 2009). FINN makes that weight explicit as a Beta posterior. Few promises means a wide range.</div>
+          </div>
+        )}
         <div className="kpis mt12">
           <div className="kpi"><div className="k">Promises tracked</div><div className="v">{L.threads.length}</div></div>
           <div className="kpi"><div className="k">Goalposts moved</div><div className={`v ${L.goalpostMoves ? "down" : ""}`}>{L.goalpostMoves}</div></div>
@@ -469,4 +487,11 @@ function Candour({ symbol }) {
       <p className="tiny muted">Method: question–answer pairing from the transcript’s speaker turns. Non-answer phrases after Gow, Larcker & Zakolyukina (2021), “Non-answers during conference calls” (JAR). Tone and uncertainty use subsets of the Loughran & McDonald (2011) finance word lists. Deterministic, free, same rules for every company.{d.calls.some((x) => x.error) ? ` ${d.calls.filter((x) => x.error).length} transcript(s) couldn’t be fetched.` : ""}</p>
     </div>
   );
+}
+
+// "₹ 1,19,121 Cr." -> "₹1.19 L cr" (lakh crore), "₹ 8,450 Cr." -> "₹8,450 cr"
+function mcap(t) {
+  const v = Number(String(t).replace(/[^\d.]/g, ""));
+  if (!v) return t;
+  return v >= 1e5 ? `₹${(v / 1e5).toFixed(2)} L cr` : `₹${Math.round(v).toLocaleString("en-IN")} cr`;
 }

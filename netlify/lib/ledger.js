@@ -11,6 +11,7 @@
 import { fetchPdfPages, withPageMarkers, verifyQuote } from "./pdf.js";
 import { llmJSON } from "./llm.js";
 import { periodToFQ, fqLabel, isFinancial } from "./fundamentals.js";
+import { credibility } from "./credibility.js";
 
 const EXTRACT_SYSTEM = `You read Indian listed-company earnings-call transcripts and extract FORWARD-LOOKING GUIDANCE given by management (not analysts).
 Return JSON: {"call_quarter": "Q2FY27" (the quarter whose results are being discussed, Indian FY ends March), "claims":[...]}.
@@ -201,6 +202,7 @@ export async function buildLedger(c, { n = 4, cache, judge = true } = {}) {
     calls: extracted.map((e) => ({ period: e.period, callQuarter: e.label, url: e.transcript, nPages: e.nPages, claims: e.claims?.length || 0, dropped: e.dropped || 0, error: e.error })),
     threads: threads.map(({ versions, first, ...t }) => ({ ...t, latest: strip(t.latest), versions: versions.map(strip) })),
     tally, sayDo: credit, sayDoBasis: scored.length, goalpostMoves: moved.length,
+    credibility: credibility(threads),
     judged: judge, consolidatedNow: consol, notRepeated: threads.filter((t) => t.notRepeated).length,
     cost,
   };
