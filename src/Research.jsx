@@ -196,7 +196,9 @@ function Snapshot({ c, biz, L, goLedger }) {
 
 const SEG_COLORS = ["#8a5f00", "#3b5bab", "#1f7a4d", "#b3261e", "#6b4fa0", "#5f6b7a"];
 function SegmentBar({ segs }) {
-  const s = segs.filter((x) => x.share_pct != null);
+  // never cycle colours: beyond 6 segments, the smallest fold into "Other"
+  let s = segs.filter((x) => x.share_pct != null).sort((a, b) => b.share_pct - a.share_pct);
+  if (s.length > 6) { const rest = s.slice(5); s = [...s.slice(0, 5), { name: `Other (${rest.length})`, share_pct: +rest.reduce((t, x) => t + x.share_pct, 0).toFixed(1) }]; }
   if (s.length < 2) return null;
   return (
     <div className="mt4">
