@@ -17,10 +17,12 @@ Please find my submission for the FINN build challenge below.
   - Price and volume triggers are user-defined, either absolute or in σ.
   - Management changes come with the appointee's profile taken from the filing itself, plus LinkedIn.
   - Results come with Revenue, EBITDA, PBT and PAT, QoQ and YoY. EBITDA is computed in code from the filing's own lines and reconciled with standardised data.
-- **Pull centres on a Promise Ledger.**
+- **Pull centres on two audits of management.**
+  - **Candour** needs no model and costs nothing. Every analyst question is paired with management's answer. Non-answers are flagged after Gow, Larcker & Zakolyukina (2021), and each one is shown verbatim with its page. Tone and uncertainty are tracked over four calls, and a *narrative vs numbers* check fires when tone moves against reported growth. The same view shows topics several analysts kept pressing on, analyst praise, and a ranking of all holdings by how often their management dodges.
+- **The Promise Ledger is the second audit.**
   - FINN reads a company's last four earnings calls and extracts every forward-looking promise, verifying each quote against the transcript.
   - It links the same promise across calls and flags when management moves the goalposts (a target lowered, or a deadline pushed out).
-  - It checks each promise against reported numbers and produces a say–do score.
+  - It checks each promise against reported numbers and turns the track record into a probability: *"83% chance the next promise is kept (80% range 63–98%)"*. This is a Beta posterior, following Hutton & Stocken (2009) on credibility being priced. It also labels the pattern, e.g. *"walks down, then beats"*.
   - The same view covers the business snapshot, trajectory, balance sheet, cash quality and a bull/bear case. Each bull or bear point may cite only verified evidence.
   - It works for any NSE ticker.
 
@@ -28,7 +30,8 @@ Please find my submission for the FINN build challenge below.
 
 1. **Models locate and quote; code computes.** No number on screen is produced by a model. Every model-supplied quote is checked against the source PDF; quotes that fail are dropped, and the drop is counted on screen.
 2. **Rules before models for triage.** Rules are free, instant and explainable. Models are spent only on items that earn attention: a cheap model (Haiku) reads documents, and a stronger model (Sonnet) is used only for cross-call judgement, batched to one call per company. Everything is cached by document. A new company costs about ₹5 the first time and nothing after that, and a cost meter in the app shows the spend.
-3. **I tested whether the ranking works.** I re-scored a year of portfolio filings, leaving out the market-reaction term so the test isn't circular.
+3. **I measured instead of asserting.** I hand-labelled the non-answer detector over three rounds on fresh samples: 86–92% precision and about 55–60% recall, reported as lower bounds. One literature idea, script-echo, didn't transfer to Indian calls, so I dropped it and documented why. A parser regression set covers 9 transcript layouts, and 15 unit tests cover the deterministic core.
+4. **I tested whether the ranking works.** I re-scored a year of portfolio filings, leaving out the market-reaction term so the test isn't circular.
    - The first version barely separated urgent filings from routine ones.
    - A per-category breakdown showed which weights were wrong.
    - After re-tuning, the result held on the six months I hadn't tuned on: *Needs you* filings were followed by a ≥2σ move **27%** of the time, vs **11%** for routine ones. Only 6% of filings now reach *Needs you*.

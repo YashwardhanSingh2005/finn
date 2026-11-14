@@ -344,37 +344,37 @@ function Money({ a }) {
         <section className="card">
           <h3>Cash quality</h3>
           {!c.fin && <div className="dial mb8"><div className="big" style={{ fontSize: 36 }}>{c.cfoToPat ?? "–"}%</div><div className="small ink2">of {c.years}-year profit arrived as operating cash<br /><span className="muted">Σ CFO ₹{Math.round(c.cfoSum).toLocaleString("en-IN")} cr ÷ Σ PAT ₹{Math.round(c.patSum).toLocaleString("en-IN")} cr</span></div></div>}
-          <table className="fig mt8">
+          <div className="xscroll"><table className="fig mt8">
             <thead><tr><th>₹ cr</th>{c.periods.map((p) => <th key={p}>{p.replace("Mar 20", "FY")}</th>)}</tr></thead>
             <tbody>
               <tr><td className="lab">PAT</td>{c.pat.map((v, i) => <td key={i}>{fmtCr(v).replace("₹", "")}</td>)}</tr>
               <tr><td className="lab">Op. cash</td>{c.cfo.map((v, i) => <td key={i} className={c.pat[i] && v < c.pat[i] * 0.7 ? "down" : ""}>{fmtCr(v).replace("₹", "")}</td>)}</tr>
               <tr><td className="lab">Free cash</td>{c.fcf.map((v, i) => <td key={i} className={cls(v) === "down" ? "down" : ""}>{fmtCr(v).replace("₹", "")}</td>)}</tr>
             </tbody>
-          </table>
+          </table></div>
           <div className="mt8"><Flags flags={c.flags} /></div>
         </section>
       )}
       {b && (
         <section className="card">
           <h3>Balance sheet</h3>
-          <table className="fig">
+          <div className="xscroll"><table className="fig">
             <thead><tr><th>₹ cr</th>{b.periods.map((p) => <th key={p}>{p.replace("Mar 20", "FY").replace("Sep 20", "H1FY")}</th>)}</tr></thead>
             <tbody>
               <tr><td className="lab">Net worth</td>{b.netWorth.map((v, i) => <td key={i}>{fmtCr(v).replace("₹", "")}</td>)}</tr>
               {b.debt && <tr><td className="lab">{b.fin ? "Borrowings" : "Debt"}</td>{b.debt.map((v, i) => <td key={i}>{fmtCr(v).replace("₹", "")}</td>)}</tr>}
               {!b.fin && <tr><td className="lab">Debt / equity</td>{b.de.map((v, i) => <td key={i}>{v == null ? "–" : v.toFixed(2)}</td>)}</tr>}
             </tbody>
-          </table>
+          </table></div>
           {b.wc && (
-            <table className="fig mt12">
+            <div className="xscroll"><table className="fig mt12">
               <thead><tr><th>days</th>{b.wc.periods.map((p) => <th key={p}>{p.replace("Mar 20", "FY")}</th>)}</tr></thead>
               <tbody>
                 {[["Debtor days", b.wc.debtorDays], ["Inventory days", b.wc.inventoryDays], ["Payable days", b.wc.payableDays], ["Cash cycle", b.wc.ccc], [b.wc.roceLabel, b.wc.roce]].filter(([, v]) => v?.some((x) => x != null)).map(([l, v]) => (
                   <tr key={l}><td className="lab">{l}</td>{v.map((x, i) => <td key={i}>{x ?? "–"}</td>)}</tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           )}
           <div className="mt8"><Flags flags={b.flags} /></div>
         </section>
@@ -382,10 +382,10 @@ function Money({ a }) {
       {h && (
         <section className="card">
           <h3>Who owns it</h3>
-          <table className="fig">
+          <div className="xscroll"><table className="fig">
             <thead><tr><th>%</th>{h.periods.map((p) => <th key={p}>{p.replace(" 20", " '")}</th>)}</tr></thead>
             <tbody>{[["Promoters", h.promoters], ["FIIs", h.fii], ["DIIs", h.dii], ["Public", h.public]].filter(([, v]) => v).map(([l, v]) => <tr key={l}><td className="lab">{l}</td>{v.map((x, i) => <td key={i}>{x ?? "–"}</td>)}</tr>)}</tbody>
-          </table>
+          </table></div>
           <div className="mt8"><Flags flags={h.flags} /></div>
         </section>
       )}
@@ -460,7 +460,7 @@ function Candour({ symbol }) {
           ))}
         </div>
         <p className="tiny muted">Share of analyst questions answered with a refusal (“we don’t give…”), an inability (“difficult to say”), or a deferral (“take it offline”). {calls.map((x) => `${x.period}: ${x.nonAnswers.length}/${x.questions}`).join(" · ")}</p>
-        <table className="fig mt8">
+        <div className="xscroll"><table className="fig mt8">
           <thead><tr><th>per call</th>{calls.map((x) => <th key={x.period}>{x.period.replace(" 20", " '")}</th>)}</tr></thead>
           <tbody>
             <tr><td className="lab">Revenue YoY (quarter discussed)</td>{calls.map((x) => <td key={x.period}><Delta v={x.growth?.yoy} /></td>)}</tr>
@@ -472,7 +472,7 @@ function Candour({ symbol }) {
             <tr><td className="lab">Analyst praise (“congratulations…”)</td>{calls.map((x) => <td key={x.period}>{x.praiseRate ?? "–"}%</td>)}</tr>
             <tr><td className="lab">Dodged: hard vs routine Qs</td>{calls.map((x) => <td key={x.period} title={`${x.pushback?.hard} hard / ${x.pushback?.easy} routine questions`}>{x.pushback?.hard >= 6 ? `${x.pushback.hardRate}% / ${x.pushback.easyRate}%` : "–"}</td>)}</tr>
           </tbody>
-        </table>
+        </table></div>
         <p className="tiny muted mt4">Tone = (positive − negative) / (positive + negative) finance words; 1 = all positive. Praise: share of questions opening with a compliment. Analysts praise more when the news is good, so a drop is a quiet skepticism signal (Milian & Smith 2017). “Hard” questions contain doubt or bad-news cues (why, but, concern, decline, delay…); a much higher dodge rate on them than on routine questions is the evasive pattern. Shown only when there are at least 6 hard questions.</p>
       </section>
       {calls.length > 0 && calls[calls.length - 1].topics?.length > 0 && (
