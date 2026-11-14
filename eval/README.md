@@ -40,6 +40,24 @@ The categories follow Gow, Larcker & Zakolyukina (2021), *Non-answers during con
 | Pushback asymmetry (dodge rate on hard vs routine questions) | GLZ 2021 + question-tone cue list | Informative but small-sample (5–18 hard questions per call); POLYCAB's latest call 23% vs 13% | **Kept, guarded**: shown only when there are 6 or more hard questions, with raw counts |
 | Script echo (5-gram overlap of answers with prepared remarks) | Lee 2016, TAR | Almost never fires: 0% in 23 of 24 calls. Indian concall answers aren't read from a script | **Dropped**: computed, not shown |
 
+### 1c. Transcript parser coverage
+
+Indian transcripts come in several layouts:
+- `Name: text` (most issuers)
+- standalone `Name – Firm` headers (Bharti Airtel)
+- `Name: Role - Company` with `Name, Firm` analyst headers (Tata Steel)
+- `Questioner (…)` / `Company Speaker (…)` (Reliance)
+- numbered management lists (Eternal)
+
+A header-line normaliser classifies each speaker by affiliation: brokerages and funds count as analysts, officer titles as management. `test/parse_regression.mjs` pins the expected analyst-question count for 9 transcripts.
+
+**One regression caught by the set:** an early version of the rule treated short management replies that mentioned "capital" as analyst headers, and TCS dropped from 28 to 15 questions. Now a `Name: …` line counts as a header only if it **ends** with an affiliation or title.
+
+**Coverage of the 18-stock portfolio:**
+- 2 companies don't publish transcripts (ITC, Trent).
+- 1 links a non-PDF (Maruti).
+- The remaining holdings parse.
+
 ## 2. Triage score (Push): backtest
 
 This is reproduced in the app under Rules → *Does the score work?* and in the main README.

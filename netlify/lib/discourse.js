@@ -82,7 +82,29 @@ function managementNames(pages) {
  * "Questioner (Name – Firm)", "Company Speaker (Sh Name)" and "Sh Name 00:09:07 – 00:15:37 (Segment)".
  * Normalise those to "Name: " turns and remember the explicit roles.
  */
+const SELL_SIDE = /paribas|sachs|lynch|suisse|barclays|daiwa|mizuho|deutsche|societe|merrill|securities|capital|equit|fund|asset|\bamc\b|research|broking|brokerage|investment|investor(?!\s+relations)|partners|advisor|wealth|insurance|bank of america|\bbofa\b|j\.?\s?p\.?\s?morgan|morgan stanley|goldman|nomura|jefferies|clsa|macquarie|\bubs\b|citi|hsbc|kotak|motilal|nuvama|ambit|iifl|emkay|antique|elara|spark|investec|bernstein|avendus|prabhudas|phillip|systematix|axis|haitong|dolat|centrum|sbicap|icici|hdfc|nirmal|batlivala|anand rathi|individual investor|analyst/i;
+const OFFICER = /officer|director|chairman|chairperson|\bceo\b|\bcfo\b|\bcoo\b|\bmd\b|president|head|investor relations|company secretary|managing|founder|group|executive|vice|limited|ltd/i;
+
 function normaliseLayout(p, roles) {
+  // standalone speaker header lines: "Name – Firm", "Name: Role - Company Limited", "Name - Analyst, Firm"
+  p = p.replace(/^[ \t]*([A-Z][A-Za-z.'’]+(?:[ \t]+[A-Z][A-Za-z.'’]*){0,4})[ \t]*(–|—|-|:|,)[ \t]*([^\n]{2,110})$/gm, (line, name, sep, rest) => {
+    if (sep === "," && (rest.split(/\s+/).length > 6 || !SELL_SIDE.test(rest))) return line; // "Name, Firm" only for known firms
+    if (/[.?!]["”]?\s*$/.test(rest)) return line; // a sentence, not a header
+    if (rest.split(/\s+/).length > 16) return line;
+    // "Name: …" is usually speech — only a header if it ENDS with an affiliation/title.
+    // "Name – Firm" (dash) is almost never speech — a known firm or title anywhere is enough.
+    if (sep === ":" && !/(?:limited|ltd\.?|securities|capital|equities|research|broking|investments?|partners|advisors|asset management|fund|amc|ventures|llp|inc\.?|plc|officer|director|chairman|chairperson|ceo|cfo|coo|md|president|head|relations|secretary|analyst|investor|bank|group|associates|financial services|\))\s*$/i.test(rest)) return line;
+    if (sep !== ":" && !SELL_SIDE.test(rest) && !OFFICER.test(rest) && !/paribas|sachs|lynch|stanley|suisse|jefferies|clsa|nomura|macquarie|bernstein|barclays|credit|dbs|daiwa|mizuho|smbc|bnp|societe|deutsche|investec|bofa|merrill|citigroup/i.test(rest)) return line;
+    const isAnalyst = SELL_SIDE.test(rest) && !/limited\s*$/i.test(rest.replace(/securities limited\s*$/i, "x"));
+    const isMgmt = !isAnalyst && OFFICER.test(rest);
+    if (!isAnalyst && !isMgmt) return line;
+    (isAnalyst ? roles.analyst : roles.mgmt).add(name.trim());
+    return `${name.trim()}: `;
+  });
+  // numbered management lists: "1. Albinder Singh Dhindsa – Chief Executive Officer, Eternal Limited"
+  p.replace(/^\s*\d+\.\s+([A-Z][A-Za-z.' ]{2,40}?)\s*[–—-]\s*[^\n]*(?:officer|director|head|chairman|president)/gim, (_, n) => { roles.mgmt.add(n.trim()); return ""; });
+  if (/^\s*(?:QUESTIONS? AND ANSWERS|QUESTION-AND-ANSWER SESSION|Q&A)\s*$/im.test(p)) p = p.replace(/^\s*(?:QUESTIONS? AND ANSWERS|QUESTION-AND-ANSWER SESSION|Q&A)\s*$/im, "Moderator: We will now begin the question-and-answer session.");
+  p = p.replace(/^\s*(Operator|Moderator)\s*$/gm, "$1: ");
   return p
     .replace(/^\s*Questioner\s*\(\s*([^–\-)]+?)\s*(?:[–-][^)]*)?\)\s*$/gm, (_, n) => { roles.analyst.add(n.trim()); return `${n.trim()}: `; })
     .replace(/^\s*Company Speakers?\s*\(\s*(?:Sh\.?|Shri|Smt\.?|Mr\.?|Ms\.?)?\s*([^)]+?)\s*\)\s*$/gm, (_, n) => { roles.mgmt.add(n.trim()); return `${n.trim()}: `; })
@@ -110,6 +132,7 @@ export function parseTranscript(pages) {
   for (const t of turns) {
     const sp = t.speaker.toLowerCase();
     if (/moderator|operator/.test(sp)) { t.role = "moderator"; if (/(?:first|next|following|last) question|question[- ]and[- ]answer session|begin (?:the |with the )?(?:question|q&a)|open (?:the )?(?:floor|line) for (?:questions|q&a)/i.test(t.text)) qaStarted = true; continue; }
+    if (roles.analyst.has(t.speaker)) qaStarted = true; // an identified analyst speaking means Q&A has begun
     t.role = roles.analyst.has(t.speaker) ? "analyst" : roles.mgmt.has(t.speaker) || isMgmt(t.speaker) || !qaStarted ? "management" : "analyst";
     t.section = qaStarted ? "qa" : "prepared";
   }

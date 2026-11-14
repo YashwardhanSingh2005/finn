@@ -9,16 +9,19 @@ import { json, fail } from "../lib/http.js";
 
 async function one(symbol) {
   const { c } = await companyCore(symbol);
-  for (const call of pickCalls(c, 2)) {
+  const calls = pickCalls(c, 2);
+  if (!calls.length) return { symbol, name: c.name, reason: "doesn't publish earnings-call transcripts" };
+  let lastErr = "transcript layout not recognised";
+  for (const call of calls) {
     try {
-      const r = await memo(`callstat:v1:${call.transcript}`, Infinity, async () => {
+      const r = await memo(`callstat:v2:${call.transcript}`, Infinity, async () => {
         const a = analyseCall((await fetchPdfPages(call.transcript, { maxPages: 45 })).pages);
         return { parsed: a.parsed, questions: a.questions, analysts: a.analysts, nonAnswerRate: a.nonAnswerRate, nonAnswers: a.nonAnswers.length, praiseRate: a.praiseRate, toneQA: a.qa.tone, uncQA: a.qa.uncPer1k, hard: a.pushback };
       });
       if (r.parsed) return { symbol: c.symbol, name: c.name, period: call.period, url: call.transcript, ...r };
-    } catch {}
+    } catch (e) { lastErr = /pdf (406|429|5\d\d)/.test(e.message) ? "exchange didn't serve the PDF; retry later" : /Invalid PDF/.test(e.message) ? "linked transcript isn't a PDF" : "couldn't read the transcript"; }
   }
-  return { symbol, error: "no parseable transcript" };
+  return { symbol, name: c.name, reason: lastErr };
 }
 
 // GET /api/league?symbol=X → one company's row (the client assembles the table progressively).

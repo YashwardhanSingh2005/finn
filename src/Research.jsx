@@ -530,7 +530,8 @@ function League({ holdings, onPick }) {
     Promise.all([worker(), worker(), worker()]);
     return () => { alive = false; };
   }, [open]); // eslint-disable-line
-  const ok = Object.values(rows).filter((r) => !r.error && r.nonAnswerRate != null).sort((a, b) => b.nonAnswerRate - a.nonAnswerRate);
+  const ok = Object.values(rows).filter((r) => !r.error && !r.reason && r.nonAnswerRate != null).sort((a, b) => b.nonAnswerRate - a.nonAnswerRate);
+  const skipped = Object.values(rows).filter((r) => r.reason || r.error);
   const pending = holdings.length - Object.keys(rows).length;
   const max = Math.max(20, ...ok.map((r) => r.nonAnswerRate));
   const med = ok.length ? ok.map((r) => r.nonAnswerRate).sort((a, b) => a - b)[Math.floor(ok.length / 2)] : null;
@@ -554,6 +555,7 @@ function League({ holdings, onPick }) {
             </button>
           ))}
           {pending > 0 && <div className="row small muted mt8"><span className="spin" /> Reading {pending} more call{pending > 1 ? "s" : ""}…</div>}
+          {skipped.length > 0 && <p className="tiny muted mt8">Not ranked: {skipped.map((r) => `${r.symbol} (${r.reason || "failed"})`).join(" · ")}</p>}
           {med != null && <p className="tiny muted mt8">Portfolio median {med}%. Red = more than 1.5× the median. Tap a name for the dodged questions, verbatim. Counts are lower bounds (detector recall ≈ 55–60%), with the same rules for every company.</p>}
         </>)}
       </div>
