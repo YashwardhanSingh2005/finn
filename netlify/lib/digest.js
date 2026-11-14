@@ -73,7 +73,7 @@ export async function buildDigest({ from, to, holdings, prefs = {}, rules = DEFA
   const per = await Promise.all(holdings.map(async (h) => {
     try {
       const ctx = await companyContext(h.symbol);
-      const f = await memo(`fil:v2:${h.symbol}:${from.toISOString().slice(0, 13)}:${to.toISOString().slice(0, 13)}`, 15 * 60e3, () => filingsFor(ctx, from, to));
+      const f = await memo(`fil:v3:${h.symbol}:${from.toISOString().slice(0, 13)}:${to.toISOString().slice(0, 13)}`, 15 * 60e3, () => filingsFor(ctx, from, to));
       return { h, ctx, f };
     } catch (e) {
       return { h, error: e.message };
