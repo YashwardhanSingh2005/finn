@@ -77,11 +77,25 @@ function managementNames(pages) {
   return new Set(names.flatMap((n) => n.split(/\s+/).filter((p) => p.length > 2)));
 }
 
+/**
+ * Some issuers (e.g. Reliance) don't use "Name: text". They use header lines such as
+ * "Questioner (Name – Firm)", "Company Speaker (Sh Name)" and "Sh Name 00:09:07 – 00:15:37 (Segment)".
+ * Normalise those to "Name: " turns and remember the explicit roles.
+ */
+function normaliseLayout(p, roles) {
+  return p
+    .replace(/^\s*Questioner\s*\(\s*([^–\-)]+?)\s*(?:[–-][^)]*)?\)\s*$/gm, (_, n) => { roles.analyst.add(n.trim()); return `${n.trim()}: `; })
+    .replace(/^\s*Company Speakers?\s*\(\s*(?:Sh\.?|Shri|Smt\.?|Mr\.?|Ms\.?)?\s*([^)]+?)\s*\)\s*$/gm, (_, n) => { roles.mgmt.add(n.trim()); return `${n.trim()}: `; })
+    .replace(/^\s*(?:Sh\.?|Shri|Smt\.?)\s+([A-Z][A-Za-z. ]+?)\s+\d{2}:\d{2}:\d{2}.*$/gm, (_, n) => { roles.mgmt.add(n.trim()); return `${n.trim()}: `; })
+    .replace(/^\s*Q&A Session\b.*$/gm, "Moderator: We will now begin the question-and-answer session.\n");
+}
+
 export function parseTranscript(pages) {
   const mg = managementNames(pages);
+  const roles = { analyst: new Set(), mgmt: new Set() };
   const turns = [];
   pages.forEach((p, pi) => {
-    const t = p.replace(HEADER, "");
+    const t = normaliseLayout(p, roles).replace(HEADER, "");
     const idx = [];
     let m;
     TURN.lastIndex = 0;
@@ -96,12 +110,12 @@ export function parseTranscript(pages) {
   for (const t of turns) {
     const sp = t.speaker.toLowerCase();
     if (/moderator|operator/.test(sp)) { t.role = "moderator"; if (/(?:first|next|following|last) question|question[- ]and[- ]answer session|begin (?:the |with the )?(?:question|q&a)|open (?:the )?(?:floor|line) for (?:questions|q&a)/i.test(t.text)) qaStarted = true; continue; }
-    t.role = isMgmt(t.speaker) || !qaStarted ? "management" : "analyst";
+    t.role = roles.analyst.has(t.speaker) ? "analyst" : roles.mgmt.has(t.speaker) || isMgmt(t.speaker) || !qaStarted ? "management" : "analyst";
     t.section = qaStarted ? "qa" : "prepared";
   }
   // speakers seen in prepared remarks are management even if the header parse missed them
   const prepSpeakers = new Set(turns.filter((t) => t.section === "prepared" && t.role === "management").map((t) => t.speaker));
-  for (const t of turns) if (t.role === "analyst" && prepSpeakers.has(t.speaker)) t.role = "management";
+  for (const t of turns) if (t.role === "analyst" && prepSpeakers.has(t.speaker) && !roles.analyst.has(t.speaker)) t.role = "management";
   return { turns, mgmtNames: [...mg] };
 }
 

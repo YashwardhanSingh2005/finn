@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Today from "./Today.jsx";
 import Research from "./Research.jsx";
 import Rules from "./Rules.jsx";
+import About from "./About.jsx";
 import { Icon } from "./ui.jsx";
 import { usePersist } from "./lib.js";
 import { PORTFOLIO } from "../netlify/lib/portfolio.js";
@@ -17,6 +18,7 @@ export default function App() {
   const [holdings, setHoldings] = usePersist("holdings", null);
   const [theme, setTheme] = usePersist("theme", "system");
   const [toastMsg, setToast] = useState(null);
+  const [about, setAbout] = useState(false);
 
   useEffect(() => {
     if (theme === "system") document.documentElement.removeAttribute("data-theme");
@@ -41,6 +43,7 @@ export default function App() {
         <div className="brand">FIN<b>N</b></div>
         <div className="sub">{tab === "today" ? "what changed, ranked" : tab === "research" ? "research with receipts" : "your rules"}</div>
         <span className="spacer" />
+        <button className="iconbtn" aria-label="How FINN works" onClick={() => setAbout(true)} style={{ fontFamily: "var(--serif)", fontSize: 18, fontWeight: 600 }}>i</button>
         <button className="iconbtn" aria-label="Toggle theme" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}><Icon.moon /></button>
       </header>
       <main>
@@ -58,6 +61,7 @@ export default function App() {
         </div>
       </nav>
       {toastMsg && <div className="toast" role="status">{toastMsg}</div>}
+      <About open={about} onClose={() => setAbout(false)} />
     </div>
   );
 }
