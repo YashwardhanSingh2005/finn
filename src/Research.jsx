@@ -73,6 +73,7 @@ function Company({ symbol, back, startTab }) {
   // Start the slow layers immediately in the background so they're warm when the tab is opened.
   const ledger = useApi("ledger", { symbol, judge: 0 }, [], { enabled: !!c });
   const judged = useApi("ledger", { symbol, judge: 1 }, [], { enabled: !!ledger.data });
+  const cand = useApi("candour", { symbol }, [], { enabled: !!c && (tab === "ledger" || tab === "candour") });
   const biz = useApi("brief", { symbol, part: "business" }, [], { enabled: !!c });
 
   if (loading) return <><button className="btn ghost" onClick={back}><Icon.back width="18" height="18" /> Back</button><Skeleton h={120} n={3} /></>;
@@ -102,9 +103,9 @@ function Company({ symbol, back, startTab }) {
       </div>
       <div className="mt12">
         {tab === "snap" && <Snapshot c={c} biz={biz} L={judged.data || ledger.data} goLedger={() => setTab("ledger")} />}
-        {tab === "ledger" && <Ledger st={ledger} judged={judged} />}
+        {tab === "ledger" && <Ledger st={ledger} judged={judged} cand={cand.data} />}
         {tab === "money" && <Money a={c.analysis} />}
-        {tab === "candour" && <Candour symbol={symbol} />}
+        {tab === "candour" && <Candour symbol={symbol} st={cand} />}
         {tab === "bb" && <BullBear symbol={symbol} ready={!!judged.data || !!judged.error} />}
       </div>
       <p className="costbar">Numbers: {c.consolidated ? "consolidated" : "standalone"} statements as filed (via screener.in) · fetched {new Date(c.fetchedAt).toLocaleString("en-IN")}</p>
@@ -227,7 +228,7 @@ function MiniBars({ periods, a, b, la, lb }) {
   );
 }
 
-function Ledger({ st, judged }) {
+function Ledger({ st, judged, cand }) {
   const { data: L0, loading, error, reload } = st;
   const L = judged.data || L0;
   if (loading && !L) return (
@@ -281,7 +282,7 @@ function Ledger({ st, judged }) {
         {!L.judged && <div className="row small muted mt8"><span className="spin" /> Checking open promises against the latest calls…</div>}
       </section>
       {threads.length === 0 && <p className="empty">No forward-looking guidance in the last four calls. This management team doesn’t guide.</p>}
-      {threads.map((t, i) => <Thread key={i} t={t} />)}
+      {threads.map((t, i) => <Thread key={i} t={t} dodges={dodgesFor(t, cand)} />)}
       <p className="tiny muted">How verdicts are made. <b>Computed</b>: consolidated growth or margin promises are checked in code against reported quarterly numbers for the promised period (±0.5 pt tolerance). Open-ended targets (“medium term”) are checked against the last four quarters. <b>Judgement</b>: segment-level or non-financial promises are judged by a stronger model, using only the latest transcripts. Each judgement must quote the transcript, and the quote is checked, or the verdict is withheld.</p>
     </div>
   );
@@ -292,7 +293,22 @@ const UP_GOOD = new Set(["ebitda_margin", "revenue_growth", "pat_growth", "ebitd
 const changeCls = (h, metric) => h.change === "pushed out" ? "risk" : h.change === "pulled in" ? "good" : ["raised", "lowered"].includes(h.change) ? (UP_GOOD.has(metric) ? (h.change === "raised" ? "good" : "risk") : "watch") : "neutral";
 const changeLabel = (h, metric) => ["raised", "lowered"].includes(h.change) && !UP_GOOD.has(metric) ? `revised ${h.change === "raised" ? "↑" : "↓"}` : h.change;
 
-function Thread({ t }) {
+// Promises × Candour: did analysts ask about this promise, and did management dodge? (keyword join)
+const STOPW = new Set("with from that this have will into over margin margins growth target range basis term long medium short year years revenue business segment percent than faster first rate market markets grow growing more much also there their about what which when quarter quarters next last time industry overall total good number numbers guidance expect expected sustain sustainable level levels terms".split(" "));
+const keyw = (t) => new Set((t.toLowerCase().match(/[a-z][a-z&-]{3,}/g) || []).filter((w) => !STOPW.has(w)));
+function dodgesFor(t, cand) {
+  if (!cand?.calls) return [];
+  const title = keyw(t.title), k = keyw(`${t.title} ${t.latest?.statement || ""}`);
+  const out = [];
+  for (const c of cand.calls) for (const na of c.nonAnswers || []) {
+    const q = keyw(na.question);
+    const shared = [...k].filter((w) => q.has(w));
+    if (shared.length >= 2 && shared.some((w) => title.has(w))) out.push({ ...na, call: c.period, url: c.url, shared });
+  }
+  return out.slice(0, 2);
+}
+
+function Thread({ t, dodges = [] }) {
   const [open, setOpen] = useState(false);
   const v = VERDICT[t.verdict || "pending"] || VERDICT.pending;
   const l = t.latest;
@@ -311,6 +327,7 @@ function Thread({ t }) {
           {t.actual && <div className="small mt4"><span className="muted">target</span> {t.target} <span className="muted">· actual</span> <strong>{t.actual}</strong>{t.coverage && <span className="muted"> ({t.coverage})</span>}</div>}
           {!t.actual && t.actualText && <div className="small mt4"><span className="muted">latest:</span> {t.actualText}</div>}
           {t.reason && <div className="small ink2 mt4">{t.reason}</div>}
+          {dodges.length > 0 && <div className="small mt4" style={{ color: "var(--watch)", fontWeight: 500 }}>Analysts asked about this; management dodged ({dodges.map((d) => d.call).join(", ")})</div>}
           {moves.length > 0 && <div className={`small mt4 ${moves.some((m) => changeCls(m, l.metric) === "risk") ? "down" : ""}`} style={{ fontWeight: 500 }}>Goalpost {moves.map((m) => { const prev = t.history[t.history.indexOf(m) - 1]; return `${changeLabel(m, l.metric)} in ${m.call}${prev?.band && m.band ? `: ${prev.band} → ${m.band}` : m.band ? ` (to ${m.band})` : ""}${m.change.startsWith("pushed") || m.change.startsWith("pulled") ? `: ${prev?.horizon} → ${m.horizon}` : ""}`; }).join("; ")}</div>}
         </div>
         <div style={{ textAlign: "right" }}>
@@ -325,6 +342,14 @@ function Thread({ t }) {
           <Receipt url={l.transcript} page={l.page} label="transcript" extra={`quote match ${Math.round((l.verifyScore || 1) * 100)}%`} />
           {t.calc && <div className="mt8 small"><span className="muted">Check:</span> {t.calc}</div>}
           {t.evidence && (<><div className="small muted mt8">Evidence, {t.evidence.call} call:</div><div className="quote">“{t.evidence.quote}”</div><Receipt url={t.evidence.url} page={t.evidence.page} label="transcript" extra="verified" /></>)}
+          {dodges.map((d, i) => (
+            <div key={i} className="mt8">
+              <div className="small muted">{d.analyst} asked on the {d.call} call <span className="tiny">(shared terms: {d.shared.join(", ")})</span>:</div>
+              <div className="small ink2">“{d.question}”</div>
+              <div className="quote">“{d.answer}”</div>
+              <Receipt url={d.url} page={d.page} label={`${d.responder}, transcript`} extra={`${d.kind}: “${d.phrase}”`} />
+            </div>
+          ))}
           {t.versions.length > 1 && (
             <details className="mt8"><summary className="small linkish">How the wording changed across {t.versions.length} calls</summary>
               {t.versions.map((x, i) => <div key={i} className="small mt8"><span className="tick">{x.callQuarter}</span> {x.statement} <Receipt url={x.transcript} page={x.page} label="p" /></div>)}
@@ -430,8 +455,8 @@ function BullBear({ symbol, ready }) {
 const NA_CLS = { refuse: "risk", unable: "watch", defer: "info" };
 
 /** How management talks: non-answers, uncertainty, tone, and whether the story matches the numbers. */
-function Candour({ symbol }) {
-  const { data: d, loading, error } = useApi("candour", { symbol });
+function Candour({ symbol, st }) {
+  const { data: d, loading, error } = st;
   if (loading) return <div className="card"><div className="row"><span className="spin" /> <strong>Reading the last four calls…</strong></div><p className="small muted">Pairing every analyst question with management’s answer and flagging non-answers. No AI model involved: published word lists, applied the same way every time.</p></div>;
   if (error) return <div className="card"><p className="err">{error.message}</p></div>;
   const calls = d.calls.filter((x) => x.parsed).slice().reverse(); // oldest -> newest
