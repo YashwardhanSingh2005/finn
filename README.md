@@ -98,6 +98,27 @@ React (Vite) PWA, mobile-first ──► Netlify Functions (Node 22) ──► s
 
 A full research page for a company FINN has never seen (four transcripts, snapshot, ledger, bull vs bear) costs about **$0.06 ≈ ₹5**. It then costs **₹0** for every later viewer, because outputs are cached by document URL and the cache key changes only when a new call is filed.
 
+## Does the triage score work? (backtest)
+
+Rules → Does the score work? re-scores every portfolio filing from the past year *without* the market-reaction term, so the test isn't circular. It then compares each filing with the stock's next-session move, in units of that stock's own 60-day volatility.
+
+| Tier | Last 6 months (used for tuning): avg move · share of moves ≥ 2σ | **6 months before (held out): avg move · share ≥ 2σ** |
+|---|---|---|
+| Needs you | 1.31σ · 22% | **1.48σ · 27%** |
+| Worth a read | 0.83σ · 8% | 1.02σ · 12% |
+| Filed away | 0.82σ · 7% | 0.95σ · 11% |
+
+**What changed.** Version 1 put 17% of filings in *Needs you* and barely separated them from the rest: 10% vs 7% of filings were followed by a big move.
+
+Broken down by category, the data showed:
+- Results and management changes carry signal: 16% of those filings were followed by big moves.
+- M&A, fund raises, litigation and credit ratings don't: average next-day moves of 0.6–0.7σ.
+- ESOP allotments, takeover-code disclosures and AGM voting results were being misfiled as urgent.
+
+I fixed the rule order and lowered the base scores for M&A, fund raises, litigation and credit ratings. Now 6% of filings reach *Needs you*. On the held-out half, a *Needs you* filing is followed by a ≥2σ move about **2.5× as often** as a routine one.
+
+This covers one portfolio, one year, and next-session moves only: a sanity check, not proof. It is shown in the app with the same caveat.
+
 ## Key decisions and trade-offs
 
 - **Rules before models for triage.** Exchange subjects are formulaic, so a readable rule beats a model call on cost, latency *and* explainability. The trade-off is that unusual wording can fall through to "routine". That is visible in the *Filed away* groups, and the fix is one more rule.

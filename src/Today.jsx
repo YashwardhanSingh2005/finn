@@ -204,6 +204,7 @@ function Expanded({ x, mute, boost, openCompany }) {
         </div>
       ))}
       <div className="rule mt4">category rule: {x.classifiedBy}</div>
+      <WhyNotHigher x={x} />
       <Enrichment x={x} />
       <div className="row wrap mt12">
         {x.url && <a className="btn" href={x.url} target="_blank" rel="noreferrer">Open filing <Icon.ext /></a>}
@@ -326,4 +327,16 @@ function Listen({ items, alerts }) {
     speechSynthesis.speak(u); setOn(true);
   };
   return <button className="listen" onClick={go}>{on ? <Icon.stop width="14" height="14" /> : <Icon.speak width="16" height="16" />} {on ? "Stop" : "Listen · 60s"}</button>;
+}
+
+/** Counterfactual: the smallest thing that would move this card up a tier. Additive scores make this exact. */
+function WhyNotHigher({ x }) {
+  if (x.tier === "act") return null;
+  const target = x.tier === "read" ? 70 : 40, gap = target - x.score;
+  const has = (k) => x.parts.some((p) => p.k === k);
+  const ideas = [];
+  if (!has("Market reaction")) ideas.push("the stock moving ≥ 2σ in the next session (+15)");
+  if (!has("Size")) ideas.push("a deal or order worth ≥ 10% of revenue (+25)");
+  if (!x.parts.some((p) => p.k === "Your rule" && p.v > 0)) ideas.push(`boosting “${x.categoryLabel}” in Rules (+25)`);
+  return <div className="tiny muted mt4">Why not higher: needs +{gap} to reach {x.tier === "read" ? "Needs you" : "Worth a read"}, e.g. {ideas.slice(0, 2).join(" or ")}.</div>;
 }

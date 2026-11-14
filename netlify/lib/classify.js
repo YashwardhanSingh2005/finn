@@ -5,11 +5,11 @@
 export const CATEGORIES = {
   results: { label: "Results", base: 90, icon: "▦" },
   management_change: { label: "Management change", base: 80, icon: "◐" },
-  "M&A": { label: "M&A", base: 85, icon: "⇄" },
-  fund_raise: { label: "Fund raise", base: 75, icon: "₹" },
-  litigation: { label: "Litigation / regulatory", base: 70, icon: "§" },
-  credit_rating: { label: "Credit rating", base: 55, icon: "★" },
-  pledging: { label: "Promoter pledge", base: 65, icon: "⚑" },
+  "M&A": { label: "M&A", base: 65, icon: "⇄" },
+  fund_raise: { label: "Fund raise", base: 55, icon: "₹" },
+  litigation: { label: "Litigation / regulatory", base: 55, icon: "§" },
+  credit_rating: { label: "Credit rating", base: 45, icon: "★" },
+  pledging: { label: "Promoter pledge", base: 60, icon: "⚑" },
   insider_trading: { label: "Insider trade", base: 45, icon: "◇" },
   capex: { label: "Capex", base: 60, icon: "⌂" },
   press_release: { label: "Press release", base: 40, icon: "✎" },
@@ -24,6 +24,11 @@ export const CATEGORIES = {
 
 // Order matters: first match wins. Each rule is shown to the user verbatim ("why this category").
 const RULES = [
+  // checked first: these phrasings otherwise trip the "results" / "M&A" / "fund raise" rules
+  ["unclassified", /esop|esos|employee stock|employees? stock|stock option|sweat equity|loss of share certificate|duplicate share/i],
+  ["agm_egm", /\bagm\b|\begm\b|annual general meeting|extra-?ordinary general meeting|shareholders'? meeting/i],
+  ["postal_ballot", /postal ballot|e-?voting/i],
+  ["insider_trading", /takeover regulations|\bsast\b|regulation 29|reg(ulation)?\.? ?7\(2\)|insider trading|regulation 31/i],
   ["earnings_call", /transcript|audio recording|video recording|recording of|earnings call/i],
   ["investor_meetings", /analyst|institutional investor|investor meet|roadshow|investor conference|con\.? ?call|conference call/i],
   ["results", /financial results|\bresults\b|outcome of board meeting.*(result|financial)|integrated filing.*financ|board meeting.*(approve|consider).*(result|financial)|unaudited|audited financial/i],

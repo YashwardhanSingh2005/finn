@@ -2,11 +2,11 @@
 // in plain words, and editable. Nothing is learned silently.
 import { useState } from "react";
 import { Toggle, Icon } from "./ui.jsx";
-import { useSpend } from "./lib.js";
+import { useSpend, useApi } from "./lib.js";
 
 const CATS = [
-  ["results", "Results", 90], ["M&A", "M&A", 85], ["management_change", "Management change", 80], ["fund_raise", "Fund raise", 75],
-  ["litigation", "Litigation / regulatory", 70], ["pledging", "Promoter pledge", 65], ["capex", "Capex", 60], ["credit_rating", "Credit rating", 55],
+  ["results", "Results", 90], ["M&A", "M&A", 65], ["management_change", "Management change", 80], ["fund_raise", "Fund raise", 55],
+  ["litigation", "Litigation / regulatory", 55], ["pledging", "Promoter pledge", 60], ["capex", "Capex", 60], ["credit_rating", "Credit rating", 45],
   ["insider_trading", "Insider trade", 45], ["press_release", "Press release", 40], ["bonus_split", "Bonus / split", 40], ["dividend", "Dividend", 35],
   ["earnings_call", "Earnings call", 25], ["agm_egm", "AGM / EGM", 15], ["postal_ballot", "Postal ballot", 15], ["investor_meetings", "Investor meet", 10], ["unclassified", "Routine paperwork", 5],
 ];
@@ -53,6 +53,8 @@ export default function Rules({ prefs, setPrefs, rules, setRules, holdings, setH
         </ul>
       </details>
 
+      <Backtest />
+
       <h2 className="section">Portfolio <span className="count">{holdings.length}</span></h2>
       <div className="card flat" style={{ padding: "4px 14px" }}>
         {holdings.map((h) => (
@@ -93,5 +95,39 @@ function Slider({ label, value, min, max, step, unit, note, onChange }) {
       <input className="range" type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(Number(e.target.value))} aria-label={label} />
       <div className="tiny muted">{note}</div>
     </div>
+  );
+}
+
+/** "Does the algorithm work?" The ranking checked against what the market did next, out of sample. */
+function Backtest() {
+  const tuned = useApi("backtest", { days: 180, offset: 0 });
+  const valid = useApi("backtest", { days: 180, offset: 180 });
+  const loading = tuned.loading || valid.loading;
+  const T = tuned.data, V = valid.data;
+  const cell = (st) => <span className="num">{st?.meanZ ?? "–"}σ · <b>{st?.big ?? "–"}%</b></span>;
+  return (
+    <>
+      <h2 className="section">Does the score work?</h2>
+      <div className="card">
+        <p className="small ink2" style={{ marginTop: 0 }}>Every portfolio filing over the past year was re-scored <b>without</b> the market-reaction term, so the check isn’t circular, then compared with the stock’s next-session move in its own volatility units. Weights were tuned on the last 6 months and <b>validated on the 6 months before</b>.</p>
+        {loading && <div className="row small muted"><span className="spin" /> Re-scoring a year of filings…</div>}
+        {T && V && (<>
+          <table className="fig">
+            <thead><tr><th>avg |move| · % ≥ 2σ</th><th>tuned on<br />last 6m</th><th>validation<br />6m before</th></tr></thead>
+            <tbody>
+              <tr><td className="lab"><span className="dot risk" style={{ display: "inline-block", marginRight: 6 }} />Needs you</td><td>{cell(T.act)}</td><td>{cell(V.act)}</td></tr>
+              <tr><td className="lab"><span className="dot watch" style={{ display: "inline-block", marginRight: 6 }} />Worth a read</td><td>{cell(T.read)}</td><td>{cell(V.read)}</td></tr>
+              <tr><td className="lab"><span className="dot" style={{ display: "inline-block", marginRight: 6, background: "var(--ink-3)" }} />Filed away</td><td>{cell(T.skim)}</td><td>{cell(V.skim)}</td></tr>
+              <tr><td className="lab muted">filings</td><td className="muted">{T.filings}</td><td className="muted">{V.filings}</td></tr>
+            </tbody>
+          </table>
+          <p className="small mt8">{V.act?.big && V.skim?.big ? <>On the validation half, a “Needs you” filing was followed by a ≥2σ move <b>{(V.act.big / V.skim.big).toFixed(1)}×</b> as often as a routine one.</> : null}</p>
+          <details className="mt4"><summary className="tiny linkish">What the backtest changed</summary>
+            <p className="tiny ink2">Version 1 put 17% of filings in “Needs you” with almost no separation (10% vs 7% big moves). Broken down by category, results and management changes carried signal (16% big moves). M&A, fund raises, litigation and credit-rating filings didn’t (0.6–0.7σ). ESOP allotments, takeover-code disclosures and AGM voting results were being misfiled as urgent. Fixes: those phrasings are matched first as routine; M&A base 85→65, fund raise 75→55, litigation 70→55, rating 55→45. The deal-size, SEBI-materiality and tone terms still promote the ones that matter.</p>
+          </details>
+          <p className="tiny muted mt4">One portfolio, one year, next-session moves only (σ from the trailing 60 days): a sanity check, not proof.</p>
+        </>)}
+      </div>
+    </>
   );
 }
