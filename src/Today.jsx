@@ -108,7 +108,7 @@ function Digest({ data, win, mute, boost, openCompany, reloading }) {
         {" "}<span className="muted">{skim.length} routine filing{skim.length === 1 ? "" : "s"} filed away.</span>
       </h1>
       <div className="row between wrap">
-        <span className="muted small">{data.counts.total} filings · {data.counts.holdings} holdings · {win.startsWith("since") ? win : `last ${win}`} {reloading && <span className="spin" />}</span>
+        <span className="muted small">{data.counts.total} events{data.counts.collapsed ? ` (${data.counts.collapsed} duplicate filings merged)` : ""} · {data.counts.holdings} holdings · {win.startsWith("since") ? win : `last ${win}`} {reloading && <span className="spin" />}</span>
         <Listen items={[...act, ...read]} alerts={data.alerts} />
       </div>
 
@@ -178,7 +178,7 @@ export function FilingCard({ x, ai, mute, boost, openCompany, defaultOpen }) {
           <div className="row wrap" style={{ gap: 6 }}>
             <button className="tick" onClick={(e) => { e.stopPropagation(); openCompany(x.symbol); }}>{x.symbol}</button>
             <span className="cat">{x.icon} {x.categoryLabel}</span>
-            <span className="muted tiny">· {istTime(x.time)}</span>
+            <span className="muted tiny">· {x.datePrecision === "day" ? new Date(x.time).toLocaleDateString("en-IN", { day: "numeric", month: "short" }) : istTime(x.time)}</span>
             {x.dayMove != null && Math.abs(x.dayMove) >= 1 && <span className={`pill ${x.dayMove > 0 ? "good" : "risk"}`}>{fmtPct(x.dayMove)} that day</span>}
           </div>
           {ai?.data?.one_line ? (
@@ -200,6 +200,11 @@ export function FilingCard({ x, ai, mute, boost, openCompany, defaultOpen }) {
       {x.resultsCut && <ResultsCut r={x.resultsCut} />}
       {x.category === "earnings_call" && /transcript/i.test(`${x.subject} ${x.summary}`) && x.url && <CallCheck x={x} />}
       {x.resultsPending && !open && <div className="small muted mt8">{x.resultsPending}</div>}
+      {x.related?.length > 0 && (
+        <details className="mt8"><summary className="tiny linkish">+{x.related.length} related filing{x.related.length > 1 ? "s" : ""} from the same event</summary>
+          {x.related.map((r, i) => <div key={i} className="tiny ink2 mt4">{r.url ? <a href={r.url} target="_blank" rel="noreferrer" className="linkish">{r.subject}</a> : r.subject}{r.summary ? ` · ${r.summary.slice(0, 90)}` : ""}</div>)}
+        </details>
+      )}
       {open && <Expanded x={x} mute={mute} boost={boost} openCompany={openCompany} />}
       {!open && <button className="btn ghost small mt4" onClick={() => setOpen(true)}>Why this rank <Icon.chev /></button>}
     </article>

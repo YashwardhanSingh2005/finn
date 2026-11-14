@@ -59,7 +59,7 @@ async function filingsFor(ctx, from, to) {
   if (!source) {
     // exchanges unreachable from this host: fall back to screener's mirror (latest 5 filings)
     source = "screener mirror";
-    items = ctx.screenerAnnouncements.map((a, i) => ({ source: "BSE via screener", id: `scr:${ctx.symbol}:${i}:${a.url}`, symbol: ctx.symbol, time: screenerDate(a.dateText), subject: a.subject, summary: a.summary, url: a.url }));
+    items = ctx.screenerAnnouncements.map((a, i) => ({ source: "BSE via screener", id: `scr:${ctx.symbol}:${i}:${a.url}`, symbol: ctx.symbol, time: screenerDate(a.dateText), datePrecision: "day", subject: a.subject, summary: a.summary, url: a.url }));
   }
   items = dedupe(items).filter((x) => !x.time || (x.time >= from.toISOString() && x.time <= to.toISOString()));
   return { items, source, errors };
@@ -109,10 +109,22 @@ export async function buildDigest({ from, to, holdings, prefs = {}, rules = DEFA
     }
   }
   items.sort((a, b) => b.score - a.score || (b.time || "").localeCompare(a.time || ""));
+  // One event, one card: a results day produces the outcome, the results, the press release and the
+  // investor deck. Same company + same IST day + same category collapse into the highest-scored filing.
+  const clustered = [], byKey = new Map();
+  for (const it of items) {
+    const day = it.time ? new Date(new Date(it.time).getTime() + 5.5 * 3600e3).toISOString().slice(0, 10) : it.id;
+    const k = `${it.symbol}|${day}|${it.category}`;
+    const lead = byKey.get(k);
+    if (lead && it.category !== "unclassified") { (lead.related ||= []).push({ subject: it.subject, summary: it.summary, url: it.url, score: it.score }); continue; }
+    byKey.set(k, it); clustered.push(it);
+  }
+  const collapsed = items.length - clustered.length;
+  items.length = 0; items.push(...clustered);
   const tiers = { act: items.filter((x) => x.tier === "act"), read: items.filter((x) => x.tier === "read"), skim: items.filter((x) => x.tier === "skim") };
   return {
     window: { from: from.toISOString(), to: to.toISOString() },
-    counts: { total: items.length, act: tiers.act.length, read: tiers.read.length, skim: tiers.skim.length, holdings: holdings.length },
+    counts: { total: items.length, act: tiers.act.length, read: tiers.read.length, skim: tiers.skim.length, holdings: holdings.length, collapsed },
     items, alerts: alerts.sort((a, b) => (a.severity === "high" ? -1 : 1)), sources, failures,
     generatedAt: new Date().toISOString(),
   };
