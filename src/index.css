@@ -195,4 +195,4 @@ details > summary::-webkit-details-marker { display: none; }
 #nl-badge-frame { bottom: calc(72px + env(safe-area-inset-bottom)) !important; }
 
 .xscroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -2px; padding: 0 2px; }
-.xscroll table.fig td:first-child, .xscroll table.fig th:first-child { position: sticky; left: 0; background: var(--surface); min-width: 120px; }
+.xscroll table.fig td:first-child, .xscroll table.fig th:first-child { position: sticky; left: 0; background: var(--surface); min-width: 108px; }

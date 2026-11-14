@@ -271,9 +271,9 @@ export async function candour(c, calls, n = 4) {
     const dNA = newest.nonAnswerRate != null && oldest.nonAnswerRate != null ? +(newest.nonAnswerRate - oldest.nonAnswerRate).toFixed(1) : null;
     let verdict = "aligned", why = "Tone and reported growth moved the same way.";
     if (dGrowth != null) {
-      if (dTone >= 0.08 && dGrowth <= -5) { verdict = "story ahead of numbers"; why = `Prepared-remarks tone rose ${fmtSigned(dTone)} while YoY revenue growth fell ${Math.abs(dGrowth)} pts (${oldest.growth.quarter} → ${newest.growth.quarter}).`; }
-      else if (dTone <= -0.08 && dGrowth >= 5) { verdict = "numbers ahead of story"; why = `Growth improved ${dGrowth} pts while tone cooled ${fmtSigned(dTone)} — conservative messaging (possible sandbagging).`; }
-      else if (Math.abs(dTone) < 0.08 || Math.abs(dGrowth) < 5) { verdict = "aligned"; why = `Tone ${fmtSigned(dTone)}, growth ${dGrowth > 0 ? "+" : ""}${dGrowth} pts — no material divergence.`; }
+      if (dTone >= 0.08 && dGrowth <= -5) { verdict = "story ahead of numbers"; why = `Management's tone warmed by ${dTone.toFixed(2)} while YoY revenue growth fell ${Math.abs(dGrowth)} pts (${oldest.growth.quarter} → ${newest.growth.quarter}): the story is running ahead of the numbers.`; }
+      else if (dTone <= -0.08 && dGrowth >= 5) { verdict = "numbers ahead of story"; why = `Reported growth improved ${dGrowth} pts while management's tone cooled by ${Math.abs(dTone).toFixed(2)}: conservative messaging, possibly sandbagging.`; }
+      else if (Math.abs(dTone) < 0.08 || Math.abs(dGrowth) < 5) { verdict = "aligned"; why = `Tone moved ${fmtSigned(dTone)} and growth ${dGrowth > 0 ? "+" : ""}${dGrowth} pts: no material divergence.`; }
     }
     divergence = { verdict, why, dTone, dGrowth, dNonAnswer: dNA, from: oldest.period, to: newest.period, rule: "divergence if |Δtone| ≥ 0.08 and |Δgrowth| ≥ 5 pts in opposite directions" };
   }

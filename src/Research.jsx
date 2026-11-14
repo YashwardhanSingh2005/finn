@@ -457,7 +457,7 @@ const NA_CLS = { refuse: "risk", unable: "watch", defer: "info" };
 /** How management talks: non-answers, uncertainty, tone, and whether the story matches the numbers. */
 function Candour({ symbol, st }) {
   const { data: d, loading, error } = st;
-  if (loading) return <div className="card"><div className="row"><span className="spin" /> <strong>Reading the last four calls…</strong></div><p className="small muted">Pairing every analyst question with management’s answer and flagging non-answers. No AI model involved: published word lists, applied the same way every time.</p></div>;
+  if (loading || (!d && !error)) return <div className="card"><div className="row"><span className="spin" /> <strong>Reading the last four calls…</strong></div><p className="small muted">Pairing every analyst question with management’s answer and flagging non-answers. No AI model involved: published word lists, applied the same way every time.</p></div>;
   if (error) return <div className="card"><p className="err">{error.message}</p></div>;
   const calls = d.calls.filter((x) => x.parsed).slice().reverse(); // oldest -> newest
   const dv = d.divergence;
@@ -468,7 +468,7 @@ function Candour({ symbol, st }) {
       {dv && (
         <section className="card" style={{ background: vcls === "risk" ? "var(--risk-soft)" : vcls === "watch" ? "var(--watch-soft)" : undefined, borderColor: vcls === "good" ? undefined : "transparent" }}>
           <div className="tiny muted">Narrative vs numbers, {dv.from} → {dv.to} calls</div>
-          <div className="serif" style={{ fontSize: 21, fontWeight: 600, textTransform: "capitalize" }}>{dv.verdict}</div>
+          <div className="serif" style={{ fontSize: 21, fontWeight: 600 }}>{dv.verdict[0].toUpperCase() + dv.verdict.slice(1)}</div>
           <div className="small ink2">{dv.why}</div>
           <div className="rule mt4">rule: {dv.rule}</div>
         </section>
