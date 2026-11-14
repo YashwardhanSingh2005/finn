@@ -15,8 +15,11 @@ async function nseCookies() {
 
 const dmy = (d) => `${String(d.getDate()).padStart(2, "0")}-${String(d.getMonth() + 1).padStart(2, "0")}-${d.getFullYear()}`;
 
+const offline = () => process.env.FINN_OFFLINE_EXCHANGES === "1"; // local dev/test: never call the exchanges
+
 /** NSE corporate announcements for one symbol between two dates. */
 export async function nseAnnouncements(symbol, from, to) {
+  if (offline()) throw new Error("exchange feeds disabled (FINN_OFFLINE_EXCHANGES=1)");
   const url = `https://www.nseindia.com/api/corporate-announcements?index=equities&symbol=${encodeURIComponent(symbol)}&from_date=${dmy(from)}&to_date=${dmy(to)}`;
   const go = async () => fetch(url, { headers: { "user-agent": BROWSER_UA, accept: "application/json", "accept-language": "en-IN,en", referer: "https://www.nseindia.com/companies-listing/corporate-filings-announcements", cookie: await nseCookies() } });
   let r = await go();
@@ -47,6 +50,7 @@ const ymd = (d) => `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0"
 
 /** BSE corporate announcements for one scrip code between two dates. */
 export async function bseAnnouncements(scripCode, symbol, from, to) {
+  if (offline()) throw new Error("exchange feeds disabled (FINN_OFFLINE_EXCHANGES=1)");
   const out = [];
   for (let page = 1; page <= 3; page++) {
     const url = `https://api.bseindia.com/BseIndiaAPI/api/AnnSubCategoryGetData/w?pageno=${page}&strCat=-1&strPrevDate=${ymd(from)}&strScrip=${scripCode}&strSearch=P&strToDate=${ymd(to)}&strType=C&subcategory=-1`;
