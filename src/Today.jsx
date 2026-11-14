@@ -198,6 +198,7 @@ export function FilingCard({ x, ai, mute, boost, openCompany, defaultOpen }) {
         <ScoreRing score={x.score} tier={x.tier} />
       </div>
       {x.resultsCut && <ResultsCut r={x.resultsCut} />}
+      {x.category === "earnings_call" && /transcript/i.test(`${x.subject} ${x.summary}`) && x.url && <CallCheck x={x} />}
       {x.resultsPending && !open && <div className="small muted mt8">{x.resultsPending}</div>}
       {open && <Expanded x={x} mute={mute} boost={boost} openCompany={openCompany} />}
       {!open && <button className="btn ghost small mt4" onClick={() => setOpen(true)}>Why this rank <Icon.chev /></button>}
@@ -351,4 +352,24 @@ function WhyNotHigher({ x }) {
   if (!has("Size")) ideas.push("a deal or order worth ≥ 10% of revenue (+25)");
   if (!x.parts.some((p) => p.k === "Your rule" && p.v > 0)) ideas.push(`boosting “${x.categoryLabel}” in Rules (+25)`);
   return <div className="tiny muted mt4">Why not higher: needs +{gap} to reach {x.tier === "read" ? "Needs you" : "Worth a read"}, e.g. {ideas.slice(0, 2).join(" or ")}.</div>;
+}
+
+/** A transcript just landed: read it instantly (no model) and compare with the previous call. */
+function CallCheck({ x }) {
+  const { data: d, loading, error } = useApi("callcheck", { url: x.url, symbol: x.symbol });
+  if (loading) return <div className="row small muted mt8"><span className="spin" /> Reading the transcript: questions, answers, dodges…</div>;
+  if (error || !d?.now?.parsed) return null;
+  const n = d.now, p = d.prev;
+  const dRate = p?.nonAnswerRate != null ? +(n.nonAnswerRate - p.nonAnswerRate).toFixed(1) : null;
+  const dTone = p ? +(n.toneQA - p.toneQA).toFixed(2) : null;
+  return (
+    <div className="mt8" style={{ background: "var(--surface-2)", borderRadius: 10, padding: "8px 10px" }}>
+      <div className="small"><b>Dodged {n.nonAnswerCount} of {n.questions} analyst questions</b> ({n.nonAnswerRate}%)
+        {dRate != null && <span className={dRate > 2 ? "down" : dRate < -2 ? "up" : "muted"}> · {dRate > 0 ? "up" : dRate < 0 ? "down" : "flat"} {Math.abs(dRate)} pts vs {p.period}</span>}
+        {dTone != null && Math.abs(dTone) >= 0.05 && <span className="muted"> · Q&A tone {dTone > 0 ? "warmer" : "cooler"}</span>}
+      </div>
+      {n.nonAnswers[0] && <div className="small ink2 mt4">e.g. “{n.nonAnswers[0].answer}” <Receipt url={x.url} page={n.nonAnswers[0].page} label="p" /></div>}
+      <div className="tiny muted mt4">Computed from the transcript text with published word lists. Free and instant; no AI model.</div>
+    </div>
+  );
 }
