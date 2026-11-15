@@ -33,6 +33,9 @@ FINN was built in one overnight session (14–15 Nov 2026) with **Claude Code** 
 | 18 | SEBI 5-working-day transcript rule | The first run flagged Airtel as 31 days late. That was a false positive (it read "quarter *ended* Sep 30" as the call date). Fixed and pinned with a test. |
 | 19 | Event study: does dodging predict returns? | n=40, inconclusive. Written up as such, not claimed. |
 
+| 20 | Auditor's-report scanner over 21 annual reports | Found the reports in 20 of 21. All 9 flags were hand-verified; one going-concern note belonged to a group entity, so it was re-attributed and pinned by a test. |
+| 21 | My call: upgrade the judgement tier | Cross-call promise judging and bull vs bear moved from Sonnet 5.5 to **Claude Opus 5.5**. Bulk extraction stays on Haiku 5.5, because quality matters most where the model reasons and cost matters where it reads. |
+
 ## Things the agent did *not* get to decide
 - Scraping NSE/BSE with browser headers: the agent's safety layer blocked it until I approved it explicitly.
 - Creating the GitHub repo and token scopes, and deploying to my Netlify account: I did those or approved them.
