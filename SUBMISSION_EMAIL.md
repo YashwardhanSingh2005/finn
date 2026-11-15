@@ -5,10 +5,10 @@ Dear ENAM team,
 
 Please find my submission for the FINN build challenge below.
 
-- **Prototype (open on a phone):** {{LIVE_URL}}
+- **Prototype (open on a phone):** https://yashwardhansingh2005.github.io/finn/
+  This is the whole app in one page, running on a snapshot recorded from the backend on 15 Nov 2026. It needs no server and says on screen that it is a recording. It covers the 18-stock portfolio and the demo companies. Researching a ticker outside that set needs the backend, which runs from the repo (see "Running it" in the README).
 - **Repository:** https://github.com/YashwardhanSingh2005/finn
-- **AI build history:** https://yashwardhansingh2005.github.io/finn/build_history.html is the Claude Code session export (the FINN part, with access tokens redacted; the same file is `docs/build_history.html` in the repo). `BUILD_LOG.md` in the repo summarises the main steps.
-- **If the live link is slow or down:** `docs/index.html` in the repo is the whole app with a recorded snapshot in one file. It runs with no server and says on screen that it is a recording.
+- **AI build history:** https://yashwardhansingh2005.github.io/finn/build_history.html is the Claude Code session export (the FINN part, with access tokens redacted; the same file is attached and is `docs/build_history.html` in the repo). `BUILD_LOG.md` in the repo summarises the main steps.
 
 **What I built.** FINN is built on two ideas: an investor needs to know *what to read* and *whether to believe it*.
 
