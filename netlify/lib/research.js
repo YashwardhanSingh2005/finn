@@ -99,7 +99,7 @@ export function evidenceList(a, ledger, biz, cand, aud) {
 
 export async function bullBear(symbol, a, ledger, biz, cand, aud) {
   const ev = evidenceList(a, ledger, biz, cand, aud);
-  const key = `bb:v7:${symbol}:${hash(JSON.stringify(ev.map((e) => e.text)))}`;
+  const key = `bb:v8:${symbol}:${hash(JSON.stringify(ev.map((e) => e.text)))}`;
   return memo(key, 7 * 864e5, async () => {
     const { json, meta } = await llmJSON({ tier: "reason", system: BULLBEAR, user: ev.map((e) => `${e.id} [${e.kind}] ${e.text}`).join("\n"), maxTokens: 900 });
     const ids = new Set(ev.map((e) => e.id));
@@ -110,7 +110,7 @@ export async function bullBear(symbol, a, ledger, biz, cand, aud) {
 
 export async function ledgerFor(symbol, { judge = true } = {}) {
   const { c } = await companyCore(symbol);
-  return memo(`ledger:v7:${judge ? "j" : "x"}:${c.symbol}:${pickCalls(c, 1)[0]?.transcript || "none"}`, 7 * 864e5, () => buildLedger(c, { n: 4, cache, judge }));
+  return memo(`ledger:v8:${judge ? "j" : "x"}:${c.symbol}:${pickCalls(c, 1)[0]?.transcript || "none"}`, 7 * 864e5, () => buildLedger(c, { n: 4, cache, judge }));
 }
 
 function hash(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }

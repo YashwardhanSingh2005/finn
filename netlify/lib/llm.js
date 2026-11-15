@@ -8,12 +8,13 @@ import { getVercelOidcToken } from "@vercel/oidc";
 
 export const MODELS = {
   extract: process.env.FINN_MODEL_EXTRACT || "claude-haiku-5-5",
-  reason: process.env.FINN_MODEL_REASON || "claude-sonnet-5-5",
+  reason: process.env.FINN_MODEL_REASON || "claude-opus-5-5",
 };
 // USD per 1M tokens (from the Netlify AI Gateway price list)
 const PRICE = {
   "claude-haiku-5-5": [0.1, 0.5],
   "claude-sonnet-5-5": [2, 10],
+  "claude-opus-5-5": [4, 20],
   "claude-haiku-4-5": [1, 5],
 };
 
@@ -43,7 +44,7 @@ export async function llmJSON({ tier = "extract", system, user, maxTokens = 2000
   // budget on a copy-and-structure task). judgement: adaptive thinking at medium effort, headroom for it.
   const thinkingCfg = tier === "extract"
     ? { thinking: { type: "disabled" }, output_config: { effort: "low" } }
-    : { thinking: { type: "adaptive" }, output_config: { effort: "medium" } };
+    : { thinking: { type: "adaptive" }, output_config: { effort: "medium" } }; // Opus 5.5: thinking can't be disabled; effort set explicitly
   const res = await (await anthropic()).messages.create({
     model: wireModel(model),
     max_tokens: tier === "extract" ? maxTokens : Math.max(maxTokens * 2, 12000),

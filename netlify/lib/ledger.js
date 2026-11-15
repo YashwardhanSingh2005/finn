@@ -290,7 +290,7 @@ async function judgeThreads(open, extracted, consol, symbol, cache, cost) {
   const excerpts = recent.map((e) => `=== ${e.label} call ===\n${relevant(e.pages, query, 18)}`).join("\n\n");
   const threadsTxt = pick.map((t) => `${t.tid}: ${t.title} | latest (${t.latest.callQuarter}): "${t.latest.statement}" | band ${band(t.latest) || "-"} | horizon ${t.latest.horizon || "-"}`).join("\n");
   const computed = consol ? `Consolidated, last 4 reported quarters (${consol.periods.join(", ")}): EBITDA margin ${consol.margin}%, revenue YoY ${consol.revYoY}%, PAT YoY ${consol.patYoY}%. Latest quarter ${consol.lastQ.period}: revenue ₹${fmt(consol.lastQ.rev)} cr, PAT ₹${fmt(consol.lastQ.pat)} cr.` : "n/a";
-  const key = `judgeall:v4:${symbol}:${hashStr(threadsTxt + recent.map((e) => e.transcript).join())}`;
+  const key = `judgeall:v5:${symbol}:${hashStr(threadsTxt + recent.map((e) => e.transcript).join())}`;
   let j = cache && (await cache.get(key));
   if (!j) {
     const r = await llmJSON({ tier: "reason", system: JUDGE_ALL, user: `THREADS:\n${threadsTxt}\n\nCOMPUTED:\n${computed}\n\nEXCERPTS:\n${excerpts}`, maxTokens: 7000 });

@@ -29,7 +29,7 @@ export default function About({ open, onClose }) {
         <tbody>
           <tr><td className="lab">Triage, numbers, alerts, candour</td><td>plain code · ₹0</td></tr>
           <tr><td className="lab">Reading a filing or transcript</td><td>Claude Haiku 5.5 · ≈ ₹0.2</td></tr>
-          <tr><td className="lab">Judging promises, bull vs bear</td><td>Claude Sonnet 5.5 · ≈ ₹3.5 per company</td></tr>
+          <tr><td className="lab">Judging promises, bull vs bear</td><td>Claude Opus 5.5 · ≈ ₹7 per company</td></tr>
         </tbody>
       </table>
       <p className="tiny muted">Every model output is cached by source document, so the same filing is never paid for twice.</p>

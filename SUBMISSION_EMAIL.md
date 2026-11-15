@@ -29,7 +29,7 @@ Please find my submission for the FINN build challenge below.
 **Key decisions**
 
 1. **Models locate and quote; code computes.** No number on screen is produced by a model. Every model-supplied quote is checked against the source PDF; quotes that fail are dropped, and the drop is counted on screen.
-2. **Rules before models for triage.** Rules are free, instant and explainable. Models are spent only on items that earn attention: a cheap model (Haiku) reads documents, and a stronger model (Sonnet) is used only for cross-call judgement, batched to one call per company. Everything is cached by document. A new company costs about ₹5 the first time and nothing after that, and a cost meter in the app shows the spend.
+2. **Rules before models for triage.** Rules are free, instant and explainable. Models are spent only on items that earn attention: a cheap model (Haiku) reads documents, and a stronger model (Opus) is used only for cross-call judgement, batched to one call per company. Everything is cached by document. A new company costs about ₹9 the first time and nothing after that, and a cost meter in the app shows the spend.
 3. **I measured instead of asserting.** I hand-labelled the non-answer detector over three rounds on fresh samples: 86–92% precision and about 55–60% recall, reported as lower bounds. One literature idea, script-echo, didn't transfer to Indian calls, so I dropped it and documented why. A parser regression set covers 9 transcript layouts, and 15 unit tests cover the deterministic core.
 4. **I tested whether the ranking works.** I re-scored a year of portfolio filings, leaving out the market-reaction term so the test isn't circular.
    - The first version barely separated urgent filings from routine ones.

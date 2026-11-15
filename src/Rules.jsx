@@ -82,7 +82,7 @@ export default function Rules({ prefs, setPrefs, rules, setRules, holdings, setH
         <div className="row between"><span>Served from cache</span><strong className="num">{spend.cached}</strong></div>
         <div className="row between"><span>Spend</span><strong className="num">${spend.usd.toFixed(4)} ≈ ₹{(spend.usd * 88).toFixed(2)}</strong></div>
         {Object.entries(spend.byModel).map(([m, u]) => <div key={m} className="row between tiny muted"><span>{m}</span><span className="num">${u.toFixed(4)}</span></div>)}
-        <p className="tiny muted mt8">Routing: rules → no model for triage · Claude Haiku (cheap) to read filings & transcripts · Claude Sonnet only for cross-quarter judgement. Every model output is cached by document, so the same filing is never paid for twice.</p>
+        <p className="tiny muted mt8">Routing: rules → no model for triage · Claude Haiku (cheap) to read filings & transcripts · Claude Opus only for cross-quarter judgement. Every model output is cached by document, so the same filing is never paid for twice.</p>
       </div>
     </div>
   );

@@ -98,7 +98,7 @@ React (Vite) PWA, mobile-first ──► Netlify Functions (Node 22) ──► s
                                         │                       │    links to annual reports, results PDFs, concall transcripts
                                         │                       └─ the primary PDFs themselves (unpdf → per-page text)
                                         ├─ Blob cache: every model output keyed by source-document URL
-                                        └─ AI Gateway → Claude Haiku 5.5 (extract) / Claude Sonnet 5.5 (judge)
+                                        └─ AI Gateway → Claude Haiku 5.5 (extract) / Claude Opus 5.5 (judge)
 
 Host-agnostic: the same handlers run as Vercel functions (`api/`, Mumbai region next to NSE/BSE,
 Vercel Blob + Vercel AI Gateway via the deployment's OIDC token, so no key to manage) or Netlify functions
@@ -113,7 +113,7 @@ Vercel Blob + Vercel AI Gateway via the deployment's OIDC token, so no key to ma
 | Numbers (results cut, ratios, CAGRs, cash conversion, alerts) | Plain code over standardised statements | ₹0 |
 | Reading PDFs (filing one-liners, management bios, results lines, business snapshot, guidance claims) | **Claude Haiku 5.5**, thinking off, low effort | ≈ $0.002 per document |
 | Linking promises across calls into threads | Haiku 5.5 | ≈ $0.001 per company |
-| Judging open promises, and bull vs bear | **Claude Sonnet 5.5**, adaptive thinking, medium effort; one *batched* call per company | ≈ $0.04 per company |
+| Judging open promises, and bull vs bear | **Claude Opus 5.5**, adaptive thinking, medium effort; one *batched* call per company | ≈ $0.08 per company |
 | Verification (quotes exist in source; cited evidence IDs exist) | Plain code (4-gram shingle match) | ₹0 |
 
 A full research page for a company FINN has never seen (four transcripts, snapshot, ledger, bull vs bear) costs about **$0.06 ≈ ₹5**. It then costs **₹0** for every later viewer, because outputs are cached by document URL and the cache key changes only when a new call is filed.
@@ -145,7 +145,7 @@ This covers one portfolio, one year, and next-session moves only: a sanity check
 - **Models locate and quote; code computes and judges numbers.** This removes the most common failure of financial LLM apps: plausible, wrong numbers. On FinanceBench, GPT-4 with retrieval failed or refused about 81% of questions.
 - **Quote verification is mandatory.** Any promise or evidence quote that can't be found in the source text is dropped (fuzzy 4-gram match, 60% threshold), and the count shows on screen.
 - **Promise threads and a goalpost detector, not a flat list of promises.** The research shows guidance is "walked down" to beatable levels (Richardson, Teoh & Wysocki 2004). It also shows that forecasts from managers with an accurate record move prices more (Hutton & Stocken 2009). Credibility is the signal, and a flat list would hide it.
-- **The strong model only where reasoning needs it:** one batched Sonnet call per company for segment and qualitative promises, and one for bull vs bear. Everything else is Haiku or plain code.
+- **The strong model only where reasoning needs it:** one batched Opus 5.5 call per company for segment and qualitative promises, and one for bull vs bear. Everything else is Haiku or plain code.
 - **Pay for attention, not volume.** Filing PDFs are read only for items that scored into *Needs you* or *Worth a read*, or that you open.
 - **Standardised statements and prices come via screener.in.** That data is derived from company filings and links back to each raw results PDF, which FINN can read and reconcile against. Transcripts and annual reports are always read from the company or exchange PDF.
 - **Competitive context:**

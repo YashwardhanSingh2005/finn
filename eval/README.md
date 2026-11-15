@@ -136,7 +136,7 @@ Every quote a model returns is checked against the source transcript text, using
 | Task | Model | Observation |
 |---|---|---|
 | Extraction (claims, bios, results lines, business) | Claude Haiku 5.5, thinking **off** | With default adaptive thinking it hit `max_tokens` on every transcript, returning truncated JSON and 0 claims. With thinking off: 4.4 s, about 1k output tokens, $0.002 per transcript. |
-| Cross-call judgement, bull/bear | Claude Sonnet 5.5, adaptive thinking, medium effort | One batched call per company (12–16 promise threads) instead of one call per promise: about 10× fewer calls. |
+| Cross-call judgement, bull/bear | Claude Opus 5.5, adaptive thinking, medium effort | One batched call per company (12–16 promise threads) instead of one call per promise: about 10× fewer calls. |
 
 ## Reproducing
 
