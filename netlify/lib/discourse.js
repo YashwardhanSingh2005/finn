@@ -277,13 +277,13 @@ export function analyseCall(pages) {
 
 /** Candour across the last N calls + narrative-vs-numbers divergence. */
 export async function candour(c, calls, n = 4) {
-  const out = [];
-  for (const call of calls.slice(0, n)) {
+  // all calls at once: one slow archive must not push the whole view past the request budget
+  const out = await Promise.all(calls.slice(0, n).map(async (call) => {
     try {
       const doc = await fetchPdfPages(call.transcript, { maxPages: 45 });
-      out.push({ period: call.period, url: call.transcript, ...analyseCall(doc.pages) });
-    } catch (e) { out.push({ period: call.period, url: call.transcript, error: e.message }); }
-  }
+      return { period: call.period, url: call.transcript, ...analyseCall(doc.pages) };
+    } catch (e) { return { period: call.period, url: call.transcript, error: e.message }; }
+  }));
   const ok = out.filter((x) => x.parsed);
   // growth per call quarter from reported numbers: YoY revenue growth of the quarter discussed
   const q = c.quarters, rev = q.rows["Sales"] || q.rows["Revenue"];
@@ -308,6 +308,8 @@ export async function candour(c, calls, n = 4) {
     }
     divergence = { verdict, why, dTone, dGrowth, dNonAnswer: dNA, from: oldest.period, to: newest.period, rule: "divergence if |Δtone| ≥ 0.08 and |Δgrowth| ≥ 5 pts in opposite directions" };
   }
-  return { calls: out, divergence, method: { nonAnswer: "phrase lexicon after Gow, Larcker & Zakolyukina (2021)", lexicon: "subsets of Loughran & McDonald (2011) uncertainty / positive / negative lists", tone: "(pos − neg) / (pos + neg), prepared remarks vs Q&A answers" } };
+  // a transcript that couldn't be downloaded is a temporary failure: don't keep that answer for a week
+  const transient = out.some((x) => x.error && /pdf (4\d\d|5\d\d)|timed out|fetch failed/.test(x.error));
+  return { ...(transient ? { _noCache: true } : {}), calls: out, divergence, method: { nonAnswer: "phrase lexicon after Gow, Larcker & Zakolyukina (2021)", lexicon: "subsets of Loughran & McDonald (2011) uncertainty / positive / negative lists", tone: "(pos − neg) / (pos + neg), prepared remarks vs Q&A answers" } };
 }
 const fmtSigned = (x) => `${x > 0 ? "+" : ""}${x}`;

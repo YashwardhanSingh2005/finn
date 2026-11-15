@@ -4,7 +4,7 @@ import Research from "./Research.jsx";
 import Rules from "./Rules.jsx";
 import About from "./About.jsx";
 import { Icon } from "./ui.jsx";
-import { usePersist } from "./lib.js";
+import { usePersist, useSnapshot } from "./lib.js";
 import { PORTFOLIO } from "../netlify/lib/portfolio.js";
 
 const DEFAULT_RULES = { movePct: 5, volX: 2, sigma: 2.5 };
@@ -36,6 +36,7 @@ export default function App() {
   const [startTab, setStartTab] = useState(null);
   const openCompany = (s, sub) => { setSymbol(s); setStartTab(sub || null); setTab("research"); window.scrollTo(0, 0); };
   const h = holdings || PORTFOLIO;
+  const snapshot = useSnapshot();
 
   return (
     <div className="app">
@@ -46,6 +47,11 @@ export default function App() {
         <button className="iconbtn" aria-label="How FINN works" onClick={() => setAbout(true)} style={{ fontFamily: "var(--serif)", fontSize: 18, fontWeight: 600 }}>i</button>
         <button className="iconbtn" aria-label="Toggle theme" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}><Icon.moon /></button>
       </header>
+      {snapshot.used > 0 && (
+        <div className="snapbar" role="status">
+          Saved snapshot from {new Date(snapshot.at).toLocaleString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false })} IST. {snapshot.noBackend ? "This copy has no live backend" : "The live source didn’t answer"}, so some views are a recording: rule changes don’t re-rank it and new tickers can’t be read.
+        </div>
+      )}
       <main>
         {tab === "today" && <Today prefs={prefs} setPrefs={setPrefs} rules={rules} holdings={h} customHoldings={!!holdings} openCompany={openCompany} toast={setToast} />}
         {tab === "research" && <Research symbol={symbol} setSymbol={setSymbol} startTab={startTab} holdings={h} />}

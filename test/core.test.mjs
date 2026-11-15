@@ -189,3 +189,14 @@ test("auditor scan: going-concern only in the consolidated report is attributed 
   assert.ok(r.flags.some((f) => /group company/.test(f.title) && f.level === "watch"));
   assert.ok(!r.flags.some((f) => f.level === "risk"));
 });
+
+test("snapshot keys: digest windows bucket up, custom ranges use the widest, per-URL views are not snapshotted", async () => {
+  const { snapKey } = await import("../src/snapkey.js");
+  assert.equal(snapKey("digest", { hours: 24 }), "digest_24");
+  assert.equal(snapKey("digest", { hours: 30 }), "digest_72");
+  assert.equal(snapKey("digest", { hours: 5000 }), "digest_720");
+  assert.equal(snapKey("digest", { from: "2026-10-01T00:00:00Z" }), "digest_720");
+  assert.equal(snapKey("ledger", { symbol: "POLYCAB", judge: 0 }), "ledger_POLYCAB_0");
+  assert.equal(snapKey("brief", { symbol: "POLYCAB", part: "bullbear" }), "brief_POLYCAB_bullbear");
+  assert.equal(snapKey("filing", { url: "x" }), null);
+});

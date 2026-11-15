@@ -1,5 +1,6 @@
 // Client helpers: API calls, per-viewer preferences, formatting, AI cost ledger.
 import { useEffect, useState, useCallback } from "react";
+import { snapKey } from "./snapkey.js";
 
 const LS = {
   get(k, d) { try { const v = localStorage.getItem("finn:" + k); return v ? JSON.parse(v) : d; } catch { return d; } },
@@ -32,14 +33,55 @@ export function useSpend() {
   return s;
 }
 
+// ---- snapshot fallback: if the live backend can't answer, serve the last saved copy and say so ----
+const snap = { at: null, used: 0, noBackend: false };
+const snapListeners = new Set();
+export function useSnapshot() {
+  const [s, setS] = useState({ ...snap });
+  useEffect(() => { snapListeners.add(setS); return () => snapListeners.delete(setS); }, []);
+  return s;
+}
+let snapIndex = null;
+const inline = () => (typeof window !== "undefined" ? window.__FINN_SNAPSHOT__ : null);
+const loadIndex = () => (snapIndex ||= inline() ? Promise.resolve(inline().index) : fetch("/snapshot/index.json").then((r) => r.json()).catch(() => null));
+async function fromSnapshot(path, params) {
+  const idx = await loadIndex();
+  if (!idx) return null;
+  let data = null;
+  if (path === "search") {
+    const q = String(params.q || "").toLowerCase().trim();
+    data = q ? idx.companies.filter((c) => c.symbol.toLowerCase().startsWith(q) || c.name.toLowerCase().includes(q)).slice(0, 8) : [];
+  } else {
+    const key = snapKey(path, params);
+    if (!key || !idx.keys.includes(key)) return null;
+    data = inline() ? inline().data[key] : await fetch(`/snapshot/${key}.json`).then((r) => r.json()).catch(() => null);
+    if (!data) return null;
+  }
+  snap.at = idx.at; snap.used += 1;
+  snapListeners.forEach((f) => f({ ...snap }));
+  return Array.isArray(data) ? data : { ...data, _snapshot: idx.at, cached: true };
+}
+
 export async function api(path, params = {}) {
   const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v != null && v !== "")).toString();
-  const r = await fetch(`/api/${path}${qs ? "?" + qs : ""}`);
-  let j;
-  try { j = await r.json(); } catch { throw new Error(`Server error (${r.status}). Try again — long documents can take a minute the first time.`); }
-  if (!r.ok) throw Object.assign(new Error(j.error || r.statusText), { data: j, status: r.status });
-  recordMeta(j.meta || j.cost, j.cached || j._cached);
-  return j;
+  let err;
+  if (!snap.noBackend && !inline()) {
+    try {
+      const r = await fetch(`/api/${path}${qs ? "?" + qs : ""}`);
+      let j;
+      try { j = await r.json(); } catch {
+        if (r.status === 404 || r.status === 200) snap.noBackend = true; // static host: there is no /api at all
+        throw Object.assign(new Error(`Server error (${r.status}). Try again — long documents can take a minute the first time.`), { status: r.status || 502 });
+      }
+      if (!r.ok) throw Object.assign(new Error(j.error || r.statusText), { data: j, status: r.status });
+      recordMeta(j.meta || j.cost, j.cached || j._cached);
+      return j;
+    } catch (e) { err = e; if (!e.status) snap.noBackend = snap.noBackend || e instanceof TypeError; }
+    if (err.status && err.status < 500) throw err; // a real answer from the live backend (bad ticker, etc.)
+  }
+  const s = await fromSnapshot(path, params);
+  if (s) return s;
+  throw err || Object.assign(new Error("This view isn’t in the saved snapshot, and the live backend isn’t reachable from this copy."), { status: 503 });
 }
 
 /** Fetch with loading/error state; `deps` re-trigger. */

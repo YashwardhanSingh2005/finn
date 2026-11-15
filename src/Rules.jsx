@@ -98,12 +98,23 @@ function Slider({ label, value, min, max, step, unit, note, onChange }) {
   );
 }
 
+// The run reported in the README and eval/README.md (v2 weights), kept as a fallback for the card below.
+const RECORDED = {
+  at: "15 Nov 2026",
+  T: { act: { meanZ: 1.31, big: 22 }, read: { meanZ: 0.83, big: 8 }, skim: { meanZ: 0.82, big: 7 } },
+  V: { act: { meanZ: 1.48, big: 27 }, read: { meanZ: 1.02, big: 12 }, skim: { meanZ: 0.95, big: 11 } },
+};
+
 /** "Does the algorithm work?" The ranking checked against what the market did next, out of sample. */
 function Backtest() {
   const tuned = useApi("backtest", { days: 180, offset: 0 });
   const valid = useApi("backtest", { days: 180, offset: 180 });
   const loading = tuned.loading || valid.loading;
-  const T = tuned.data, V = valid.data;
+  // If the live re-run can't reach the exchange feed, show the recorded run (and say so) rather than blanks.
+  const live = tuned.data?.filings > 0 && valid.data?.filings > 0;
+  const done = !loading && (tuned.data || tuned.error) && (valid.data || valid.error);
+  const recorded = done && !live;
+  const T = live ? tuned.data : recorded ? RECORDED.T : null, V = live ? valid.data : recorded ? RECORDED.V : null;
   const cell = (st) => <span className="num">{st?.meanZ ?? "–"}σ · <b>{st?.big ?? "–"}%</b></span>;
   return (
     <>
@@ -118,9 +129,10 @@ function Backtest() {
               <tr><td className="lab"><span className="dot risk" style={{ display: "inline-block", marginRight: 6 }} />Needs you</td><td>{cell(T.act)}</td><td>{cell(V.act)}</td></tr>
               <tr><td className="lab"><span className="dot watch" style={{ display: "inline-block", marginRight: 6 }} />Worth a read</td><td>{cell(T.read)}</td><td>{cell(V.read)}</td></tr>
               <tr><td className="lab"><span className="dot" style={{ display: "inline-block", marginRight: 6, background: "var(--ink-3)" }} />Filed away</td><td>{cell(T.skim)}</td><td>{cell(V.skim)}</td></tr>
-              <tr><td className="lab muted">filings</td><td className="muted">{T.filings}</td><td className="muted">{V.filings}</td></tr>
+              {live && <tr><td className="lab muted">filings</td><td className="muted">{T.filings}</td><td className="muted">{V.filings}</td></tr>}
             </tbody>
           </table>
+          {recorded && <p className="tiny" style={{ color: "var(--watch)" }}>Recorded run of {RECORDED.at}: the live re-run couldn’t reach the exchange feed just now.</p>}
           <p className="small mt8">{V.act?.big && V.skim?.big ? <>On the validation half, a “Needs you” filing was followed by a ≥2σ move <b>{(V.act.big / V.skim.big).toFixed(1)}×</b> as often as a routine one.</> : null}</p>
           <details className="mt4"><summary className="tiny linkish">What the backtest changed</summary>
             <p className="tiny ink2">Version 1 put 17% of filings in “Needs you” with almost no separation (10% vs 7% big moves). Broken down by category, results and management changes carried signal (16% big moves). M&A, fund raises, litigation and credit-rating filings didn’t (0.6–0.7σ). ESOP allotments, takeover-code disclosures and AGM voting results were being misfiled as urgent. Fixes: those phrasings are matched first as routine; M&A base 85→65, fund raise 75→55, litigation 70→55, rating 55→45. The deal-size, SEBI-materiality and tone terms still promote the ones that matter.</p>

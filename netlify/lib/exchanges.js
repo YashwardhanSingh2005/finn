@@ -3,10 +3,22 @@
 // approach every open-source NSE/BSE library (nsepython, jugaad-data, bse) uses. Read-only, low rate.
 const BROWSER_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
 
+// Exchanges tend to tarpit cloud IPs (the connection hangs rather than failing). Every call therefore
+// has a hard timeout, and after repeated failures a host is skipped for a few minutes so one dead
+// feed can't eat the whole request budget; the digest then falls back to the screener mirror.
+const T_MS = 8000;
+const breaker = { nse: { fails: 0, until: 0 }, bse: { fails: 0, until: 0 } };
+const guard = async (name, fn) => {
+  const b = breaker[name];
+  if (Date.now() < b.until) throw new Error(`${name} feed skipped (unreachable a moment ago)`);
+  try { const v = await fn(); b.fails = 0; return v; }
+  catch (e) { if (++b.fails >= 3) { b.until = Date.now() + 3 * 60e3; b.fails = 0; } throw e.name === "TimeoutError" ? new Error(`${name} timed out`) : e; }
+};
+
 let nseCookie = null, nseCookieAt = 0;
 async function nseCookies() {
   if (nseCookie && Date.now() - nseCookieAt < 5 * 60e3) return nseCookie;
-  const r = await fetch("https://www.nseindia.com/", { headers: { "user-agent": BROWSER_UA, accept: "text/html", "accept-language": "en-IN,en" } });
+  const r = await fetch("https://www.nseindia.com/", { headers: { "user-agent": BROWSER_UA, accept: "text/html", "accept-language": "en-IN,en" }, signal: AbortSignal.timeout(T_MS) });
   const set = r.headers.getSetCookie?.() || [];
   nseCookie = set.map((c) => c.split(";")[0]).join("; ");
   nseCookieAt = Date.now();
@@ -21,11 +33,13 @@ const offline = () => process.env.FINN_OFFLINE_EXCHANGES === "1"; // local dev/t
 export async function nseAnnouncements(symbol, from, to) {
   if (offline()) throw new Error("exchange feeds disabled (FINN_OFFLINE_EXCHANGES=1)");
   const url = `https://www.nseindia.com/api/corporate-announcements?index=equities&symbol=${encodeURIComponent(symbol)}&from_date=${dmy(from)}&to_date=${dmy(to)}`;
-  const go = async () => fetch(url, { headers: { "user-agent": BROWSER_UA, accept: "application/json", "accept-language": "en-IN,en", referer: "https://www.nseindia.com/companies-listing/corporate-filings-announcements", cookie: await nseCookies() } });
-  let r = await go();
-  if (r.status === 401 || r.status === 403) { nseCookie = null; r = await go(); }
-  if (!r.ok) throw new Error(`nse ${r.status}`);
-  const j = await r.json();
+  const go = async () => fetch(url, { headers: { "user-agent": BROWSER_UA, accept: "application/json", "accept-language": "en-IN,en", referer: "https://www.nseindia.com/companies-listing/corporate-filings-announcements", cookie: await nseCookies() }, signal: AbortSignal.timeout(T_MS) });
+  const j = await guard("nse", async () => {
+    let r = await go();
+    if (r.status === 401 || r.status === 403) { nseCookie = null; r = await go(); }
+    if (!r.ok) throw new Error(`nse ${r.status}`);
+    return r.json();
+  });
   return (Array.isArray(j) ? j : j.data || []).map((x) => ({
     source: "NSE",
     id: `nse:${x.seq_id}`,
@@ -54,9 +68,11 @@ export async function bseAnnouncements(scripCode, symbol, from, to) {
   const out = [];
   for (let page = 1; page <= 3; page++) {
     const url = `https://api.bseindia.com/BseIndiaAPI/api/AnnSubCategoryGetData/w?pageno=${page}&strCat=-1&strPrevDate=${ymd(from)}&strScrip=${scripCode}&strSearch=P&strToDate=${ymd(to)}&strType=C&subcategory=-1`;
-    const r = await fetch(url, { headers: { "user-agent": BROWSER_UA, accept: "application/json", referer: "https://www.bseindia.com/", origin: "https://www.bseindia.com" } });
-    if (!r.ok) throw new Error(`bse ${r.status}`);
-    const j = await r.json();
+    const j = await guard("bse", async () => {
+      const r = await fetch(url, { headers: { "user-agent": BROWSER_UA, accept: "application/json", referer: "https://www.bseindia.com/", origin: "https://www.bseindia.com" }, signal: AbortSignal.timeout(T_MS) });
+      if (!r.ok) throw new Error(`bse ${r.status}`);
+      return r.json();
+    });
     const rows = j.Table || [];
     for (const x of rows)
       out.push({

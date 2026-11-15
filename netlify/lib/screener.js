@@ -17,7 +17,7 @@ const num = (s) => {
 const clean = (s) => (s || "").replace(/[\s\u00a0]+/g, " ").trim().replace(/\s*\+$/, "").trim();
 
 async function get(url) {
-  const r = await fetch(url, { headers: { "user-agent": UA, accept: "text/html,application/json" } });
+  const r = await fetch(url, { headers: { "user-agent": UA, accept: "text/html,application/json" }, signal: AbortSignal.timeout(20000) });
   if (!r.ok) throw Object.assign(new Error(`screener ${r.status} for ${url}`), { status: r.status });
   return r;
 }

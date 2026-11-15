@@ -4,13 +4,13 @@ import { pickCalls } from "../lib/ledger.js";
 import { memo } from "../lib/cache.js";
 import { auditorFindings } from "../lib/auditor.js";
 import { llmAvailable } from "../lib/llm.js";
-import { json, fail, sym } from "../lib/http.js";
+import { json, fail, sym, fixture } from "../lib/http.js";
 // ?symbol=X&part=business|bullbear
 export default async (req) => {
   const q = new URL(req.url).searchParams;
   const s = sym(q.get("symbol"));
   if (!s) return json({ error: "symbol required" }, 400);
-  if (!llmAvailable()) return json({ error: "LLM not configured on this deployment" }, 503);
+  if (!llmAvailable()) { const fx = q.get("part") !== "bullbear" ? await fixture("brief", `${s}_business`) : null; return fx ? json(fx) : json({ error: "LLM not configured on this deployment" }, 503); }
   try {
     const core = await companyCore(s);
     const biz = await businessBrief(core.c);

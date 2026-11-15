@@ -196,3 +196,6 @@ details > summary::-webkit-details-marker { display: none; }
 
 .xscroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -2px; padding: 0 2px; }
 .xscroll table.fig td:first-child, .xscroll table.fig th:first-child { position: sticky; left: 0; background: var(--surface); min-width: 108px; }
+
+/* snapshot notice: shown only when a view is served from the saved copy */
+.snapbar { background: var(--watch-soft); color: var(--watch); border-radius: 10px; padding: 8px 12px; font-size: 12.5px; line-height: 1.4; margin: 4px 0 8px; }

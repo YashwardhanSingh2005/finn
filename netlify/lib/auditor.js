@@ -15,7 +15,7 @@ async function arPages(url) {
   const key = `arpages:v2:${url}`;
   const hit = await cache.get(key);
   if (hit) return hit;
-  const r = await fetch(url, { headers: { "user-agent": UA, accept: "application/pdf,*/*", "accept-language": "en-IN,en" } });
+  const r = await fetch(url, { headers: { "user-agent": UA, accept: "application/pdf,*/*", "accept-language": "en-IN,en" }, signal: AbortSignal.timeout(40000) }).catch((e) => { throw new Error(e.name === "TimeoutError" ? "annual report download timed out" : `annual report: ${e.message}`); });
   if (!r.ok) throw new Error(`annual report ${r.status}`);
   const pdf = await getDocumentProxy(new Uint8Array(await r.arrayBuffer()));
   const { text } = await extractText(pdf, { mergePages: false });

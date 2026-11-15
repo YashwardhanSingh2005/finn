@@ -14,10 +14,15 @@ export async function fetchPdfPages(url, opts = {}) {
   return { ...doc, pages: doc.pages.slice(0, opts.maxPages || 60) };
 }
 
+const deadHosts = new Map(); // host -> skip-until: a host that just hung is not retried for 3 minutes
 async function fetchPdfPagesRaw(url, { maxPages = 60 } = {}) {
+  const host = new URL(url).host;
+  if (Date.now() < (deadHosts.get(host) || 0)) throw new Error(`pdf 504 (host unreachable a moment ago) ${url}`);
   let r;
   for (let attempt = 0; attempt < 4; attempt++) {
-    r = await fetch(url, { headers: { "user-agent": UA, accept: "application/pdf,*/*", "accept-language": "en-IN,en" }, redirect: "follow" });
+    // hard timeout: a hung exchange archive must fail fast (with a readable reason), not stall the request
+    try { r = await fetch(url, { headers: { "user-agent": UA, accept: "application/pdf,*/*", "accept-language": "en-IN,en" }, redirect: "follow", signal: AbortSignal.timeout(20000) }); }
+    catch (e) { if (e.name === "TimeoutError") deadHosts.set(host, Date.now() + 3 * 60e3); throw new Error(e.name === "TimeoutError" ? `pdf 504 (timed out) ${url}` : `pdf fetch failed: ${e.message} ${url}`); }
     if (r.ok || ![406, 429, 500, 502, 503].includes(r.status)) break;
     await new Promise((res) => setTimeout(res, 1500 * (attempt + 1))); // exchange servers throttle bursts
   }

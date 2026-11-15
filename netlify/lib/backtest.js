@@ -51,6 +51,8 @@ export async function backtest(holdings, days = 180, offset = 0) {
     const evBy = (t) => events.filter((r) => r.tier === t);
     const subjects = {};
     for (const r of rows.filter((r) => r.tier === "act")) subjects[r.subj] = (subjects[r.subj] || 0) + 1;
-    return { days, offset, filings: rows.length, byCategory, events: { n: events.length, act: stat(evBy("act")), read: stat(evBy("read")), skim: stat(evBy("skim")) }, topActSubjects: Object.entries(subjects).sort((a, b) => b[1] - a[1]).slice(0, 15), failed, act: stat(by("act")), read: stat(by("read")), skim: stat(by("skim")), all: stat(rows), note: "Score excludes the market-reaction term. z = |next-session return| / stock's 60-day daily σ.", at: new Date().toISOString() };
+    return { days, offset, filings: rows.length, byCategory, events: { n: events.length, act: stat(evBy("act")), read: stat(evBy("read")), skim: stat(evBy("skim")) }, topActSubjects: Object.entries(subjects).sort((a, b) => b[1] - a[1]).slice(0, 15), failed, act: stat(by("act")), read: stat(by("read")), skim: stat(by("skim")), all: stat(rows), note: "Score excludes the market-reaction term. z = |next-session return| / stock's 60-day daily σ.", at: new Date().toISOString(),
+      // exchange feed unreachable for most holdings: say so, and don't keep an empty result for a day
+      ...(failed > holdings.length / 2 || !rows.length ? { degraded: true, _noCache: true } : {}) };
   });
 }
