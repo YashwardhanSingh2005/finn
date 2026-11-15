@@ -1,7 +1,8 @@
 # FINN: a financial investment agent that shows its work
 
-**Live (open it on a phone):** https://finn-investor.netlify.app
-**Deep links:** [Polycab: promise ledger](https://finn-investor.netlify.app/?c=POLYCAB) · [Kaynes](https://finn-investor.netlify.app/?c=KAYNES) · [Your rules](https://finn-investor.netlify.app/?tab=rules)
+**Live (open it on a phone):** the link is in the covering email. The host changed during the build (`BUILD_LOG.md`, step 12), so it isn't hard-coded here.
+**Recorded copy, no backend needed:** [`docs/index.html`](docs/index.html) is the whole app plus a recorded snapshot in one file. Open it from disk, or enable GitHub Pages for `/docs` and it is served at https://yashwardhansingh2005.github.io/finn/. A banner says it is a recording.
+**Deep links on the live site:** `/?c=POLYCAB` (promise ledger) · `/?c=KAYNES` · `/?tab=rules`
 
 > An investor doesn't need more summaries; they need to know **what to read** and **whether to believe it**.
 > FINN does both, and every judgement comes with a receipt.
@@ -168,9 +169,19 @@ This covers one portfolio, one year, and next-session moves only: a sanity check
 4. **Silence as a signal:** promises management stops mentioning are already counted as "not in latest call". Next, alert on them.
 5. **Annual-report diffs:** year-over-year changes in risk factors, contingent liabilities, related-party transactions and auditor remarks.
 
+## When a source is down
+
+Exchanges often tarpit cloud IPs: the connection hangs instead of failing. FINN is built to degrade in steps and to say which step it is on.
+
+1. **Every outbound call has a hard timeout** (8 s for exchange APIs, 20 s for PDFs, 40 s for annual reports). After three failures a host is skipped for three minutes, so one dead feed can't use up a request's time budget.
+2. **The digest falls back** from NSE to BSE to the screener.in mirror of BSE announcements, and each card shows which source it came from.
+3. **Failures are never cached.** A result built from a failed download is returned once and recomputed next time.
+4. **If the backend can't answer at all**, the app serves the last recorded snapshot (`public/snapshot/`, written by `scripts/snapshot.mjs`) under a banner that says so. The same snapshot is inlined into `docs/index.html`, which needs no server.
+5. **Without model access**, everything computed in code still works: triage, alerts, results cut, Candour, the auditor scan, the backtest. Views that need a model say that the AI layer is offline.
+
 ## Quality
 
-- **Unit tests:** `npm test` runs 16 tests over the deterministic core: the classifier and its rule order, the scorer, the amount parser, SEBI materiality, the quote verifier, the fiscal calendar, horizon resolution, numeric verdicts, actuals for the year to date, the non-answer lexicon, transcript parsing, alerts, and the credibility posterior.
+- **Unit tests:** `npm test` runs 20 tests over the deterministic core: the classifier and its rule order, the scorer, the amount parser, SEBI materiality, the quote verifier, the fiscal calendar, horizon resolution, numeric verdicts, actuals for the year to date, the non-answer lexicon, transcript parsing, alerts, and the credibility posterior.
 - **Parser regression set:** `test/parse_regression.mjs` covers 9 real transcripts across 5 layouts.
 - **UI smoke test:** `test/ui_smoke.py` opens every screen and sub-tab in a 390 px headless browser, in light and dark mode, and fails on any JavaScript error. It caught a crash on directly opening the Candour tab.
 - **Evaluations:** `eval/README.md` covers the triage backtest (tuned on one half, validated out of sample) and three precision/recall rounds for the non-answer detector. It also records the model-routing finding (thinking off for extraction) and the judge-direction bug found by inspection.
@@ -187,6 +198,12 @@ npx netlify dev         # functions; AI Gateway credentials are injected after o
 
 Model tiers are configurable with `FINN_MODEL_EXTRACT` and `FINN_MODEL_REASON`.
 
+```bash
+node scripts/dev-server.mjs                       # plain Node server for the same handlers (no Netlify/Vercel CLI)
+node scripts/snapshot.mjs http://127.0.0.1:8787   # record every demo view into public/snapshot/
+npm run single                                    # build + write the one-file copy to docs/index.html
+```
+
 ## Repository map
 
 | Path | What it does |
@@ -201,6 +218,10 @@ Model tiers are configurable with `FINN_MODEL_EXTRACT` and `FINN_MODEL_REASON`.
 | `netlify/lib/research.js` | Layered research view; bull vs bear restricted to evidence IDs |
 | `netlify/lib/llm.js` | Model router, cost accounting, recovery of truncated JSON |
 | `netlify/lib/pdf.js` | PDF to per-page text; the quote verifier |
+| `netlify/lib/discourse.js` | Candour: transcript parser, non-answer detector, tone, divergence, praise, pushback, recurring topics |
+| `netlify/lib/auditor.js` | Auditor's-report scanner (opinion type, emphasis of matter, going concern, CARO remarks) |
+| `netlify/lib/backtest.js` | Triage backtest: re-scores past filings without the market-reaction term |
+| `scripts/snapshot.mjs`, `scripts/single.mjs` | Record a snapshot; build the one-file copy |
 | `src/` | The mobile UI (`Today.jsx`, `Research.jsx`, `Rules.jsx`) |
 
 Built with Claude Code; see `BUILD_LOG.md` for how.

@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
+    "single": "vite build && node scripts/single.mjs && cp dist/finn-snapshot.html docs/index.html",
     "test": "node --test test/*.test.mjs"
   },
   "dependencies": {

@@ -1,3 +1,6 @@
+/* The webfont's rupee sign can render with zero advance (it overlapped the next digit in Firefox),
+   so that one character is taken from a system face. Everything else stays in the webfonts. */
+@font-face { font-family: "FinnRupee"; src: local("Roboto"), local("Helvetica Neue"), local("Segoe UI"), local("Arial"), local("Noto Sans"), local("DejaVu Sans"), local("Liberation Sans"); unicode-range: U+20B9; }
 :root {
   --bg: #f6f5f1;
   --surface: #ffffff;
@@ -18,8 +21,8 @@
   --info-soft: #e3e9f8;
   --radius: 14px;
   --shadow: 0 1px 2px rgba(20, 20, 30, 0.04), 0 4px 16px rgba(20, 20, 30, 0.05);
-  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --serif: "Newsreader", Georgia, serif;
+  --font: "FinnRupee", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "FinnRupee", "Newsreader", Georgia, serif;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {

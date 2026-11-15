@@ -16,7 +16,7 @@ const DEMO = [
 
 export default function Research({ symbol, setSymbol, startTab, holdings }) {
   const [sub, setSub] = useState(startTab);
-  if (symbol) return <Company key={symbol + (sub || "")} symbol={symbol} startTab={sub || startTab} back={() => { setSymbol(null); setSub(null); }} />;
+  if (symbol) return <Company pick={setSymbol} key={symbol + (sub || "")} symbol={symbol} startTab={sub || startTab} back={() => { setSymbol(null); setSub(null); }} />;
   return <Finder onPick={(s, t) => { setSub(t || null); setSymbol(s); }} holdings={holdings} />;
 }
 
@@ -65,7 +65,7 @@ const TABS = [
   { k: "bb", label: "Bull vs bear" },
 ];
 
-function Company({ symbol, back, startTab }) {
+function Company({ symbol, back, startTab, pick }) {
   const { data: c, loading, error } = useApi("company", { symbol });
   const [tab, setTab] = useState(startTab || "snap");
   const [recent, setRecent] = usePersist("recent", []);
@@ -80,7 +80,7 @@ function Company({ symbol, back, startTab }) {
   if (error) return (
     <div><button className="btn ghost" onClick={back}><Icon.back width="18" height="18" /> Back</button>
       <p className="err">{error.message}</p>
-      {error.data?.suggestions?.filter((s) => s.symbol).length > 0 && <p className="small">Did you mean {error.data.suggestions.filter((s) => s.symbol).map((s) => <button key={s.symbol} className="chip" style={{ marginRight: 6 }} onClick={() => location.assign(`/?c=${s.symbol}`)}>{s.symbol}</button>)}</p>}
+      {error.data?.suggestions?.filter((s) => s.symbol).length > 0 && <p className="small">Did you mean {error.data.suggestions.filter((s) => s.symbol).map((s) => <button key={s.symbol} className="chip" style={{ marginRight: 6 }} onClick={() => pick(s.symbol)}>{s.symbol}</button>)}</p>}
     </div>);
   const st = c.stats;
   return (

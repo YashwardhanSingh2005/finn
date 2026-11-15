@@ -57,7 +57,7 @@ async function fromSnapshot(path, params) {
     data = inline() ? inline().data[key] : await fetch(`/snapshot/${key}.json`).then((r) => r.json()).catch(() => null);
     if (!data) return null;
   }
-  snap.at = idx.at; snap.used += 1;
+  snap.at = idx.at; snap.used += 1; if (inline()) snap.noBackend = true;
   snapListeners.forEach((f) => f({ ...snap }));
   return Array.isArray(data) ? data : { ...data, _snapshot: idx.at, cached: true };
 }

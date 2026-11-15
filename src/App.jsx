@@ -30,7 +30,7 @@ export default function App() {
     u.search = "";
     if (tab === "research" && symbol) u.searchParams.set("c", symbol);
     else if (tab !== "today") u.searchParams.set("tab", tab);
-    history.replaceState(null, "", u);
+    try { history.replaceState(null, "", u); } catch { /* sandboxed frame or file://: the URL just doesn't follow the view */ }
   }, [tab, symbol]);
 
   const [startTab, setStartTab] = useState(null);

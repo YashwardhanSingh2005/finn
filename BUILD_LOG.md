@@ -1,6 +1,6 @@
 # Build log: how FINN was built with an AI coding agent
 
-FINN was built in one overnight session (14–15 Nov 2026) with **Claude Code** (Claude Opus 5.5) as the coding agent, working in a shell on a university HPC login node. This log records how the work went, including the dead ends. The full session export is attached separately.
+FINN was built in one overnight session (14–15 Nov 2026) with **Claude Code** (Claude Opus 5.5) as the coding agent, working in a shell on a university HPC login node. This log records how the work went, including the dead ends. A redacted export of the session (FINN part only) is attached separately.
 
 ## How I worked with the agent
 
@@ -35,6 +35,10 @@ FINN was built in one overnight session (14–15 Nov 2026) with **Claude Code** 
 
 | 20 | Auditor's-report scanner over 21 annual reports | Found the reports in 20 of 21. All 9 flags were hand-verified; one going-concern note belonged to a group entity, so it was re-attributed and pinned by a test. |
 | 21 | My call: upgrade the judgement tier | Cross-call promise judging and bull vs bear moved from Sonnet 5.5 to **Claude Opus 5.5**. Bulk extraction stays on Haiku 5.5, because quality matters most where the model reasons and cost matters where it reads. |
+| 22 | Two views hung for three minutes: transcript PDFs on the NSE archive host never answered from this network | No fetch had a timeout. Added hard timeouts everywhere, a per-host circuit breaker, and parallel transcript downloads. Results built from a failed download are no longer cached (one empty backtest had been cached for 24 hours). |
+| 23 | No live backend while the host move was pending | **Snapshot mode**: every demo view is recorded as JSON. The app falls back to the recording when the backend can't answer and says so in a banner. The same recording is inlined into a single HTML file that runs with no server. |
+| 24 | Checking the one-file copy in a phone-sized browser | The rupee sign was missing in front of prices. The webfont's ₹ rendered with zero width, so the next digit was drawn over it. That one character now comes from a system font. It had been wrong in every earlier screenshot and I had not seen it. |
+| 25 | Build history | The raw session contains unrelated work and access tokens, so the attached history is a filtered, redacted export of the FINN part only. |
 
 ## Things the agent did *not* get to decide
 - Scraping NSE/BSE with browser headers: the agent's safety layer blocked it until I approved it explicitly.

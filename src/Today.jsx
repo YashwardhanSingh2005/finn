@@ -385,18 +385,22 @@ function CallCheck({ x }) {
 
 /** Push without infrastructure: the ranked brief as a WhatsApp-ready message (share sheet or wa.me). */
 function ShareBrief({ act, read, alerts, win }) {
+  const live = typeof window !== "undefined" && !window.__FINN_SNAPSHOT__ && location.protocol.startsWith("http");
   const text = () => {
     const L = [`*FINN brief*: ${win.startsWith("since") ? win : `last ${win}`}`];
     if (act.length) { L.push("", "*Needs you*"); act.slice(0, 5).forEach((x) => L.push(`• ${x.symbol}: ${(x.summary || x.subject).slice(0, 110)} (${x.score})`)); }
     if (alerts.length) { L.push("", "*Triggers*"); alerts.slice(0, 4).forEach((a) => L.push(`• ${a.symbol}: ${a.title}`)); }
     if (read.length) L.push("", `${read.length} more worth a read.`);
-    L.push("", location.origin);
+    if (live) L.push("", location.origin);
     return L.join("\n");
   };
-  const go = async () => {
-    const t = text();
-    if (navigator.share) { try { await navigator.share({ text: t }); return; } catch {} }
-    window.open(`https://wa.me/?text=${encodeURIComponent(t)}`, "_blank", "noopener");
+  // A real link, so it works even where scripts can't open windows (embedded or sandboxed copies);
+  // on a phone with a share sheet, the sheet is offered first.
+  const href = `https://wa.me/?text=${encodeURIComponent(text())}`;
+  const go = async (e) => {
+    if (!live || !navigator.share) return;
+    e.preventDefault();
+    try { await navigator.share({ text: text() }); } catch (err) { if (err?.name !== "AbortError") window.open(href, "_blank", "noopener"); }
   };
-  return <button className="listen" onClick={go} aria-label="Send brief to WhatsApp" style={{ background: "var(--good-soft)", color: "var(--good)" }}>↗ WhatsApp</button>;
+  return <a className="listen" href={href} target="_blank" rel="noopener noreferrer" onClick={go} aria-label="Send brief to WhatsApp" style={{ background: "var(--good-soft)", color: "var(--good)", textDecoration: "none" }}>↗ WhatsApp</a>;
 }
