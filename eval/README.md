@@ -143,7 +143,7 @@ Every quote a model returns is checked against the source transcript text, using
 ## Reproducing
 
 ```bash
-npm test                                   # 14 unit tests over the deterministic core
+npm test                                   # 24 unit tests over the deterministic core
 FINN_DISK_CACHE=./.cache NODE_USE_ENV_PROXY=1 node scripts/eval_nonanswers.mjs POLYCAB KAYNES ASIANPAINT HAL JUBLFOOD TCS DIXON RELIANCE SUZLON TRENT
 SEED=99991 MODE=unflagged node scripts/eval_recall.mjs    # recall sample
 SEED=99991 MODE=flagged   node scripts/eval_recall.mjs    # precision sample

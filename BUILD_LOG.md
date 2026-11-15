@@ -1,6 +1,6 @@
 # Build log: how FINN was built with an AI coding agent
 
-FINN was built in one overnight session (14–15 Nov 2026) with **Claude Code** (Claude Opus 5.5) as the coding agent, working in a shell on a university HPC login node. This log records how the work went, including the dead ends. A redacted export of the session (FINN part only) is attached separately.
+FINN was built in one overnight session (14–15 Nov 2026) with **Claude Code** (Claude Opus 5.5) as the coding agent, working in a shell on a university Linux cluster. This log records how the work went, including the dead ends. A redacted export of the session (FINN part only) is attached separately.
 
 ## How I worked with the agent
 
@@ -41,6 +41,7 @@ FINN was built in one overnight session (14–15 Nov 2026) with **Claude Code** 
 | 25 | A fresh deployment would start cold and depend on exchange archives that hang | Exchange PDFs don't change, so the page text of every document already read is shipped as a gzipped seed (1.6 MB). A cold server answered Candour, the auditor scan and the league in under a second with an empty cache. |
 | 26 | The one annual report the scanner couldn't locate (Bajaj Finance) | Its title is a running header that the PDF text order puts after the body. Anchored the start on the SA 700 opening sentence as well. Now 22 of 22, with no change on the other 21. The stale result was also sitting in the seed, which is why derived results are versioned by key. |
 | 27 | Build history | The raw session contains unrelated work and access tokens, so the attached history is a filtered, redacted export of the FINN part only. |
+| 28 | What happens when the model itself is down? | Until now a failed model call meant a 503 for the whole view. Now the judgement tier retries one model down, a failed judge keeps the verdicts computed in code (and the partial result is not cached), and bull vs bear falls back to a rule-sorted layout of the same evidence. Tested with a mock provider. The on-screen wording for this was the last change and was not re-checked in a browser. |
 
 ## Things the agent did *not* get to decide
 - Scraping NSE/BSE with browser headers: the agent's safety layer blocked it until I approved it explicitly.
