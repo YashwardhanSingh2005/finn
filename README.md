@@ -182,7 +182,7 @@ Exchanges often tarpit cloud IPs: the connection hangs instead of failing. FINN 
 
 ## Quality
 
-- **Unit tests:** `npm test` runs 21 tests over the deterministic core: the classifier and its rule order, the scorer, the amount parser, SEBI materiality, the quote verifier, the fiscal calendar, horizon resolution, numeric verdicts, actuals for the year to date, the non-answer lexicon, transcript parsing, alerts, and the credibility posterior.
+- **Unit tests:** `npm test` runs 22 tests over the deterministic core: the classifier and its rule order, the scorer, the amount parser, SEBI materiality, the quote verifier, the fiscal calendar, horizon resolution, numeric verdicts, actuals for the year to date, the non-answer lexicon, transcript parsing, alerts, and the credibility posterior.
 - **Parser regression set:** `test/parse_regression.mjs` covers 9 real transcripts across 5 layouts.
 - **UI smoke test:** `test/ui_smoke.py` opens every screen and sub-tab in a 390 px headless browser, in light and dark mode, and fails on any JavaScript error. It caught a crash on directly opening the Candour tab.
 - **Evaluations:** `eval/README.md` covers the triage backtest (tuned on one half, validated out of sample) and three precision/recall rounds for the non-answer detector. It also records the model-routing finding (thinking off for extraction) and the judge-direction bug found by inspection.

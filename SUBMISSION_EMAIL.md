@@ -26,13 +26,13 @@ Please find my submission for the FINN build challenge below.
   - It checks each promise against reported numbers and turns the track record into a probability: *"83% chance the next promise is kept (80% range 63–98%)"*. This is a Beta posterior, following Hutton & Stocken (2009) on credibility being priced. It also labels the pattern, e.g. *"walks down, then beats"*.
   - The same view covers the business snapshot, trajectory, balance sheet, cash quality and a bull/bear case. Each bull or bear point may cite only verified evidence.
   - It works for any NSE ticker.
-- **The auditor's report is read too.** A scanner with no model reads the latest annual report for the opinion type, emphasis-of-matter and going-concern paragraphs and adverse CARO remarks, each quoted with its page. It found the audit report in 20 of 21 annual reports and raised 9 flags, and I checked every one by hand.
+- **The auditor's report is read too.** A scanner with no model reads the latest annual report for the opinion type, emphasis-of-matter and going-concern paragraphs and adverse CARO remarks, each quoted with its page. It found the audit report in all 22 annual reports I ran it on and raised 10 flags in 5 companies, and I checked every one by hand.
 
 **Key decisions**
 
 1. **Models locate and quote; code computes.** No number on screen is produced by a model. Every model-supplied quote is checked against the source PDF; quotes that fail are dropped, and the drop is counted on screen.
 2. **Rules before models for triage.** Rules are free, instant and explainable. Models are spent only on items that earn attention: a cheap model (Haiku) reads documents, and a stronger model (Opus) is used only for cross-call judgement, batched to one call per company. Everything is cached by document. A new company costs about ₹9 the first time and nothing after that, and a cost meter in the app shows the spend.
-3. **I measured instead of asserting.** I hand-labelled the non-answer detector over three rounds on fresh samples: 86–92% precision and about 55–60% recall, reported as lower bounds. One literature idea, script-echo, didn't transfer to Indian calls, so I dropped it and documented why. A parser regression set covers 9 transcript layouts, and 21 unit tests cover the deterministic core.
+3. **I measured instead of asserting.** I hand-labelled the non-answer detector over three rounds on fresh samples: 86–92% precision and about 55–60% recall, reported as lower bounds. One literature idea, script-echo, didn't transfer to Indian calls, so I dropped it and documented why. A parser regression set covers 9 transcript layouts, and 22 unit tests cover the deterministic core.
 4. **I tested whether the ranking works.** I re-scored a year of portfolio filings, leaving out the market-reaction term so the test isn't circular.
    - The first version barely separated urgent filings from routine ones.
    - A per-category breakdown showed which weights were wrong.

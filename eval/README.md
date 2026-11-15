@@ -80,11 +80,13 @@ The correlation between non-answer rate and the next-session return is −0.08, 
 
 ### 1f. Auditor's-report scanner
 
-This covers the 21 latest annual reports for the portfolio plus the demo set.
+This covers the 22 latest annual reports for the portfolio plus the demo set.
 
 **Locating the reports.**
-- The first version found the auditor's reports in 16 of 21. The misses were curly apostrophes ("Auditor’s") and titles broken across lines ("To\nThe Members").
-- After making the patterns whitespace- and apostrophe-tolerant, it found them in **20 of 21**. Every one of the 20 had both the standalone and the consolidated report. Bajaj Finance is still not located.
+- The first version found the auditor's reports in 16 of the first 21. The misses were curly apostrophes ("Auditor’s") and titles broken across lines ("To\nThe Members").
+- After making the patterns whitespace- and apostrophe-tolerant, it found them in 20 of 21. Bajaj Finance was the miss.
+- Bajaj Finance prints the title as a running header ("Independent Auditor's Report on the Standalone Financial Statements"), and on the consolidated report the PDF text order puts that header *after* the body. The start is now also anchored on the SA 700 opening sentence ("We have [jointly] audited the accompanying…") on a page that carries the title and "To the Members of", and "(Contd.)" pages never count as a start.
+- Result: **22 of 22** located, each with both the standalone and the consolidated report. I re-ran the new rule over the other 21 cached reports and nothing changed (same start pages, opinions and flags). A unit test pins the layout.
 
 **Every flag, checked by hand:**
 
@@ -97,7 +99,7 @@ This covers the 21 latest annual reports for the portfolio plus the demo set.
 | HAL | Emphasis of matter, standalone and consolidated: pay-revision and contribution notes | Genuine |
 | HAL | "Going-concern uncertainty" (₹12.8 lakh net liability) | **Mis-attributed**: it concerns a group entity reproduced in the consolidated report. Fix: a going-concern paragraph that appears only in the consolidated report is now a "watch" flag labelled *group company*, pinned by a unit test. |
 
-That is 8 of 9 flags correct as originally labelled, and 9 of 9 after the fix. All opinions were unmodified, so there were no qualified, adverse or disclaimer cases in this sample to test against; the unit tests cover those paths synthetically.
+The table has 10 flags in 5 companies (Suzlon, Maruti and Eternal each carry the same paragraph in both the standalone and the consolidated report). 9 of the 10 were correct as originally labelled, and all 10 after the fix. A script also confirms that each quote is on the page it cites, under the right heading. All opinions were unmodified, so there were no qualified, adverse or disclaimer cases in this sample to test against; the unit tests cover those paths synthetically.
 
 ## 2. Triage score (Push): backtest
 

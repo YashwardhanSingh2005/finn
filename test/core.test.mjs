@@ -190,6 +190,17 @@ test("auditor scan: going-concern only in the consolidated report is attributed 
   assert.ok(!r.flags.some((f) => f.level === "risk"));
 });
 
+test("auditor scan: running-title layout (title after the body in text order) is located; continuation pages are not starts", () => {
+  const r = analyseAudit({
+    10: "226 Annual Report 2025-26\nIndependent Auditor's Report on the Standalone Financial Statements\nTo the Members of Q Limited\nOpinion\n1. We have jointly audited the accompanying standalone financial statements of Q Limited. In our opinion the aforesaid standalone financial statements give a true and fair view.",
+    11: "Key audit matter How our audit addressed\nIndependent Auditor's Report on the Standalone Financial Statements (Contd.)\nTo the Members of Q Limited we report our opinion; we have audited the accompanying statements.",
+    40: "366 Annual Report 2025-26\nTo the Members of Q Limited\nOpinion\n1. We have jointly audited the accompanying consolidated financial statements of Q Limited. In our opinion the aforesaid consolidated financial statements give a true and fair view.\nIndependent Auditor's Report on the Consolidated Financial Statements",
+    41: "Emphasis handled elsewhere.\nIndependent Auditor's Report on the Consolidated Financial Statements (Contd.)",
+  }, 60);
+  assert.deepEqual(r.reports.map((x) => [x.basis, x.startPage, x.opinion]), [["standalone", 10, "unmodified"], ["consolidated", 40, "unmodified"]]);
+  assert.equal(r.clean, true);
+});
+
 test("snapshot keys: digest windows bucket up, custom ranges use the widest, per-URL views are not snapshotted", async () => {
   const { snapKey } = await import("../src/snapkey.js");
   assert.equal(snapKey("digest", { hours: 24 }), "digest_24");

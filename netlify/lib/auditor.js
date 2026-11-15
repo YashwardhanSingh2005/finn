@@ -54,7 +54,11 @@ export function analyseAudit(pages, nPages) {
   const reports = [];
   const pageNums = Object.keys(pages).map(Number).sort((a, b) => a - b);
   // auditor's report starts: a page that has the title and an Opinion heading nearby
-  const starts = pageNums.filter((p) => /independent\s+auditor[’']?s[’']?\s+report\s*\n?\s*(?:to\s+the\s+members|to\s*,?\s*the\s+members|report\s+on\s+the\s+audit)/i.test(pages[p]) || (/independent\s+auditor[’']?s[’']?\s+report/i.test(pages[p]) && /report\s+on\s+the\s+audit\s+of\s+the\s+(?:standalone\s+|consolidated\s+)?(?:ind\s*as\s+)?financial\s+statements/i.test(pages[p]) && /\bopinion\b/i.test(pages[p])));
+  // Three layouts seen in practice: title directly above "To the Members"; title + "Report on the Audit of…";
+  // and (Bajaj Finance) a running title that the PDF text order puts anywhere on the page, so the anchor
+  // there is the SA 700 opening sentence itself. Continuation pages ("(Contd.)") never count as a start.
+  const TITLE = /independent\s+auditor[’']?s[’']?\s+report(?!\s*(?:on\s+the\s+(?:standalone|consolidated)\s+financial\s+statements\s*)?\(cont)/i;
+  const starts = pageNums.filter((p) => /independent\s+auditor[’']?s[’']?\s+report\s*\n?\s*(?:to\s+the\s+members|to\s*,?\s*the\s+members|report\s+on\s+the\s+audit)/i.test(pages[p]) || (/independent\s+auditor[’']?s[’']?\s+report/i.test(pages[p]) && /report\s+on\s+the\s+audit\s+of\s+the\s+(?:standalone\s+|consolidated\s+)?(?:ind\s*as\s+)?financial\s+statements/i.test(pages[p]) && /\bopinion\b/i.test(pages[p])) || (TITLE.test(pages[p]) && /to\s+the\s+members\s+of/i.test(pages[p]) && /\bopinion\b/i.test(pages[p]) && /we\s+have\s+(?:jointly\s+)?audited\s+the\s+accompanying/i.test(pages[p])));
   const seen = new Set();
   for (const s of starts) {
     if ([...seen].some((x) => Math.abs(x - s) < 6)) continue;
