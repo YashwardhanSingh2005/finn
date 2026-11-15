@@ -180,3 +180,12 @@ test("auditor scan: opinion type, emphasis of matter, CARO flags (and negations 
   assert.ok(bad.flags.some((f) => /Emphasis of matter/.test(f.title) && /restatement/.test(f.ev.quote)));
   assert.ok(bad.flags.some((f) => /Default on borrowings/.test(f.title)));
 });
+
+test("auditor scan: going-concern only in the consolidated report is attributed to a group company", () => {
+  const r = analyseAudit({
+    10: "Independent Auditor’s Report\nTo the Members of Z Limited\nReport on the Audit of the Standalone Financial Statements\nOpinion\nIn our opinion the financial statements give a true and fair view.",
+    40: "Independent Auditor’s Report\nTo the Members of Z Limited\nReport on the Audit of the Consolidated Financial Statements\nOpinion\ngive a true and fair view.\nMaterial uncertainty related to going concern\nThe JV company has a net liability of 12 lakhs indicating an uncertainty.",
+  }, 60);
+  assert.ok(r.flags.some((f) => /group company/.test(f.title) && f.level === "watch"));
+  assert.ok(!r.flags.some((f) => f.level === "risk"));
+});

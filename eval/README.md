@@ -78,6 +78,27 @@ The correlation between non-answer rate and the next-session return is −0.08, 
 
 **Reading:** the next-day difference points the way the literature predicts, but at n=40 it is not statistically meaningful (t ≈ −0.8), and over 5 days the sign reverses. **We do not claim that Candour predicts returns.** We present it as an explainable credibility lens with a verbatim receipt for every dodge. A proper test needs hundreds of calls (all NSE-500 companies over several years), which is the obvious next step once transcripts are cached at scale. Data: `candour_event_study.json`; script: `scripts/event_study_candour.mjs`.
 
+### 1f. Auditor's-report scanner
+
+This covers the 21 latest annual reports for the portfolio plus the demo set.
+
+**Locating the reports.**
+- The first version found the auditor's reports in 16 of 21. The misses were curly apostrophes ("Auditor’s") and titles broken across lines ("To\nThe Members").
+- After making the patterns whitespace- and apostrophe-tolerant, it found them in **20 of 21**. Every one of the 20 had both the standalone and the consolidated report. Bajaj Finance is still not located.
+
+**Every flag, checked by hand:**
+
+| Company | Flag | Verdict |
+|---|---|---|
+| Suzlon | Emphasis of matter: restatement of FY25 comparatives after an NCLT scheme | Genuine |
+| Maruti | Emphasis of matter: can't reliably estimate end-of-life-vehicle EPR obligations | Genuine |
+| Eternal | Emphasis of matter: GST orders on delivery charges | Genuine |
+| Dixon | Emphasis of matter: ₹1,110 cr of PLI incentive income recognised at a subsidiary | Genuine |
+| HAL | Emphasis of matter, standalone and consolidated: pay-revision and contribution notes | Genuine |
+| HAL | "Going-concern uncertainty" (₹12.8 lakh net liability) | **Mis-attributed**: it concerns a group entity reproduced in the consolidated report. Fix: a going-concern paragraph that appears only in the consolidated report is now a "watch" flag labelled *group company*, pinned by a unit test. |
+
+That is 8 of 9 flags correct as originally labelled, and 9 of 9 after the fix. All opinions were unmodified, so there were no qualified, adverse or disclaimer cases in this sample to test against; the unit tests cover those paths synthetically.
+
 ## 2. Triage score (Push): backtest
 
 This is reproduced in the app under Rules → *Does the score work?* and in the main README.

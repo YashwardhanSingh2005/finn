@@ -88,7 +88,13 @@ export function analyseAudit(pages, nPages) {
   const flags = [];
   for (const r of reports) {
     if (r.opinion !== "unmodified") flags.push({ level: "risk", title: `${r.opinion[0].toUpperCase() + r.opinion.slice(1)} audit opinion (${r.basis})`, ev: r.opinionEv });
-    if (r.goingConcern) flags.push({ level: "risk", title: `Going-concern uncertainty (${r.basis})`, ev: r.goingConcern });
+    if (r.goingConcern) {
+      // A going-concern paragraph that appears only in the consolidated report usually concerns a
+      // subsidiary / JV (component auditors' findings are reproduced there). Don't pin it on the parent.
+      const alsoStandalone = reports.some((x) => x.basis === "standalone" && x.goingConcern);
+      if (r.basis === "standalone" || alsoStandalone) flags.push({ level: "risk", title: `Going-concern uncertainty (${r.basis})`, ev: r.goingConcern });
+      else flags.push({ level: "watch", title: "Going-concern doubt in a group company (consolidated report only)", ev: r.goingConcern });
+    }
     if (r.emphasisOfMatter) flags.push({ level: "watch", title: `Emphasis of matter (${r.basis})`, ev: r.emphasisOfMatter });
   }
   for (const c of dedup) flags.push({ level: "watch", title: `CARO: ${c.label}`, ev: c });
