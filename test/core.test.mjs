@@ -227,3 +227,70 @@ test("seed cache: a document already read is served from the shipped seed, with 
   assert.equal(await cache.get("auditor_v3_no_such_document"), null);
   if (saved) process.env.FINN_DISK_CACHE = saved;
 });
+
+test("model router: falls back one tier when the gateway doesn't offer the judgement model; a dead provider is a 503, not a crash", async () => {
+  const { createServer } = await import("node:http");
+  const seen = [];
+  let mode = "no-opus";
+  const srv = createServer((req, res) => {
+    let body = "";
+    req.on("data", (d) => (body += d));
+    req.on("end", () => {
+      const m = JSON.parse(body || "{}").model;
+      seen.push(m);
+      res.setHeader("content-type", "application/json");
+      if (mode === "dead") { res.statusCode = 529; return res.end(JSON.stringify({ type: "error", error: { type: "overloaded_error", message: "overloaded" } })); }
+      if (/opus/.test(m)) { res.statusCode = 404; return res.end(JSON.stringify({ type: "error", error: { type: "not_found_error", message: `model: ${m}` } })); }
+      res.end(JSON.stringify({ id: "msg_1", type: "message", role: "assistant", model: m, content: [{ type: "text", text: '{"verdicts":[]}' }], stop_reason: "end_turn", usage: { input_tokens: 10, output_tokens: 5 } }));
+    });
+  });
+  await new Promise((r) => srv.listen(0, "127.0.0.1", r));
+  const saved = { k: process.env.ANTHROPIC_API_KEY, b: process.env.ANTHROPIC_BASE_URL };
+  process.env.ANTHROPIC_API_KEY = "test"; process.env.ANTHROPIC_BASE_URL = `http://127.0.0.1:${srv.address().port}`;
+  try {
+    const { llmJSON } = await import("../netlify/lib/llm.js");
+    const r = await llmJSON({ tier: "reason", system: "s", user: "u" });
+    assert.deepEqual(r.json, { verdicts: [] });
+    assert.equal(r.meta.model, "claude-sonnet-5-5", "meta names the model that actually answered");
+    assert.equal(r.meta.fallbackFrom, "claude-opus-5-5");
+    assert.deepEqual(seen, ["claude-opus-5-5", "claude-sonnet-5-5"]);
+    mode = "dead";
+    await assert.rejects(() => llmJSON({ tier: "extract", system: "s", user: "u" }), (e) => e.modelDown === true && e.status === 503 && /model call failed/.test(e.message));
+  } finally {
+    srv.close(); srv.closeAllConnections?.();
+    for (const [k, v] of [["ANTHROPIC_API_KEY", saved.k], ["ANTHROPIC_BASE_URL", saved.b]]) { if (v === undefined) delete process.env[k]; else process.env[k] = v; }
+  }
+});
+
+test("bull vs bear by rule: evidence is sided in code (flags, verdicts, auditor), heaviest first, every point cites its item", async () => {
+  const { evidenceList, ruleBullBear } = await import("../netlify/lib/research.js");
+  const a = {
+    results: { period: "Sep 2026", rows: [{ label: "Revenue", cur: 100, qoq: 2, yoy: 12 }, { label: "PAT", cur: 10, qoq: 1, yoy: 20 }] },
+    trajectory: { years: 5, revCagr: 12, patCagr: 15, flags: [{ level: "watch", title: "Growth decelerating", detail: "3y 6% vs 5y 12%.", rule: "r1" }] },
+    balance: { flags: [{ level: "good", title: "Practically debt-free", detail: "D/E 0.05×.", rule: "r2" }] },
+    cash: { flags: [{ level: "risk", title: "Profits not converting to cash", detail: "only 55%.", rule: "r3" }, { level: "info", title: "n/a", detail: "x", rule: "r4" }] },
+  };
+  const ledger = { credibility: { kept: 5, scored: 6, pNext: 75, lo: 55, hi: 92 }, threads: [
+    { title: "Margin 12%", verdict: "missed", check: "computed", callsMentioned: ["Q1FY27"], history: [], latest: { page: 4 } },
+    { title: "Capex on time", verdict: "on track", callsMentioned: ["Q2FY27"], history: [], latest: { page: 7 } },
+    { title: "Exports 10%", verdict: "too early", callsMentioned: ["Q2FY27"], history: [{ change: "first said" }, { change: "pushed out" }], latest: { page: 9 } },
+  ] };
+  const aud = { flags: [{ level: "watch", title: "Emphasis of matter (standalone)", ev: { quote: "We draw attention to Note 17", page: 270 } }] };
+  const ev = evidenceList(a, ledger, null, null, aud);
+  const side = (re) => ev.find((e) => re.test(e.text)).side;
+  assert.equal(side(/Latest quarter/), "bull");
+  assert.equal(side(/decelerating/), "bear");
+  assert.equal(side(/debt-free/), "bull");
+  assert.equal(side(/^n\/a/), null, "info flags take no side");
+  assert.equal(side(/Margin 12%/), "bear");
+  assert.equal(side(/Capex on time/), "bull");
+  assert.equal(side(/Exports 10%/), "bear", "a pushed-out promise counts against, even before it is due");
+  assert.equal(side(/CAGR/), null);
+  const r = ruleBullBear(ev);
+  assert.equal(r.byRule, true);
+  assert.match(r.bear[0].point, /Emphasis of matter/, "auditor remarks lead the case against");
+  assert.match(r.bull[0].point, /Track record/);
+  assert.ok(r.bull.length <= 4 && r.bear.length <= 4);
+  const ids = new Set(ev.map((e) => e.id));
+  for (const p of [...r.bull, ...r.bear]) assert.ok(p.refs.length === 1 && ids.has(p.refs[0]));
+});

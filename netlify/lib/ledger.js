@@ -9,7 +9,7 @@
 // 4. Only promises that can't be checked from the P&L (qualitative, or non-financial KPIs) go to a
 //    stronger model, which may only cite later transcripts; those verdicts are labelled "judgement".
 import { fetchPdfPages, withPageMarkers, verifyQuote } from "./pdf.js";
-import { llmJSON } from "./llm.js";
+import { llmJSON, ModelUnavailable } from "./llm.js";
 import { periodToFQ, fqLabel, isFinancial } from "./fundamentals.js";
 import { credibility } from "./credibility.js";
 
@@ -151,7 +151,10 @@ export async function extractCall(call, { cache } = {}) {
 export async function buildLedger(c, { n = 4, cache, judge = true } = {}) {
   const calls = pickCalls(c, n);
   const qi = quarterIndex(c);
-  const extracted = await Promise.all(calls.map((call) => extractCall(call, { cache }).catch((e) => ({ period: call.period, error: e.message, claims: [] }))));
+  const extracted = await Promise.all(calls.map((call) => extractCall(call, { cache }).catch((e) => ({ period: call.period, transcript: call.transcript, error: e.message, modelDown: !!e.modelDown, claims: [] }))));
+  // every call failed because the model is unreachable: say so (the handler serves a recording or a 503)
+  const failed = extracted.filter((e) => e.error);
+  if (calls.length && failed.length === calls.length && failed.some((e) => e.modelDown)) throw new ModelUnavailable(failed[0].error);
   const cost = [];
   const claims = [];
   extracted.forEach((ex, ci) => {
@@ -163,7 +166,9 @@ export async function buildLedger(c, { n = 4, cache, judge = true } = {}) {
   });
 
   // ---- threads: the same promise repeated across calls ----
-  const threads = await threadClaims(claims, c.symbol, cache, cost);
+  // if the threading call fails, each promise stays its own thread (still correct, just not linked)
+  let threadError;
+  const threads = await threadClaims(claims, c.symbol, cache, cost).catch((e) => { threadError = e.message; return claims.map((cl) => ({ title: cl.statement, ids: [cl.id] })); });
   const consol = consolidatedNow(qi);
   for (const t of threads) {
     t.versions = t.ids.map((id) => claims.find((x) => x.id === id)).filter(Boolean).sort((a, b) => b.callIdx - a.callIdx); // oldest -> newest
@@ -191,7 +196,9 @@ export async function buildLedger(c, { n = 4, cache, judge = true } = {}) {
     }
   }
 
-  if (judge) await judgeThreads(threads.filter((t) => !t.check), extracted, consol, c.symbol, cache, cost);
+  // a failed judge call must not take the code-computed verdicts down with it
+  let judgeError;
+  if (judge) await judgeThreads(threads.filter((t) => !t.check), extracted, consol, c.symbol, cache, cost).catch((e) => { judgeError = e.message; });
 
   const tally = {};
   for (const t of threads) tally[t.verdict || "pending"] = (tally[t.verdict || "pending"] || 0) + 1;
@@ -203,8 +210,9 @@ export async function buildLedger(c, { n = 4, cache, judge = true } = {}) {
     threads: threads.map(({ versions, first, ...t }) => ({ ...t, latest: strip(t.latest), versions: versions.map(strip) })),
     tally, sayDo: credit, sayDoBasis: scored.length, goalpostMoves: moved.length,
     credibility: credibility(threads),
-    judged: judge, consolidatedNow: consol, notRepeated: threads.filter((t) => t.notRepeated).length,
+    judged: judge && !judgeError, judgeError, threadError, consolidatedNow: consol, notRepeated: threads.filter((t) => t.notRepeated).length,
     cost,
+    _noCache: !!(failed.length || judgeError || threadError) || undefined, // a partial result is shown, never stored
   };
 }
 const strip = (v) => v && ({ callQuarter: v.callQuarter, statement: v.statement, quote: v.quote, page: v.page, low: v.low, high: v.high, horizon: v.horizon, metric: v.metric, scope: v.scope, speaker: v.speaker, transcript: v.transcript, verifyScore: v.verifyScore });

@@ -31,6 +31,15 @@ async function anthropic() {
 }
 const wireModel = (m) => (viaVercel() ? `anthropic/${m.replace(/-(\d+)-(\d+)$/, "-$1.$2")}` : m);
 
+/** The model provider could not be reached or refused the call. Handlers turn this into a 503 or a labelled recording. */
+export class ModelUnavailable extends Error {
+  constructor(message) { super(message); this.name = "ModelUnavailable"; this.status = 503; this.modelDown = true; }
+}
+// If the judgement model isn't offered by the gateway in use (400/403/404), fall back one tier rather than
+// lose the view. The model that actually answered is recorded in meta and shown in the app.
+const FALLBACK = { reason: process.env.FINN_MODEL_REASON_FALLBACK || "claude-sonnet-5-5" };
+const describe = (e) => `model call failed (${e.status || e.name || "network"}): ${String(e.message || e).replace(/\s+/g, " ").slice(0, 160)}`;
+
 export const llmAvailable = () => !!(process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_BASE_URL || process.env.AI_GATEWAY_API_KEY || process.env.VERCEL);
 
 /**
@@ -38,25 +47,34 @@ export const llmAvailable = () => !!(process.env.ANTHROPIC_API_KEY || process.en
  * `system` is sent as a cacheable block (long instructions reused across calls).
  */
 export async function llmJSON({ tier = "extract", system, user, maxTokens = 2000 }) {
-  const model = MODELS[tier];
+  let model = MODELS[tier], fallbackFrom;
   const t0 = Date.now();
   // extraction: thinking off (Haiku 5.5 thinks adaptively by default, which silently eats the output
   // budget on a copy-and-structure task). judgement: adaptive thinking at medium effort, headroom for it.
   const thinkingCfg = tier === "extract"
     ? { thinking: { type: "disabled" }, output_config: { effort: "low" } }
     : { thinking: { type: "adaptive" }, output_config: { effort: "medium" } }; // Opus 5.5: thinking can't be disabled; effort set explicitly
-  const res = await (await anthropic()).messages.create({
-    model: wireModel(model),
+  const call = async (m) => (await anthropic()).messages.create({
+    model: wireModel(m),
     max_tokens: tier === "extract" ? maxTokens : Math.max(maxTokens * 2, 12000),
     ...thinkingCfg,
     system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
     messages: [{ role: "user", content: user + "\n\nReply with the JSON object only, starting with {. No markdown fences, no commentary." }],
   });
+  let res;
+  try { res = await call(model); }
+  catch (e) {
+    const fb = FALLBACK[tier];
+    if (!fb || fb === model || ![400, 403, 404].includes(e.status)) throw new ModelUnavailable(describe(e));
+    try { res = await call(fb); fallbackFrom = model; model = fb; }
+    catch (e2) { throw new ModelUnavailable(describe(e2)); }
+  }
   const text = res.content.filter((c) => c.type === "text").map((c) => c.text).join("");
   const u = res.usage || {};
   const [pi, po] = PRICE[model] || [0, 0];
   const usd = ((u.input_tokens || 0) * pi + (u.output_tokens || 0) * po + (u.cache_read_input_tokens || 0) * pi * 0.1) / 1e6;
   const meta = { model, tier, ms: Date.now() - t0, inTok: u.input_tokens, outTok: u.output_tokens, usd: +usd.toFixed(5) };
+  if (fallbackFrom) meta.fallbackFrom = fallbackFrom;
   const json = parseJSON(text);
   meta.stop = res.stop_reason;
   if (json?._salvaged) meta.salvaged = true;

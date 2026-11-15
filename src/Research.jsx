@@ -134,7 +134,7 @@ function Snapshot({ c, biz, L, goLedger }) {
         <h3>What it does</h3>
         {biz.loading && <div className="row small muted"><span className="spin" /> Reading the latest earnings call…</div>}
         {biz.error && <p className="muted small">{biz.error.status === 503 ? "AI layer offline: showing numbers only." : biz.error.message}</p>}
-        {biz.data?.fixture && <p className="tiny" style={{ color: "var(--watch)" }}>Recorded model run of 15 Nov 2026 (no model access on this copy).</p>}
+        {biz.data?.fixture && <p className="tiny" style={{ color: "var(--watch)" }}>Recorded model run of 15 Nov 2026 ({biz.data.modelError ? "the model isn’t reachable right now" : "no model access on this copy"}).</p>}
         {!b && c.revenueMix && (<><SegmentBar segs={c.revenueMix.segments} /><div className="tiny muted">Revenue mix{c.revenueMix.label ? ` (${c.revenueMix.label})` : ""}: {c.revenueMix.source}</div></>)}
         {b && (<>
           <p style={{ margin: "0 0 8px" }}>{b.what_it_does}</p>
@@ -281,10 +281,11 @@ function Ledger({ st, judged, cand }) {
           <div className="kpi"><div className="k">Not repeated in latest call</div><div className="v">{L.notRepeated}</div></div>
         </div>
         <div className="tiny muted mt8">
-          Calls read: {L.calls.map((c) => <span key={c.url} style={{ marginRight: 8 }}><a className="linkish" href={c.url} target="_blank" rel="noreferrer">{c.callQuarter}</a> ({c.claims}{c.dropped ? `, ${c.dropped} unverifiable dropped` : ""})</span>)}
+          Calls read: {L.calls.map((c) => <span key={c.url} style={{ marginRight: 8 }}><a className="linkish" href={c.url} target="_blank" rel="noreferrer">{c.callQuarter}</a> ({c.error ? "couldn’t be read" : c.claims}{c.dropped ? `, ${c.dropped} unverifiable dropped` : ""})</span>)}
         </div>
-        {!L.judged && <div className="row small muted mt8"><span className="spin" /> Checking open promises against the latest calls…</div>}
-        {L.fixture && <p className="tiny mt8" style={{ color: "var(--watch)" }}>Recorded model run of 15 Nov 2026. This copy has no model access, so the calls aren’t re-read; quotes and computed checks are as recorded.</p>}
+        {!L.judged && !judged.error && !L.judgeError && <div className="row small muted mt8"><span className="spin" /> Checking open promises against the latest calls…</div>}
+        {!L.judged && (judged.error || L.judgeError) && <p className="tiny mt8" style={{ color: "var(--watch)" }}>The judgement model didn’t answer, so only the verdicts computed in code are shown; the other promises stay pending.</p>}
+        {L.fixture && <p className="tiny mt8" style={{ color: "var(--watch)" }}>Recorded model run of 15 Nov 2026. {L.modelError ? "The model isn’t reachable right now" : "This copy has no model access"}, so the calls aren’t re-read; quotes and computed checks are as recorded.</p>}
       </section>
       {threads.length === 0 && <p className="empty">No forward-looking guidance in the last four calls. This management team doesn’t guide.</p>}
       {threads.map((t, i) => <Thread key={i} t={t} dodges={dodgesFor(t, cand)} />)}
@@ -433,6 +434,7 @@ function BullBear({ symbol, ready }) {
   const Side = ({ title, pts, tone }) => (
     <section className="card">
       <h3 className={tone === "good" ? "up" : "down"}>{title}</h3>
+      {!pts.length && <p className="small muted">Nothing on this side from the rules.</p>}
       {pts.map((p, i) => (
         <div key={i} className="flag" style={{ gridTemplateColumns: "8px 1fr" }}>
           <span className={`dot ${tone}`} />
@@ -447,9 +449,11 @@ function BullBear({ symbol, ready }) {
   return (
     <div className="stack">
       {d.question && <div className="card" style={{ background: "var(--accent-soft)", borderColor: "transparent" }}><div className="tiny muted">The question that decides it</div><div className="serif" style={{ fontSize: 19 }}>{d.question}</div></div>}
-      <Side title="Bull case" pts={d.bull} tone="good" />
-      <Side title="Bear case" pts={d.bear} tone="risk" />
-      <details className="card"><summary className="small"><strong>All {d.evidence.length} evidence items</strong> <span className="muted">(the only facts the model was allowed to use)</span></summary>
+      {d.byRule && <div className="card" style={{ borderColor: "var(--watch)" }}><div className="tiny" style={{ color: "var(--watch)" }}>Sorted by rule, not written by a model</div>
+        <p className="small ink2 mt4">The model that writes the bull and bear case isn’t reachable from this copy, so FINN lays out the same evidence in code. Good flags, kept promises and a clean audit report go on one side. Watch and risk flags, missed or walked-down promises, auditor remarks and issues management itself acknowledged go on the other. Heaviest first; nothing here is generated text.</p></div>}
+      <Side title={d.byRule ? "Evidence for" : "Bull case"} pts={d.bull} tone="good" />
+      <Side title={d.byRule ? "Evidence against" : "Bear case"} pts={d.bear} tone="risk" />
+      <details className="card"><summary className="small"><strong>All {d.evidence.length} evidence items</strong> <span className="muted">{d.byRule ? "(everything the rules looked at)" : "(the only facts the model was allowed to use)"}</span></summary>
         {d.evidence.map((e) => <div key={e.id} className="small mt4"><span className="tick">{e.id}</span> {e.text} <span className="muted tiny">· {e.src}</span></div>)}
       </details>
       {d.meta && <div className="tiny muted">{d.meta.model} · ${d.meta.usd?.toFixed(4)}</div>}

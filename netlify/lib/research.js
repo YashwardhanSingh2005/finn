@@ -77,24 +77,44 @@ const BULLBEAR = `You are a buy-side analyst writing a tight bull and bear case 
 You receive an EVIDENCE list; each item has an id. Every point you make MUST cite 1-3 evidence ids in "refs". Do not use any fact that is not in the evidence. No outside knowledge, no price targets.
 Return JSON {"bull":[{"point":"<= 22 words","refs":["E3"]}] (3 points), "bear":[...] (3 points), "verdict_question":"<= 20 words: the single question that decides which case wins"}. JSON only.`;
 
-/** Collect evidence items with stable ids from all earlier layers. */
+/** Collect evidence items with stable ids from all earlier layers.
+ *  Each item also gets a side ("bull" | "bear" | null) and a weight, decided by rule, so the same evidence
+ *  can be laid out without a model when the model can't be reached (see ruleBullBear). */
 export function evidenceList(a, ledger, biz, cand, aud) {
   const ev = [];
-  const add = (kind, text, src) => ev.push({ id: `E${ev.length + 1}`, kind, text, src });
+  const add = (kind, text, src, side = null, w = 1) => ev.push({ id: `E${ev.length + 1}`, kind, text, src, side, w });
   const r = a.results;
-  if (r) add("numbers", `Latest quarter ${r.period}: ` + r.rows.map((x) => `${x.label} ₹${x.cur} cr (QoQ ${x.qoq ?? "–"}%, YoY ${x.yoy ?? "–"}%)`).join("; "), "reported results");
-  for (const k of ["trajectory", "balance", "cash", "holders"]) for (const f of a[k]?.flags || []) add(k, `${f.title}: ${f.detail}`, `rule: ${f.rule}`);
+  if (r) {
+    const yoy = (re) => r.rows.find((x) => re.test(x.label))?.yoy;
+    const rev = yoy(/revenue|sales/i), pat = yoy(/\bpat\b|net profit/i);
+    const side = rev > 0 && pat > 0 ? "bull" : rev < 0 && pat < 0 ? "bear" : null;
+    add("numbers", `Latest quarter ${r.period}: ` + r.rows.map((x) => `${x.label} ₹${x.cur} cr (QoQ ${x.qoq ?? "–"}%, YoY ${x.yoy ?? "–"}%)`).join("; "), "reported results", side, 2);
+  }
+  const KW = { cash: 3, balance: 3, trajectory: 3, holders: 2 };
+  for (const k of ["trajectory", "balance", "cash", "holders"]) for (const f of a[k]?.flags || []) add(k, `${f.title}: ${f.detail}`, `rule: ${f.rule}`, f.level === "good" ? "bull" : f.level === "watch" || f.level === "risk" ? "bear" : null, KW[k] + (f.level === "risk" ? 1 : 0));
   if (a.trajectory) add("trajectory", `${a.trajectory.years}y revenue CAGR ${a.trajectory.revCagr}%, PAT CAGR ${a.trajectory.patCagr}%`, "annual statements");
-  if (ledger?.credibility) add("credibility", `Track record: ${ledger.credibility.kept} of ${ledger.credibility.scored} checkable promises kept → ${ledger.credibility.pNext}% chance the next is kept (80% range ${ledger.credibility.lo}–${ledger.credibility.hi}%)${ledger.credibility.style ? `; style: ${ledger.credibility.style}` : ""}`, "Beta posterior over ledger verdicts");
-  for (const t of ledger?.threads || []) if (t.verdict && t.verdict !== "no evidence") add("ledger", `Promise "${t.title}" (said in ${t.callsMentioned.join(", ")}) → ${t.verdict}${t.actual ? ` (target ${t.target}, actual ${t.actual})` : t.actualText ? ` (${t.actualText})` : ""}${t.history.some((h) => ["raised", "lowered", "pushed out"].includes(h.change)) ? `; goalpost: ${t.history.map((h) => h.change).join(" → ")}` : ""}`, `transcript p.${t.latest.page}`);
+  if (ledger?.credibility) add("credibility", `Track record: ${ledger.credibility.kept} of ${ledger.credibility.scored} checkable promises kept → ${ledger.credibility.pNext}% chance the next is kept (80% range ${ledger.credibility.lo}–${ledger.credibility.hi}%)${ledger.credibility.style ? `; style: ${ledger.credibility.style}` : ""}`, "Beta posterior over ledger verdicts", ledger.credibility.pNext >= 65 ? "bull" : ledger.credibility.pNext <= 45 ? "bear" : null, 4);
+  for (const t of ledger?.threads || []) if (t.verdict && t.verdict !== "no evidence") {
+    const walked = t.history.some((h) => ["lowered", "pushed out"].includes(h.change));
+    const side = ["delivered", "beat", "on track"].includes(t.verdict) ? "bull" : ["missed", "behind"].includes(t.verdict) || walked ? "bear" : null;
+    add("ledger", `Promise "${t.title}" (said in ${t.callsMentioned.join(", ")}) → ${t.verdict}${t.actual ? ` (target ${t.target}, actual ${t.actual})` : t.actualText ? ` (${t.actualText})` : ""}${t.history.some((h) => ["raised", "lowered", "pushed out"].includes(h.change)) ? `; goalpost: ${t.history.map((h) => h.change).join(" → ")}` : ""}`, `transcript p.${t.latest.page}`, side, t.check === "computed" ? 4 : 3);
+  }
   for (const g of biz?.data?.guidance || []) add("guidance", `Guidance: ${g.statement}`, `latest call p.${g.page}`);
-  for (const w of biz?.data?.watch_items || []) add("mgmt-acknowledged", w.item, `latest call p.${w.page}`);
-  for (const f of aud?.flags || []) add("auditor", `${f.title}: “${(f.ev?.quote || "").slice(0, 200)}”`, `annual report p.${f.ev?.page}`);
-  if (aud?.clean) add("auditor", "Auditor's reports (standalone + consolidated): unmodified, no emphasis of matter, no going-concern doubt, no adverse CARO remarks", "annual report");
+  for (const w of biz?.data?.watch_items || []) add("mgmt-acknowledged", w.item, `latest call p.${w.page}`, "bear", 2);
+  for (const f of aud?.flags || []) add("auditor", `${f.title}: “${(f.ev?.quote || "").slice(0, 200)}”`, `annual report p.${f.ev?.page}`, "bear", f.level === "risk" ? 6 : 5);
+  if (aud?.clean) add("auditor", "Auditor's reports (standalone + consolidated): unmodified, no emphasis of matter, no going-concern doubt, no adverse CARO remarks", "annual report", "bull", 3);
   const ok = (cand?.calls || []).filter((x) => x.parsed);
   if (ok.length) add("candour", `Non-answer rate to analyst questions by call (newest first): ${ok.map((x) => `${x.period} ${x.nonAnswerRate}%`).join(", ")}`, "transcript lexicon (Gow et al. 2021)");
-  if (cand?.divergence && cand.divergence.verdict !== "aligned") add("candour", `Narrative vs numbers: ${cand.divergence.verdict}. ${cand.divergence.why}`, cand.divergence.rule);
+  if (cand?.divergence && cand.divergence.verdict !== "aligned") add("candour", `Narrative vs numbers: ${cand.divergence.verdict}. ${cand.divergence.why}`, cand.divergence.rule, cand.divergence.verdict === "story ahead of numbers" ? "bear" : "bull", 3);
   return ev;
+}
+
+/** No model: lay the same evidence out by rule. Good flags, kept promises and a clean audit report on one
+ *  side; watch/risk flags, missed or walked-down promises, auditor remarks and issues management itself
+ *  acknowledged on the other. Heaviest first. Nothing here is generated text. */
+export function ruleBullBear(ev) {
+  const top = (side) => ev.filter((e) => e.side === side).sort((x, y) => y.w - x.w).slice(0, 4).map((e) => ({ point: e.text.length > 190 ? e.text.slice(0, 188).replace(/\s+\S*$/, "") + "…" : e.text, refs: [e.id] }));
+  return { bull: top("bull"), bear: top("bear"), question: null, evidence: ev, byRule: true };
 }
 
 export async function bullBear(symbol, a, ledger, biz, cand, aud) {
