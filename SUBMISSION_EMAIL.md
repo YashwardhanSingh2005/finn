@@ -7,7 +7,7 @@ Please find my submission for the FINN build challenge below.
 
 - **Prototype (open on a phone):** {{LIVE_URL}}
 - **Repository:** https://github.com/YashwardhanSingh2005/finn
-- **AI build history:** the Claude Code session export is attached (`FINN_build_history.html`, with access tokens redacted); `BUILD_LOG.md` in the repo summarises the main steps.
+- **AI build history:** https://yashwardhansingh2005.github.io/finn/build_history.html is the Claude Code session export (the FINN part, with access tokens redacted; the same file is `docs/build_history.html` in the repo). `BUILD_LOG.md` in the repo summarises the main steps.
 - **If the live link is slow or down:** `docs/index.html` in the repo is the whole app with a recorded snapshot in one file. It runs with no server and says on screen that it is a recording.
 
 **What I built.** FINN is built on two ideas: an investor needs to know *what to read* and *whether to believe it*.
