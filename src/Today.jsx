@@ -255,7 +255,9 @@ function Enrichment({ x }) {
     <div className="mt12">
       {!d && !state.loading && <button className="btn primary" onClick={run}>{label}</button>}
       {state.loading && <div className="row small muted"><span className="spin" /> Reading the filing PDF…</div>}
-      {state.error && <p className="err">{state.error.message}</p>}
+      {state.error && (state.error.status === 503
+        ? <p className="muted small">FINN reads this PDF on the live site (it needs the model). This copy can’t, so use “Open filing” below.</p>
+        : <p className="err">{state.error.message}</p>)}
       {d?.error && <p className="muted small">{d.error}</p>}
       {d?.kind === "mgmt" && <MgmtCard d={d} />}
       {d?.kind === "results" && <FilingResults d={d} cut={x.resultsCut} />}

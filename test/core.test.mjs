@@ -198,5 +198,7 @@ test("snapshot keys: digest windows bucket up, custom ranges use the widest, per
   assert.equal(snapKey("digest", { from: "2026-10-01T00:00:00Z" }), "digest_720");
   assert.equal(snapKey("ledger", { symbol: "POLYCAB", judge: 0 }), "ledger_POLYCAB_0");
   assert.equal(snapKey("brief", { symbol: "POLYCAB", part: "bullbear" }), "brief_POLYCAB_bullbear");
-  assert.equal(snapKey("filing", { url: "x" }), null);
+  assert.match(snapKey("filing", { url: "https://www.bseindia.com/a.pdf", category: "results" }), /^filing_[0-9a-z]+_results$/);
+  assert.notEqual(snapKey("filing", { url: "https://www.bseindia.com/a.pdf" }), snapKey("filing", { url: "https://www.bseindia.com/b.pdf" }));
+  assert.equal(snapKey("search", { q: "x" }), null);
 });

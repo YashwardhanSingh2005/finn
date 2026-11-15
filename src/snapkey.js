@@ -11,5 +11,15 @@ export function snapKey(path, p = {}) {
   if (path === "ledger") return `ledger_${p.symbol}_${String(p.judge) === "0" ? 0 : 1}`;
   if (path === "brief") return `brief_${p.symbol}_${p.part || "business"}`;
   if (["company", "candour", "auditor"].includes(path)) return `${path}_${p.symbol}`;
-  return null; // filing / callcheck / search are not snapshotted per-URL
+  // per-document views: keyed by a short hash of the document URL
+  if (path === "filing" && p.url) return `filing_${hash(p.url)}_${p.category || "generic"}`;
+  if (path === "callcheck" && p.url) return `callcheck_${hash(p.url)}`;
+  return null; // search is answered from the snapshot's company index
+}
+
+/** djb2, base36: short, stable, good enough to name a few dozen files. */
+export function hash(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h * 33) ^ str.charCodeAt(i)) >>> 0;
+  return h.toString(36);
 }
