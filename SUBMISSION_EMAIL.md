@@ -32,14 +32,14 @@ Please find my submission for the FINN build challenge below.
 
 1. **Models locate and quote; code computes.** No number on screen is produced by a model. Every model-supplied quote is checked against the source PDF; quotes that fail are dropped, and the drop is counted on screen.
 2. **Rules before models for triage.** Rules are free, instant and explainable. Models are spent only on items that earn attention: a cheap model (Haiku) reads documents, and a stronger model (Opus) is used only for cross-call judgement, batched to one call per company. Everything is cached by document. A new company costs about ₹9 the first time and nothing after that, and a cost meter in the app shows the spend.
-3. **I measured instead of asserting.** I hand-labelled the non-answer detector over three rounds on fresh samples: 86–92% precision and about 55–60% recall, reported as lower bounds. One literature idea, script-echo, didn't transfer to Indian calls, so I dropped it and documented why. A parser regression set covers 9 transcript layouts, and 20 unit tests cover the deterministic core.
+3. **I measured instead of asserting.** I hand-labelled the non-answer detector over three rounds on fresh samples: 86–92% precision and about 55–60% recall, reported as lower bounds. One literature idea, script-echo, didn't transfer to Indian calls, so I dropped it and documented why. A parser regression set covers 9 transcript layouts, and 21 unit tests cover the deterministic core.
 4. **I tested whether the ranking works.** I re-scored a year of portfolio filings, leaving out the market-reaction term so the test isn't circular.
    - The first version barely separated urgent filings from routine ones.
    - A per-category breakdown showed which weights were wrong.
    - After re-tuning, the result held on the six months I hadn't tuned on: *Needs you* filings were followed by a ≥2σ move **27%** of the time, vs **11%** for routine ones. Only 6% of filings now reach *Needs you*.
    - The result is shown in the app, with its caveats.
 
-5. **It fails in steps, and says so.** Exchange feeds hang from cloud hosts, so every call has a hard timeout and a circuit breaker. The digest falls back from NSE to BSE to a mirror, failures are never cached, and if the backend can't answer the app shows a labelled recording.
+5. **It fails in steps, and says so.** Exchange feeds hang from cloud hosts, so every call has a hard timeout and a circuit breaker. The digest falls back from NSE to BSE to a mirror, and failures are never cached. The text of documents already read ships with the deployment, so a cold start doesn't depend on the exchange archives. If the backend can't answer at all, the app shows a labelled recording.
 
 **What I left out on purpose.** Notification delivery (WhatsApp or Web Push): the digest and triggers are computed on demand. Deep reads of annual reports. Logins. A chat box: chat invites answers that can't be checked, so FINN gives structured views with receipts instead.
 

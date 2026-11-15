@@ -176,12 +176,13 @@ Exchanges often tarpit cloud IPs: the connection hangs instead of failing. FINN 
 1. **Every outbound call has a hard timeout** (8 s for exchange APIs, 20 s for PDFs, 40 s for annual reports). After three failures a host is skipped for three minutes, so one dead feed can't use up a request's time budget.
 2. **The digest falls back** from NSE to BSE to the screener.in mirror of BSE announcements, and each card shows which source it came from.
 3. **Failures are never cached.** A result built from a failed download is returned once and recomputed next time.
-4. **If the backend can't answer at all**, the app serves the last recorded snapshot (`public/snapshot/`, written by `scripts/snapshot.mjs`) under a banner that says so. The same snapshot is inlined into `docs/index.html`, which needs no server.
-5. **Without model access**, everything computed in code still works: triage, alerts, results cut, Candour, the auditor scan, the backtest. Views that need a model say that the AI layer is offline.
+4. **Documents already read ship with the deployment.** `seed/` holds the page text of every transcript FINN has read, plus the code-only analyses built on it (1.6 MB gzipped, written by `scripts/seed.mjs`). Exchange PDFs don't change after filing, so a fresh instance is warm for the whole portfolio and doesn't need the exchange archives to answer. No model output is seeded.
+5. **If the backend can't answer at all**, the app serves the last recorded snapshot (`public/snapshot/`, written by `scripts/snapshot.mjs`) under a banner that says so. The same snapshot is inlined into `docs/index.html`, which needs no server.
+6. **Without model access**, everything computed in code still works: triage, alerts, results cut, Candour, the auditor scan, the backtest. Views that need a model say that the AI layer is offline, except where a recorded run exists (`fixtures/`), which is shown with a label saying it is a recording.
 
 ## Quality
 
-- **Unit tests:** `npm test` runs 20 tests over the deterministic core: the classifier and its rule order, the scorer, the amount parser, SEBI materiality, the quote verifier, the fiscal calendar, horizon resolution, numeric verdicts, actuals for the year to date, the non-answer lexicon, transcript parsing, alerts, and the credibility posterior.
+- **Unit tests:** `npm test` runs 21 tests over the deterministic core: the classifier and its rule order, the scorer, the amount parser, SEBI materiality, the quote verifier, the fiscal calendar, horizon resolution, numeric verdicts, actuals for the year to date, the non-answer lexicon, transcript parsing, alerts, and the credibility posterior.
 - **Parser regression set:** `test/parse_regression.mjs` covers 9 real transcripts across 5 layouts.
 - **UI smoke test:** `test/ui_smoke.py` opens every screen and sub-tab in a 390 px headless browser, in light and dark mode, and fails on any JavaScript error. It caught a crash on directly opening the Candour tab.
 - **Evaluations:** `eval/README.md` covers the triage backtest (tuned on one half, validated out of sample) and three precision/recall rounds for the non-answer detector. It also records the model-routing finding (thinking off for extraction) and the judge-direction bug found by inspection.

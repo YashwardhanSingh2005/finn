@@ -7,6 +7,17 @@ import { put, head } from "@vercel/blob";
 const mem = new Map();
 let store = null;
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
+import { gunzipSync } from "node:zlib";
+
+// Read-only seed shipped with the deployment (scripts/seed.mjs): text of documents already read, so a
+// cold instance doesn't need the exchange archives to answer. Looked up last, after memory and blobs.
+const SEED_DIRS = [new URL("../../seed/", import.meta.url).pathname, `${process.cwd()}/seed/`];
+function seed(k) {
+  if (process.env.FINN_NO_SEED === "1") return null;
+  for (const d of SEED_DIRS) { try { return JSON.parse(gunzipSync(readFileSync(`${d}${k}.json.gz`))); } catch { /* not seeded */ } }
+  return null;
+}
 function blobs() {
   if (store !== null) return store;
   if (process.env.FINN_DISK_CACHE) {
@@ -42,11 +53,12 @@ export const cache = {
     const m = mem.get(k);
     if (m && Date.now() - m.t < maxAgeMs) return m.v;
     const s = blobs();
-    if (!s) return null;
-    try {
+    if (s) try {
       const r = await s.get(k, { type: "json" });
       if (r && Date.now() - r.t < maxAgeMs) { mem.set(k, r); return r.v; }
     } catch {}
+    const r = seed(k);
+    if (r && Date.now() - r.t < maxAgeMs) { mem.set(k, r); return r.v; }
     return null;
   },
   async set(key, v) {

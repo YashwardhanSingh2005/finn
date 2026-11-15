@@ -134,6 +134,7 @@ function Snapshot({ c, biz, L, goLedger }) {
         <h3>What it does</h3>
         {biz.loading && <div className="row small muted"><span className="spin" /> Reading the latest earnings call…</div>}
         {biz.error && <p className="muted small">{biz.error.status === 503 ? "AI layer offline: showing numbers only." : biz.error.message}</p>}
+        {biz.data?.fixture && <p className="tiny" style={{ color: "var(--watch)" }}>Recorded model run of 15 Nov 2026 (no model access on this copy).</p>}
         {!b && c.revenueMix && (<><SegmentBar segs={c.revenueMix.segments} /><div className="tiny muted">Revenue mix{c.revenueMix.label ? ` (${c.revenueMix.label})` : ""}: {c.revenueMix.source}</div></>)}
         {b && (<>
           <p style={{ margin: "0 0 8px" }}>{b.what_it_does}</p>
@@ -283,6 +284,7 @@ function Ledger({ st, judged, cand }) {
           Calls read: {L.calls.map((c) => <span key={c.url} style={{ marginRight: 8 }}><a className="linkish" href={c.url} target="_blank" rel="noreferrer">{c.callQuarter}</a> ({c.claims}{c.dropped ? `, ${c.dropped} unverifiable dropped` : ""})</span>)}
         </div>
         {!L.judged && <div className="row small muted mt8"><span className="spin" /> Checking open promises against the latest calls…</div>}
+        {L.fixture && <p className="tiny mt8" style={{ color: "var(--watch)" }}>Recorded model run of 15 Nov 2026. This copy has no model access, so the calls aren’t re-read; quotes and computed checks are as recorded.</p>}
       </section>
       {threads.length === 0 && <p className="empty">No forward-looking guidance in the last four calls. This management team doesn’t guide.</p>}
       {threads.map((t, i) => <Thread key={i} t={t} dodges={dodgesFor(t, cand)} />)}

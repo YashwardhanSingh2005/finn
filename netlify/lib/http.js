@@ -4,9 +4,11 @@ export const fail = (e) => json({ error: e.message || String(e), suggestions: e.
 export const sym = (s) => (s || "").toUpperCase().replace(/[^A-Z0-9&_-]/g, "").slice(0, 20);
 
 import { readFile } from "node:fs/promises";
-/** Local development without model access: serve a recorded response (labelled as such) if one exists. */
+/** No model access (local development, or a deployment without a gateway): serve a recorded response if one
+ *  exists. It carries `fixture: true`, and the UI labels it as a recording. */
 export async function fixture(kind, symbol) {
-  const dir = process.env.FINN_FIXTURES;
-  if (!dir) return null;
-  try { return { ...JSON.parse(await readFile(`${dir}/${kind}_${symbol}.json`, "utf8")), fixture: true }; } catch { return null; }
+  // FINN_FIXTURES, else the fixtures/ folder shipped with the deployment
+  const dirs = process.env.FINN_FIXTURES ? [process.env.FINN_FIXTURES] : [new URL("../../fixtures", import.meta.url).pathname, `${process.cwd()}/fixtures`];
+  for (const dir of dirs) { try { return { ...JSON.parse(await readFile(`${dir}/${kind}_${symbol}.json`, "utf8")), fixture: true }; } catch { /* try the next place */ } }
+  return null;
 }

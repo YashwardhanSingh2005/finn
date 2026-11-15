@@ -202,3 +202,17 @@ test("snapshot keys: digest windows bucket up, custom ranges use the widest, per
   assert.notEqual(snapKey("filing", { url: "https://www.bseindia.com/a.pdf" }), snapKey("filing", { url: "https://www.bseindia.com/b.pdf" }));
   assert.equal(snapKey("search", { q: "x" }), null);
 });
+
+test("seed cache: a document already read is served from the shipped seed, with no persistent store", async () => {
+  const { readdirSync } = await import("node:fs");
+  const dir = new URL("../seed/", import.meta.url).pathname;
+  const f = readdirSync(dir).find((x) => x.startsWith("auditor_v3_"));
+  assert.ok(f, "seed/ has auditor entries");
+  const saved = process.env.FINN_DISK_CACHE; delete process.env.FINN_DISK_CACHE;
+  const { cache } = await import("../netlify/lib/cache.js?seedtest");
+  const key = f.replace(/\.json\.gz$/, ""); // already in its file-safe form, which safe() leaves unchanged
+  const v = await cache.get(key);
+  assert.ok(v && Array.isArray(v.reports), "seeded auditor analysis is returned");
+  assert.equal(await cache.get("auditor_v3_no_such_document"), null);
+  if (saved) process.env.FINN_DISK_CACHE = saved;
+});

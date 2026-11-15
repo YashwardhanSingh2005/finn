@@ -38,7 +38,8 @@ FINN was built in one overnight session (14–15 Nov 2026) with **Claude Code** 
 | 22 | Two views hung for three minutes: transcript PDFs on the NSE archive host never answered from this network | No fetch had a timeout. Added hard timeouts everywhere, a per-host circuit breaker, and parallel transcript downloads. Results built from a failed download are no longer cached (one empty backtest had been cached for 24 hours). |
 | 23 | No live backend while the host move was pending | **Snapshot mode**: every demo view is recorded as JSON. The app falls back to the recording when the backend can't answer and says so in a banner. The same recording is inlined into a single HTML file that runs with no server. |
 | 24 | Checking the one-file copy in a phone-sized browser | The rupee sign was missing in front of prices. The webfont's ₹ rendered with zero width, so the next digit was drawn over it. That one character now comes from a system font. It had been wrong in every earlier screenshot and I had not seen it. |
-| 25 | Build history | The raw session contains unrelated work and access tokens, so the attached history is a filtered, redacted export of the FINN part only. |
+| 25 | A fresh deployment would start cold and depend on exchange archives that hang | Exchange PDFs don't change, so the page text of every document already read is shipped as a gzipped seed (1.6 MB). A cold server answered Candour, the auditor scan and the league in under a second with an empty cache. |
+| 26 | Build history | The raw session contains unrelated work and access tokens, so the attached history is a filtered, redacted export of the FINN part only. |
 
 ## Things the agent did *not* get to decide
 - Scraping NSE/BSE with browser headers: the agent's safety layer blocked it until I approved it explicitly.
